@@ -1,0 +1,130 @@
+# Track A POS — fork D real_tn6 + semantic yolo_obstacles_layer
+# Track D — Robot thật — real_tn3: proxemic + group/object/emotion + density gate FULL
+local_costmap:
+  global_frame: odom
+  robot_base_frame: base_footprint
+  transform_tolerance: 0.75
+  update_frequency: 10.0
+  publish_frequency: 5.0
+  width: 10.0
+  height: 10.0
+  resolution: 0.05
+  footprint_padding: 0.005
+  rolling_window: true
+  plugins:
+    - { name: obstacles_layer,    type: "costmap_2d::ObstacleLayer" }
+    - { name: yolo_obstacles_layer, type: "costmap_2d::ObstacleLayer" }
+    - { name: inflation_layer,    type: "costmap_2d::InflationLayer" }
+    - { name: proxemic,           type: "social_navigation_layers::ProxemicLayer" }
+    # - { name: passing,            type: "social_navigation_layers::PassingLayer" }
+    - { name: human_group_layer,  type: "social_navigation_layers::HumanGroupLayer" }
+    - { name: human_object_layer, type: "social_navigation_layers::HumanObjectLayer" }
+    - { name: emotion_layer,      type: "social_navigation_layers::EmotionLayer" }
+
+  obstacles_layer:
+    observation_sources: base_scan
+    base_scan:
+      data_type: LaserScan
+      sensor_frame: lidar_link
+      topic: /scan
+      clearing: true
+      marking: true
+      inf_is_valid: true
+      observation_persistence: 0.0
+      expected_update_rate: 0.5
+      obstacle_range: 10.0
+      raytrace_range: 12.0
+    track_unknown_space: false
+    footprint_clearing_enabled: true
+    combination_method: 1
+    mark_threshold: 0
+    clear_threshold: 1
+
+
+  yolo_obstacles_layer:
+    enabled: true
+    observation_sources: yolo_mark yolo_clear
+    yolo_mark:
+      data_type: PointCloud2
+      topic: /yolo_obstacle_cloud
+      sensor_frame: camera_link
+      marking: true
+      clearing: false
+      observation_persistence: 0.0
+      expected_update_rate: 2.5
+      obstacle_range: 8.0
+      raytrace_range: 8.0
+      min_obstacle_height: 0.0
+      max_obstacle_height: 2.2
+      inf_is_valid: false
+    yolo_clear:
+      data_type: PointCloud2
+      topic: /yolo_obstacle_clear
+      sensor_frame: camera_link
+      marking: false
+      clearing: true
+      observation_persistence: 0.0
+      expected_update_rate: 2.5
+      obstacle_range: 8.0
+      raytrace_range: 8.0
+      min_obstacle_height: 0.0
+      max_obstacle_height: 2.2
+      inf_is_valid: false
+    track_unknown_space: false
+    footprint_clearing_enabled: true
+    combination_method: 1
+    mark_threshold: 0
+    clear_threshold: 1
+
+  inflation_layer:
+    enabled: true
+    cost_scaling_factor: 100.0
+    inflation_radius: 0.26
+
+  proxemic:
+    enabled: true
+    cutoff: 22.0  # = lethal_cost = TEB threshold; nâng để thu hẹp r_proxemic
+    amplitude: 77.0
+    covariance: 0.25
+    factor: 5.0
+    min_radius: 0.6
+    proxemic_density_weight: 22.0
+    keep_time: 2.0
+
+  # passing:
+  #   enabled: true
+  #   cutoff: 22.0  # = lethal_cost = TEB threshold; nâng để thu hẹp r_proxemic
+  #   amplitude: 77.0
+  #   covariance: 0.25
+  #   factor: 5.0
+  #   min_radius: 0.6
+  #   density_weight: 22.0
+  #   keep_time: 2.0
+
+  emotion_layer:
+    enabled: true
+    cutoff: 22.0  # = lethal_cost = TEB threshold; nâng để thu hẹp r_proxemic
+    amplitude: 77.0
+    covariance: 0.25
+    emotion_density_weight: 10.0
+    keep_time: 2.0  # đồng bộ proxemic; FOV memory 60s
+
+  human_object_layer:
+    enabled: true
+    cutoff: 22.0  # = lethal_cost = TEB threshold; nâng để thu hẹp r_proxemic
+    amplitude: 77.0
+    covar: 0.25
+    factor: 1.0
+    human_object_density_weight: 22.0
+    # Giữ cost tương tác (seeing) sau khi mất detection — lab: 20s
+    keep_time: 2.0  # đồng bộ proxemic; FOV memory 60s
+
+  human_group_layer:
+    enabled: true
+    cutoff: 22.0  # = lethal_cost = TEB threshold; nâng để thu hẹp r_proxemic
+    amplitude: 77.0
+    covar: 0.25
+    factor: 1.0
+    human_group_density_weight: 50
+    # Giữ costmap nhóm khi ZED mất track ngắn (social_state rỗng)
+    keep_time: 2.0  # đồng bộ proxemic; FOV memory 60s

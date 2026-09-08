@@ -1,0 +1,354 @@
+<?xml version="1.0"?>
+<launch>
+  <!--
+    Navigation với odom_mode chọn được (giữ Body Tracking + social costmap).
+
+    Danh sách odom_mode (truyền: odom_mode:=<tên>):
+      baseline       — wheel+RF2O (ekf_x_omni4wd.yaml), hành vi cũ không đổi
+      wheel_only     — chỉ wheel twist
+      rf2o_only      — chỉ RF2O pose
+      srf_only       — chỉ SRF pose
+      zed_vio_only   — chỉ ZED VIO pose
+      wheel_rf2o     — wheel + RF2O
+      wheel_srf      — wheel + SRF
+      wheel_zed      — wheel + ZED VIO
+      rf2o_zed       — RF2O + ZED VIO
+      srf_zed        — SRF + ZED VIO
+      srf_zed_dir    — SRF directional + ZED VIO (P8; tự bật reliability)
+      srf_zed_soft   — SRF directional + VIO soft-gate (P9; tự bật reliability)
+      livo_full      — P10: directional SRF + soft VIO + IMU wz (EKF; tự bật reliability)
+      gtsam_livo     — GTSAM ISAM2 → /odom_livo (+ TF); cần IMU+VIO (research)
+      srf_zed_imu    — SRF + ZED raw IMU /zed_imu (không VIO) ★ mặc định, khuyến nghị production
+      wheel_rf2o_zed — wheel + RF2O + ZED VIO
+      wheel_srf_zed  — wheel + SRF + ZED VIO
+
+    Ví dụ:
+      roslaunch x_omni4wd_navigation navigation_with_selectable_odom.launch
+      roslaunch x_omni4wd_navigation navigation_with_selectable_odom.launch odom_mode:=srf_only
+      roslaunch x_omni4wd_navigation navigation_with_selectable_odom.launch odom_mode:=srf_zed_imu
+      # Bài A C0 / C1 (YOLO costmap layer):
+      #   use_yolo_obstacle_layer:=false   # C0 LiDAR only
+      #   use_yolo_obstacle_layer:=true    # C1 LiDAR + YOLO (cần use_yolo:=true)
+
+    RF2O và SRF XOR (không chạy song song trong cùng mode).
+    Mode có ZED VIO tự bật publish_vio_odom trên body-tracking node (không mở zed_wrapper).
+    Mode srf_zed_imu / gtsam_livo / livo_full tự bật publish_imu.
+
+    Ctrl+C tắt sạch: mặc định hardware_respawn:=false (LiDAR/ZED/amcl/move_base không tự sống lại).
+    Khuyến nghị: ./run_navigation_with_selectable_odom.sh
+  -->
+
+  <arg name="odom_mode" default="srf_zed_imu"/>
+  <arg name="zed_odom_topic" default="/odom_zed"/>
+  <!-- Tự bật VIO khi mode cần ZED; có thể ép publish_vio_odom:=true để ghi bag mọi mode -->
+  <arg name="publish_vio_odom" default="$(eval odom_mode in ('zed_vio_only', 'wheel_zed', 'rf2o_zed', 'srf_zed', 'srf_zed_dir', 'srf_zed_soft', 'livo_full', 'gtsam_livo', 'wheel_rf2o_zed', 'wheel_srf_zed'))"/>
+  <arg name="publish_vio_tf" default="false"/>
+  <!-- Mode srf_zed_imu / gtsam_livo cần IMU thô -->
+  <arg name="publish_imu" default="$(eval odom_mode in ('srf_zed_imu', 'livo_full', 'gtsam_livo'))"/>
+  <arg name="zed_imu_topic" default="/zed_imu"/>
+  <arg name="gtsam_lag_s" default="5.0"/>
+  <arg name="srf_xy_scale" default="0.9667"/>
+
+  <arg name="full_system_test" default="false"/>
+
+  <arg name="map_file" default="$(find x_omni4wd_navigation)/maps/f21_wall_qa2.yaml"/>
+  <arg name="nav_config_dir" default="$(find x_omni4wd_navigation)/config"/>
+  <arg name="algorithm_navigation" default="teb"/>
+  <arg name="cmd_vel_topic" default="/cmd_vel"/>
+  <arg name="scan_topic" default="/scan"/>
+  <arg name="odom_topic" default="/odom"/>
+  <arg name="wheel_odom_topic" default="/odom_wheel"/>
+  <arg name="rf2o_odom_topic" default="/odom_rf2o"/>
+  <arg name="srf_odom_topic" default="/odom_srf"/>
+  <arg name="odom_frame" default="odom"/>
+  <arg name="base_frame" default="base_footprint"/>
+  <arg name="laser_frame" default="lidar_link"/>
+  <arg name="open_rviz" default="true"/>
+  <arg name="use_amcl" default="true"/>
+  <arg name="use_bringup" default="true"/>
+  <arg name="use_ekf_fusion" default="true"/>
+  <arg name="use_lidar" default="true"/>
+  <arg name="use_zed" default="true"/>
+  <arg name="use_zed_sdk_bridge" default="true"/>
+  <arg name="use_social_density_fusion" default="true"/>
+  <arg name="use_path_density_weight_controller" default="true"/>
+  <arg name="zed_body_enable_visualizer" default="true"/>
+  <arg name="zed_body_enable_proxemic" default="false"/>
+  <arg name="zed_body_enable_costmap_3d" default="false"/>
+  <arg name="zed_body_detection_model" default="HUMAN_BODY_FAST"/>
+  <arg name="zed_body_format" default="34"/>
+  <arg name="zed_camera_name" default="zed2i"/>
+  <arg name="zed_camera_frame" default="camera_link"/>
+  <!--
+    Cần YOLO (/objects) cho tương tác người–đối tượng trên social costmap.
+    ZED Body Tracking đã chiếm GPU: nếu YOLO cũng CUDA → "invalid resource handle"
+    / Skeleton detection failed. Vì vậy mode có ZED VIO mặc định YOLO trên CPU.
+    Ép GPU (rủi ro): yolo_device:=0
+  -->
+  <arg name="use_yolo" default="true"/>
+  <arg name="yolo_model" default="yolov8n.pt"/>
+  <arg name="yolo_conf_thres" default="0.25"/>
+  <arg name="yolo_debug" default="false"/>
+  <arg name="use_live_objects" default="true"/>
+  <!--
+    Bài A (YOLO → costmap vật tĩnh): layer yolo_obstacles_layer + /yolo_obstacle_cloud.
+    C0: false · C1: true. Cần use_yolo:=true. Mặc định false để không đổi hành vi social cũ.
+  -->
+  <arg name="use_yolo_obstacle_layer" default="true"/>
+  <arg name="yolo_process_hz" default="$(eval 2.0 if odom_mode in ('zed_vio_only', 'wheel_zed', 'rf2o_zed', 'srf_zed', 'srf_zed_dir', 'srf_zed_soft', 'livo_full', 'gtsam_livo', 'wheel_rf2o_zed', 'wheel_srf_zed') else 3.0)"/>
+  <arg name="yolo_device" default="$(eval 'cpu' if odom_mode in ('zed_vio_only', 'wheel_zed', 'rf2o_zed', 'srf_zed', 'srf_zed_dir', 'srf_zed_soft', 'livo_full', 'gtsam_livo', 'wheel_rf2o_zed', 'wheel_srf_zed') else '')"/>
+  <arg name="yolo_launch_delay" default="$(eval 12.0 if odom_mode in ('zed_vio_only', 'wheel_zed', 'rf2o_zed', 'srf_zed', 'srf_zed_dir', 'srf_zed_soft', 'livo_full', 'gtsam_livo', 'wheel_rf2o_zed', 'wheel_srf_zed') else 8.0)"/>
+  <arg name="use_system_health_monitor" default="false"/>
+  <arg name="use_sim_time" default="false"/>
+  <arg name="use_laser_filter" default="true"/>
+  <!-- Lọc động trước SRF: /scan → /scan_static (costmap vẫn /scan) -->
+  <arg name="use_scan_static_filter" default="true"/>
+  <arg name="scan_static_use_body_filter" default="false"/>
+  <arg name="odom_scan_topic"
+       default="$(eval '/scan_static' if arg('use_scan_static_filter') else arg('scan_topic'))"/>
+  <arg name="use_goal_sender" default="true"/>
+  <arg name="use_move_base_monitor" default="false"/>
+  <!--
+    hardware_respawn:=false (mặc định): Ctrl+C tắt hẳn LiDAR/ZED/amcl/move_base,
+    không tự respawn để lại orphan giữ USB camera/lidar.
+    Bật lại nếu cần tự phục hồi crash GPU: hardware_respawn:=true
+  -->
+  <arg name="hardware_respawn" default="false"/>
+  <arg name="goal_sender_waypoints_file" default="$(find goal_sender)/config/waypoints_f21_wall_full_real.yaml"/>
+  <arg name="goal_sender_num_cycles" default="1"/>
+  <arg name="goal_sender_extra_delay" default="2.0"/>
+  <arg name="goal_sender_abort_only_when_proxemic_max" default="true"/>
+  <arg name="goal_sender_proxemic_max_weight" default="50.0"/>
+  <arg name="goal_sender_abort_retry_delay_sec" default="0.5"/>
+
+  <arg name="velocity_compensation_mode" default="robot_odometry"/>
+  <arg name="velocity_low_pass_alpha" default="0.3"/>
+  <arg name="velocity_stationary_threshold" default="0.10"/>
+  <arg name="rotational_compensation_sign" default="-1.0"/>
+  <arg name="social_scenario_config"
+       default="$(find social_density_fusion)/config/costmapEx_vcca_real.yaml"/>
+
+  <arg name="arduino_port" default="/dev/robot_arduino"/>
+  <arg name="lidar_port" default="/dev/robot_lidar"/>
+
+  <arg name="wheel_joint_states_topic" default="/wheel_encoder_joint_states"/>
+  <arg name="R" default="0.2505"/>
+  <arg name="wheel_radius" default="0.0635"/>
+  <arg name="wheel_odom_rate" default="50.0"/>
+  <arg name="rf2o_freq" default="10.0"/>
+  <arg name="srf_operation_mode" default="HYBRID"/>
+  <arg name="srf_laser_decimation" default="1"/>
+  <arg name="srf_laser_min_range" default="0.20"/>
+  <arg name="srf_laser_max_range" default="-1.0"/>
+
+  <arg name="initial_pose_x" default="-2.2909"/>
+  <arg name="initial_pose_y" default="-28.4764"/>
+  <arg name="initial_pose_a" default="0.05348135"/>
+
+  <param name="/odom_mode" value="$(arg odom_mode)"/>
+
+  <group if="$(arg full_system_test)">
+    <param name="/full_system_test/active" value="true"/>
+  </group>
+
+  <include if="$(arg use_bringup)" file="$(find x_omni4wd_bringup)/launch/x_omni4wd_bringup_fusion.launch">
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="use_lidar" value="$(arg use_lidar)"/>
+    <arg name="lidar_respawn" value="$(arg hardware_respawn)"/>
+    <arg name="use_zed" value="$(arg use_zed)"/>
+    <!-- Body tracking mở camera SDK trực tiếp → không chạy cùng zed_wrapper -->
+    <arg name="use_zed_sdk_bridge" value="$(arg use_zed_sdk_bridge)"/>
+    <arg name="zed_respawn" value="$(arg hardware_respawn)"/>
+    <arg if="$(arg full_system_test)" name="zed_body_enable_visualizer" value="false"/>
+    <arg unless="$(arg full_system_test)" name="zed_body_enable_visualizer" value="$(arg zed_body_enable_visualizer)"/>
+    <arg name="zed_body_enable_proxemic" value="$(arg zed_body_enable_proxemic)"/>
+    <arg name="zed_body_enable_costmap_3d" value="$(arg zed_body_enable_costmap_3d)"/>
+    <arg name="zed_body_detection_model" value="$(arg zed_body_detection_model)"/>
+    <arg if="$(arg full_system_test)" name="zed_body_format" value="18"/>
+    <arg unless="$(arg full_system_test)" name="zed_body_format" value="$(arg zed_body_format)"/>
+    <arg name="zed_camera_name" value="$(arg zed_camera_name)"/>
+    <arg name="use_yolo" value="$(arg use_yolo)"/>
+    <arg name="yolo_model" value="$(arg yolo_model)"/>
+    <arg name="yolo_conf_thres" value="$(arg yolo_conf_thres)"/>
+    <arg name="yolo_debug" value="$(arg yolo_debug)"/>
+    <arg name="yolo_process_hz" value="$(arg yolo_process_hz)"/>
+    <arg name="yolo_device" value="$(arg yolo_device)"/>
+    <arg name="yolo_launch_delay" value="$(arg yolo_launch_delay)"/>
+    <arg name="open_rviz" value="false"/>
+    <arg name="use_rqt_omni_robot_steering" value="false"/>
+    <arg name="cmd_vel_topic" value="$(arg cmd_vel_topic)"/>
+    <arg name="scan_topic" value="$(arg scan_topic)"/>
+    <arg name="odom_frame" value="$(arg odom_frame)"/>
+    <arg name="base_frame" value="$(arg base_frame)"/>
+    <arg name="laser_frame" value="$(arg laser_frame)"/>
+    <arg name="arduino_port" value="$(arg arduino_port)"/>
+    <arg name="lidar_port" value="$(arg lidar_port)"/>
+    <arg name="wheel_joint_states_topic" value="$(arg wheel_joint_states_topic)"/>
+    <arg name="R" value="$(arg R)"/>
+    <arg name="wheel_radius" value="$(arg wheel_radius)"/>
+    <arg if="$(arg full_system_test)" name="zed_depth_mode" value="0"/>
+    <arg if="$(eval full_system_test and not use_yolo)" name="zed_publish_depth" value="false"/>
+    <arg if="$(arg full_system_test)" name="zed_camera_fps" value="30"/>
+    <arg if="$(arg full_system_test)" name="zed_launch_delay" value="5.0"/>
+    <arg name="publish_vio_odom" value="$(arg publish_vio_odom)"/>
+    <arg name="publish_vio_tf" value="$(arg publish_vio_tf)"/>
+    <arg name="publish_imu" value="$(arg publish_imu)"/>
+    <arg name="vio_odom_topic" value="$(arg zed_odom_topic)"/>
+    <arg name="imu_topic" value="$(arg zed_imu_topic)"/>
+  </include>
+
+  <!-- Map sớm cho scan_static_filter -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)" output="screen">
+    <param name="frame_id" value="map"/>
+  </node>
+
+  <include if="$(arg use_scan_static_filter)"
+           file="$(find x_omni4wd_slam)/launch/scan_static_filter.launch">
+    <arg name="scan_in" value="$(arg scan_topic)"/>
+    <arg name="scan_out" value="/scan_static"/>
+    <arg name="use_map_filter" value="true"/>
+    <arg name="use_body_filter" value="$(arg scan_static_use_body_filter)"/>
+    <arg name="bodies_topic" value="/bodies"/>
+  </include>
+
+  <include if="$(arg use_ekf_fusion)" file="$(find x_omni4wd_slam)/launch/odometry_modes.launch">
+    <arg name="odom_mode" value="$(arg odom_mode)"/>
+    <arg name="cmd_vel_topic" value="$(arg cmd_vel_topic)"/>
+    <arg name="scan_topic" value="$(arg odom_scan_topic)"/>
+    <arg name="odom_topic" value="$(arg odom_topic)"/>
+    <arg name="wheel_odom_topic" value="$(arg wheel_odom_topic)"/>
+    <arg name="rf2o_odom_topic" value="$(arg rf2o_odom_topic)"/>
+    <arg name="srf_odom_topic" value="$(arg srf_odom_topic)"/>
+    <arg name="zed_odom_topic" value="$(arg zed_odom_topic)"/>
+    <arg name="odom_frame" value="$(arg odom_frame)"/>
+    <arg name="base_frame" value="$(arg base_frame)"/>
+    <arg name="map_frame" value="map"/>
+    <arg name="joint_states_topic" value="$(arg wheel_joint_states_topic)"/>
+    <arg name="R" value="$(arg R)"/>
+    <arg name="wheel_radius" value="$(arg wheel_radius)"/>
+    <arg name="wheel_odom_rate" value="$(arg wheel_odom_rate)"/>
+    <arg name="rf2o_freq" value="$(arg rf2o_freq)"/>
+    <arg name="srf_operation_mode" value="$(arg srf_operation_mode)"/>
+    <arg name="srf_laser_decimation" value="$(arg srf_laser_decimation)"/>
+    <arg name="srf_laser_min_range" value="$(arg srf_laser_min_range)"/>
+    <arg name="srf_laser_max_range" value="$(arg srf_laser_max_range)"/>
+    <arg name="gtsam_lag_s" value="$(arg gtsam_lag_s)"/>
+    <arg name="srf_xy_scale" value="$(arg srf_xy_scale)"/>
+  </include>
+
+  <include if="$(arg use_laser_filter)" file="$(find x_omni4wd_navigation)/launch/laser_filter.launch"/>
+
+  <include if="$(eval use_social_density_fusion and use_zed_sdk_bridge)"
+           file="$(find social_density_fusion)/launch/social_density_fusion_zed.launch">
+    <arg name="scan_topic" value="$(arg scan_topic)"/>
+    <arg name="source_frame" value="$(arg zed_camera_frame)"/>
+    <arg name="target_frame" value="map"/>
+    <arg name="robot_odom_topic" value="$(arg odom_topic)"/>
+    <arg name="robot_base_frame" value="$(arg base_frame)"/>
+    <arg name="scenario_config" value="$(arg social_scenario_config)"/>
+    <arg if="$(arg use_yolo)" name="use_live_objects" value="true"/>
+    <arg unless="$(arg use_yolo)" name="use_live_objects" value="false"/>
+    <arg name="velocity_compensation_mode" value="$(arg velocity_compensation_mode)"/>
+    <arg name="velocity_low_pass_alpha" value="$(arg velocity_low_pass_alpha)"/>
+    <arg name="velocity_stationary_threshold" value="$(arg velocity_stationary_threshold)"/>
+    <arg name="rotational_compensation_sign" value="$(arg rotational_compensation_sign)"/>
+  </include>
+
+  <group if="$(eval full_system_test or use_system_health_monitor)">
+    <node pkg="x_omni4wd_bringup" type="system_health_monitor.py"
+          name="system_health_monitor" output="screen" required="false">
+      <param name="monitor_yolo" value="$(arg use_yolo)"/>
+    </node>
+    <include file="$(find social_density_fusion)/launch/zed_velocity_compensation_test.launch">
+      <arg name="test_case" value="V1"/>
+      <arg name="publish_cmd" value="false"/>
+    </include>
+  </group>
+
+  <group if="$(arg use_amcl)">
+    <node pkg="amcl" type="amcl" name="amcl" respawn="$(arg hardware_respawn)" output="screen">
+      <rosparam file="$(arg nav_config_dir)/amcl_params.yaml" command="load"/>
+      <param name="initial_pose_x" value="$(arg initial_pose_x)"/>
+      <param name="initial_pose_y" value="$(arg initial_pose_y)"/>
+      <param name="initial_pose_a" value="$(arg initial_pose_a)"/>
+      <param name="odom_frame_id" value="$(arg odom_frame)"/>
+      <param name="base_frame_id" value="$(arg base_frame)"/>
+      <param name="global_frame_id" value="map"/>
+      <remap from="scan" to="$(arg scan_topic)"/>
+    </node>
+  </group>
+  <group unless="$(arg use_amcl)">
+    <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_odom_static"
+          args="0 0 0 0 0 0 map $(arg odom_frame)"/>
+  </group>
+
+  <node pkg="move_base" type="move_base" respawn="$(arg hardware_respawn)" name="move_base" output="screen">
+    <rosparam file="$(arg nav_config_dir)/costmap_common_params_x_omni4wd.yaml" command="load" ns="global_costmap"/>
+    <rosparam file="$(arg nav_config_dir)/costmap_common_params_x_omni4wd.yaml" command="load" ns="local_costmap"/>
+    <rosparam file="$(arg nav_config_dir)/costmap_global_params_x_omni4wd.yaml" command="load"/>
+    <rosparam file="$(arg nav_config_dir)/costmap_local_params_x_omni4wd.yaml" command="load"/>
+    <rosparam file="$(arg nav_config_dir)/move_base_params.yaml" command="load"/>
+    <rosparam if="$(eval algorithm_navigation == 'teb')"
+              file="$(arg nav_config_dir)/teb_local_planner_params_omni.yaml" command="load"/>
+    <rosparam if="$(eval algorithm_navigation == 'dwa')"
+              file="$(find x_omni4wd_navigation)/config/dwa_local_planner_params.yaml" command="load"/>
+
+    <param name="base_global_planner" value="global_planner/GlobalPlanner"/>
+    <param if="$(eval algorithm_navigation == 'teb')"
+           name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS"/>
+    <param if="$(eval algorithm_navigation == 'dwa')"
+           name="base_local_planner" value="dwa_local_planner/DWAPlannerROS"/>
+    <param name="clearing_rotation_allowed" value="false"/>
+    <param name="global_costmap/global_frame" value="map"/>
+    <param name="global_costmap/robot_base_frame" value="$(arg base_frame)"/>
+    <param name="local_costmap/global_frame" value="$(arg odom_frame)"/>
+    <param name="local_costmap/robot_base_frame" value="$(arg base_frame)"/>
+    <!-- Bài A: bật/tắt layer tô YOLO lên costmap (C0 false / C1 true) -->
+    <param name="local_costmap/yolo_obstacles_layer/enabled" value="$(arg use_yolo_obstacle_layer)"/>
+    <param name="global_costmap/yolo_obstacles_layer/enabled" value="$(arg use_yolo_obstacle_layer)"/>
+    <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+  </node>
+
+  <!-- /objects → /yolo_obstacle_cloud khi C1 -->
+  <include if="$(arg use_yolo_obstacle_layer)"
+           file="$(find ultralytics_ros)/launch/yolo_obstacle_cloud.launch"/>
+
+  <include if="$(eval use_path_density_weight_controller and use_social_density_fusion)"
+           file="$(find social_navigation_layers)/launch/path_density_weight_controller.launch">
+    <arg name="odom_topic" value="$(arg odom_topic)"/>
+  </include>
+
+  <group if="$(arg use_goal_sender)">
+    <node if="$(arg use_zed_sdk_bridge)" pkg="goal_sender" type="goal_sender_node_scenario.py" name="goal_sender_cycle_node" output="screen"
+          launch-prefix="bash -c 'until rostopic echo -n1 /move_base/status &gt;/dev/null 2&gt;&amp;1; do sleep 1; done; until rostopic echo -n1 /amcl_pose &gt;/dev/null 2&gt;&amp;1; do sleep 1; done; until rostopic echo -n1 /bodies &gt;/dev/null 2&gt;&amp;1; do sleep 1; done; until rostopic echo -n1 /social_state &gt;/dev/null 2&gt;&amp;1; do sleep 1; done; sleep $(arg goal_sender_extra_delay); exec &quot;$0&quot; &quot;$@&quot;'">
+      <param name="waypoints_file" value="$(arg goal_sender_waypoints_file)"/>
+      <param name="num_cycles" value="$(arg goal_sender_num_cycles)"/>
+      <param name="abort_only_when_proxemic_max" value="$(arg goal_sender_abort_only_when_proxemic_max)"/>
+      <param name="proxemic_max_weight" value="$(arg goal_sender_proxemic_max_weight)"/>
+      <param name="proxemic_weight_param_global" value="/move_base/global_costmap/proxemic/proxemic_density_weight"/>
+      <param name="proxemic_weight_param_local" value="/move_base/local_costmap/proxemic/proxemic_density_weight"/>
+      <param name="abort_retry_delay_sec" value="$(arg goal_sender_abort_retry_delay_sec)"/>
+    </node>
+    <node unless="$(arg use_zed_sdk_bridge)" pkg="goal_sender" type="goal_sender_node_scenario.py" name="goal_sender_cycle_node" output="screen"
+          launch-prefix="bash -c 'until rostopic echo -n1 /move_base/status &gt;/dev/null 2&gt;&amp;1; do sleep 1; done; until rostopic echo -n1 /amcl_pose &gt;/dev/null 2&gt;&amp;1; do sleep 1; done; sleep $(arg goal_sender_extra_delay); exec &quot;$0&quot; &quot;$@&quot;'">
+      <param name="waypoints_file" value="$(arg goal_sender_waypoints_file)"/>
+      <param name="num_cycles" value="$(arg goal_sender_num_cycles)"/>
+      <param name="abort_only_when_proxemic_max" value="false"/>
+      <param name="proxemic_max_weight" value="50.0"/>
+      <param name="abort_retry_delay_sec" value="$(arg goal_sender_abort_retry_delay_sec)"/>
+    </node>
+  </group>
+
+  <group if="$(arg use_move_base_monitor)">
+    <node name="move_base_status_timeline" pkg="move_base_monitor" type="move_base_status_timeline.py" output="screen"/>
+    <node name="path_planning_monitor" pkg="move_base_monitor" type="path_planning_monitor.py" output="screen">
+      <remap from="/move_base/NavfnROS/plan" to="/move_base/GlobalPlanner/plan"/>
+    </node>
+  </group>
+
+  <group if="$(arg open_rviz)">
+    <node unless="$(arg full_system_test)" pkg="rviz" type="rviz" name="rviz_navigation"
+          args="-d $(find x_omni4wd_navigation)/rviz/x_omni4wd_navigation.rviz"
+          output="screen" required="false"/>
+  </group>
+</launch>

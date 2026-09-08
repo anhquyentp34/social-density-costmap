@@ -1,0 +1,284 @@
+<?xml version="1.0"?>
+<launch>
+  <!--
+    Track A POS — độc lập Track D (bản sao hành vi POS exp4/5/6 + Semantic).
+    Không include / không trỏ path D-density-costmap.
+    Stack: latch, goal_sender, SII/SGI GT, odom SRF+IMU, không FER.
+    Delta A: DeepLabV3 → /yolo_obstacle_cloud → yolo_obstacles_layer.
+
+    Odom:
+      odom_mode:=srf_zed_imu → SRF + ZED raw IMU → EKF → /odom
+      scan_static_filter: /scan → /scan_static → SRF; costmap vẫn /scan
+
+    Cách dùng (qua run_real_track_a_pos.sh):
+      exp_variant := real_tn4 | real_tn5 | real_tn6
+  -->
+
+  <arg name="hardware_respawn" default="false"/>
+  <arg name="exp_variant" default="real_tn5"/>
+  <arg name="nav_config_dir"
+       default="$(find x_omni4wd_navigation)/config/A-yolo-costmap/$(arg exp_variant)"/>
+
+  <arg name="map_file"
+       default="$(find x_omni4wd_navigation)/maps/A-yolo-costmap/trackA_pos_map_exp456_v3.yaml"/>
+
+  <arg name="social_config"
+       default="$(find social_density_fusion)/config/A-yolo-costmap/real/social_config_real_exp5_social_layers_pos.yaml"/>
+
+  <arg name="goal_sender_waypoints_file"
+       default="$(find goal_sender)/config/A-yolo-costmap/waypoints_trackA_pos_real.yaml"/>
+  <arg name="goal_sender_num_cycles" default="1"/>
+  <arg name="goal_sender_extra_delay" default="3.0"/>
+  <arg name="use_goal_sender" default="false"/>
+  <!-- Tuỳ chọn (mặc định TẮT): spin khi tới goal -->
+  <arg name="goal_sender_spin_on_arrival" default="false"/>
+  <arg name="goal_sender_spin_angular_vel" default="0.7"/>
+  <arg name="goal_sender_spin_revolutions" default="1.0"/>
+  <arg name="goal_sender_goal_reach_xy_tol" default="0.35"/>
+
+  <arg name="use_zed_sdk_bridge" default="true"/>
+  <arg name="use_yolo" default="false"/>
+  <arg name="use_semantic_obstacle_layer" default="true"/>
+  <arg name="semantic_device" default="cuda:0"/>
+  <arg name="zed_publish_depth" default="true"/>
+  <arg name="use_social_density_fusion" default="true"/>
+  <arg name="use_path_density_weight_controller" default="true"/>
+  <arg name="use_layer_weights_logger" default="true"/>
+  <arg name="layer_weights_csv_path" default=""/>
+  <arg name="layer_weights_rate" default="10.0"/>
+  <arg name="preview_scenario_actors" default="false"/>
+  <arg name="use_scenario_social_latch" default="true"/>
+  <arg name="scenario_latch_mode" default="near_pose"/>
+  <arg name="scenario_latch_hold_sec" default="-1.0"/>
+  <arg name="scenario_latch_all_people" default="false"/>
+  <arg name="suppress_live_when_scenario" default="true"/>
+  <arg name="open_rviz" default="true"/>
+  <arg name="rviz_config"
+       default="$(find x_omni4wd_navigation)/rviz/A-yolo-costmap/track_a_real_pos.rviz"/>
+  <arg name="open_sii_sgi_dashboard" default="true"/>
+  <arg name="use_scenario_gt_for_sii_sgi" default="true"/>
+  <arg name="scenario_gt_path"
+       default="$(find social_density_fusion)/config/A-yolo-costmap/real/social_scenario_canonical_trackA_pos.yaml"/>
+  <arg name="open_move_base_status_timeline" default="false"/>
+  <arg name="use_bringup" default="true"/>
+
+  <!-- ===== Odom / LiDAR (giống exp1–3) ===== -->
+  <arg name="odom_mode" default="srf_zed_imu"/>
+  <arg name="odom_topic" default="/odom"/>
+  <arg name="srf_xy_scale" default="0.9667"/>
+  <arg name="use_scan_static_filter" default="true"/>
+  <arg name="scan_static_use_body_filter" default="true"/>
+  <arg name="odom_scan_topic"
+       default="$(eval '/scan_static' if arg('use_scan_static_filter') else arg('scan_topic'))"/>
+
+  <arg name="cmd_vel_topic" default="/cmd_vel"/>
+  <arg name="scan_topic" default="/scan"/>
+  <arg name="odom_frame" default="odom"/>
+  <arg name="base_frame" default="base_footprint"/>
+  <arg name="laser_frame" default="lidar_link"/>
+  <arg name="arduino_port" default="/dev/robot_arduino"/>
+  <arg name="lidar_port" default="/dev/robot_lidar"/>
+  <arg name="wheel_joint_states_topic" default="/wheel_encoder_joint_states"/>
+  <arg name="R" default="0.2505"/>
+  <arg name="wheel_radius" default="0.0635"/>
+
+  <!-- AMCL seed lệch nhẹ so với START goal_sender — để particle filter tự tinh chỉnh trước khi chạy.
+       START thật (waypoints): (1.1070, -10.9695, yaw=0.0846) -->
+  <!-- AMCL seed = START đang chỉ định (waypoints_trackA_pos_real.yaml) -->
+  <!-- Default = pose robot đã chụp; run_real_track_a_pos.sh ưu tiên /amcl_pose live -->
+  <arg name="initial_pose_x" default="-5.3519"/>
+  <arg name="initial_pose_y" default="-26.9359"/>
+  <arg name="initial_pose_a" default="0.18294"/>
+
+  <param name="/odom_mode" value="$(arg odom_mode)"/>
+
+  <!-- ===== Bringup ===== -->
+  <include if="$(arg use_bringup)" file="$(find x_omni4wd_bringup)/launch/x_omni4wd_bringup_fusion.launch">
+    <arg name="use_sim_time" value="false"/>
+    <arg name="use_lidar" value="true"/>
+    <arg name="use_zed" value="true"/>
+    <arg name="use_zed_sdk_bridge" value="$(arg use_zed_sdk_bridge)"/>
+    <arg name="zed_body_enable_visualizer" value="true"/>
+    <arg name="zed_publish_skeleton_markers" value="false"/>
+    <arg name="zed_show_skeleton_overlay" value="false"/>
+    <arg name="zed_detection_label_font_scale" value="0.9"/>
+    <arg name="zed_detection_label_font_thickness" value="3"/>
+    <arg name="zed_body_enable_proxemic" value="false"/>
+    <arg name="zed_body_enable_costmap_3d" value="false"/>
+    <arg name="zed_body_detection_model" value="HUMAN_BODY_FAST"/>
+    <arg name="zed_body_format" value="34"/>
+    <arg name="use_yolo" value="$(arg use_yolo)"/>
+    <arg name="zed_publish_depth" value="$(arg zed_publish_depth)"/>
+    <arg name="open_rviz" value="false"/>
+    <arg name="use_rqt_omni_robot_steering" value="false"/>
+    <arg name="cmd_vel_topic" value="$(arg cmd_vel_topic)"/>
+    <arg name="scan_topic" value="$(arg scan_topic)"/>
+    <arg name="odom_frame" value="$(arg odom_frame)"/>
+    <arg name="base_frame" value="$(arg base_frame)"/>
+    <arg name="laser_frame" value="$(arg laser_frame)"/>
+    <arg name="arduino_port" value="$(arg arduino_port)"/>
+    <arg name="lidar_port" value="$(arg lidar_port)"/>
+    <arg name="wheel_joint_states_topic" value="$(arg wheel_joint_states_topic)"/>
+    <arg name="R" value="$(arg R)"/>
+    <arg name="wheel_radius" value="$(arg wheel_radius)"/>
+    <arg name="lidar_respawn" value="$(arg hardware_respawn)"/>
+    <arg name="zed_respawn" value="$(arg hardware_respawn)"/>
+    <!-- srf_zed_imu cần /zed_imu; không bật VIO -->
+    <arg name="publish_vio_odom" value="false"/>
+    <arg name="publish_imu" value="$(eval odom_mode in ('srf_zed_imu', 'livo_full', 'gtsam_livo'))"/>
+  </include>
+
+  <!-- Map sớm để scan_static_filter có /map -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)" output="screen">
+    <param name="frame_id" value="map"/>
+  </node>
+
+  <include if="$(arg use_scan_static_filter)"
+           file="$(find x_omni4wd_slam)/launch/scan_static_filter.launch">
+    <arg name="scan_in" value="$(arg scan_topic)"/>
+    <arg name="scan_out" value="/scan_static"/>
+    <arg name="use_map_filter" value="true"/>
+    <arg name="use_body_filter" value="$(arg scan_static_use_body_filter)"/>
+    <arg name="bodies_topic" value="/bodies"/>
+  </include>
+
+  <include file="$(find x_omni4wd_slam)/launch/odometry_modes.launch">
+    <arg name="odom_mode" value="$(arg odom_mode)"/>
+    <arg name="cmd_vel_topic" value="$(arg cmd_vel_topic)"/>
+    <arg name="scan_topic" value="$(arg odom_scan_topic)"/>
+    <arg name="odom_topic" value="$(arg odom_topic)"/>
+    <arg name="odom_frame" value="$(arg odom_frame)"/>
+    <arg name="base_frame" value="$(arg base_frame)"/>
+    <arg name="map_frame" value="map"/>
+    <arg name="joint_states_topic" value="$(arg wheel_joint_states_topic)"/>
+    <arg name="R" value="$(arg R)"/>
+    <arg name="wheel_radius" value="$(arg wheel_radius)"/>
+    <arg name="srf_xy_scale" value="$(arg srf_xy_scale)"/>
+  </include>
+
+  <include file="$(find x_omni4wd_navigation)/launch/laser_filter.launch"/>
+
+  <!-- ===== Social density fusion POS (độc lập — emotion_zones + objects tĩnh) ===== -->
+  <include if="$(eval use_social_density_fusion and use_zed_sdk_bridge)"
+           file="$(find social_density_fusion)/launch/social_density_fusion_zed_pos.launch">
+    <arg name="scan_topic" value="$(arg scan_topic)"/>
+    <arg name="scenario_config" value="$(arg social_config)"/>
+    <arg name="use_live_emotions" value="false"/>
+    <arg name="publish_facing_markers" value="false"/>
+    <arg name="publish_velocity_debug" value="false"/>
+    <arg name="preview_scenario_actors" value="$(arg preview_scenario_actors)"/>
+    <arg name="use_scenario_social_latch" value="$(arg use_scenario_social_latch)"/>
+    <arg name="scenario_latch_mode" value="$(arg scenario_latch_mode)"/>
+    <arg name="scenario_latch_hold_sec" value="$(arg scenario_latch_hold_sec)"/>
+    <arg name="scenario_latch_all_people" value="$(arg scenario_latch_all_people)"/>
+    <arg name="suppress_live_when_scenario" value="$(arg suppress_live_when_scenario)"/>
+  </include>
+
+  <!-- ===== Đánh dấu người giống mô phỏng (mesh /actor_visualization) ===== -->
+  <node if="$(eval use_social_density_fusion and use_zed_sdk_bridge)"
+        name="person_visualization_from_social_state"
+        pkg="animated_marker_tutorial"
+        type="person_visualization_from_social_state.py"
+        output="screen">
+    <param name="social_state_topic" value="/social_state"/>
+    <param name="output_topic" value="/actor_visualization"/>
+    <param name="frame_id" value="map"/>
+    <param name="pin_to_ground" value="true"/>
+    <param name="ground_z" value="-0.10"/>
+    <param name="target_person_height" value="1.75"/>
+    <!-- Mesh 3D RViz: Angry=đỏ, Neutral/khác=xanh -->
+    <param name="color_by_emotion" value="true"/>
+    <param name="show_emotion_in_text" value="true"/>
+  </node>
+
+  <node pkg="amcl" type="amcl" name="amcl" respawn="$(arg hardware_respawn)" output="screen">
+    <rosparam file="$(arg nav_config_dir)/amcl_params.yaml" command="load"/>
+    <param name="initial_pose_x" value="$(arg initial_pose_x)"/>
+    <param name="initial_pose_y" value="$(arg initial_pose_y)"/>
+    <param name="initial_pose_a" value="$(arg initial_pose_a)"/>
+    <param name="odom_frame_id" value="$(arg odom_frame)"/>
+    <param name="base_frame_id" value="$(arg base_frame)"/>
+    <param name="global_frame_id" value="map"/>
+    <remap from="scan" to="$(arg scan_topic)"/>
+  </node>
+
+  <node pkg="move_base" type="move_base" respawn="$(arg hardware_respawn)" name="move_base" output="screen">
+    <rosparam file="$(arg nav_config_dir)/costmap_common_params_x_omni4wd.yaml" command="load" ns="global_costmap"/>
+    <rosparam file="$(arg nav_config_dir)/costmap_common_params_x_omni4wd.yaml" command="load" ns="local_costmap"/>
+    <rosparam file="$(arg nav_config_dir)/costmap_global_params_x_omni4wd.yaml" command="load"/>
+    <rosparam file="$(arg nav_config_dir)/costmap_local_params_x_omni4wd.yaml" command="load"/>
+    <rosparam file="$(arg nav_config_dir)/move_base_params.yaml" command="load"/>
+    <rosparam file="$(arg nav_config_dir)/teb_local_planner_params_omni.yaml" command="load"/>
+    <param name="base_global_planner" value="global_planner/GlobalPlanner"/>
+    <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS"/>
+    <param name="clearing_rotation_allowed" value="false"/>
+    <param name="global_costmap/global_frame" value="map"/>
+    <param name="global_costmap/robot_base_frame" value="$(arg base_frame)"/>
+    <param name="local_costmap/global_frame" value="$(arg odom_frame)"/>
+    <param name="local_costmap/robot_base_frame" value="$(arg base_frame)"/>
+    <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+  </node>
+
+  <include if="$(eval use_path_density_weight_controller and use_social_density_fusion)"
+           file="$(find social_navigation_layers)/launch/path_density_weight_controller.launch">
+    <arg name="odom_topic" value="$(arg odom_topic)"/>
+    <!-- Node POS tên social_density_fusion_node_pos — khớp button_state exp6 -->
+    <arg name="density_button_state_param"
+         value="/social_density_fusion_node_pos/density/button_state"/>
+  </include>
+
+  <include if="$(arg use_layer_weights_logger)"
+           file="$(find social_density_fusion)/launch/layer_weights_logger.launch">
+    <arg name="rate" value="$(arg layer_weights_rate)"/>
+    <arg name="rho_topic" value="/density_info"/>
+    <arg name="csv_path" value="$(arg layer_weights_csv_path)"/>
+  </include>
+
+  <!-- ===== DELTA Track A: Semantic → costmap ===== -->
+  <group if="$(arg use_semantic_obstacle_layer)">
+    <param name="/move_base/local_costmap/yolo_obstacles_layer/enabled" value="true"/>
+    <param name="/move_base/global_costmap/yolo_obstacles_layer/enabled" value="true"/>
+    <include file="$(find ultralytics_ros)/launch/semantic_obstacle_cloud.launch">
+      <arg name="device" value="$(arg semantic_device)"/>
+    </include>
+  </group>
+
+  <!-- ===== Goal sender ===== -->
+  <node if="$(arg use_goal_sender)" pkg="goal_sender" type="goal_sender_node_scenario.py"
+        name="goal_sender_cycle_node" output="screen"
+        launch-prefix="bash -c 'until rostopic echo -n1 /move_base/status &gt;/dev/null 2&gt;&amp;1; do sleep 1; done; until rostopic echo -n1 /amcl_pose &gt;/dev/null 2&gt;&amp;1; do sleep 1; done; sleep $(arg goal_sender_extra_delay); exec &quot;$0&quot; &quot;$@&quot;'">
+    <param name="waypoints_file" value="$(arg goal_sender_waypoints_file)"/>
+    <param name="num_cycles" value="$(arg goal_sender_num_cycles)"/>
+    <param name="abort_only_when_proxemic_max" value="true"/>
+    <param name="proxemic_max_weight" value="45.0"/>
+    <param name="proxemic_weight_param_global" value="/move_base/global_costmap/proxemic/proxemic_density_weight"/>
+    <param name="proxemic_weight_param_local" value="/move_base/local_costmap/proxemic/proxemic_density_weight"/>
+    <param name="abort_retry_delay_sec" value="0.5"/>
+    <param name="spin_on_arrival" value="$(arg goal_sender_spin_on_arrival)"/>
+    <param name="spin_angular_vel" value="$(arg goal_sender_spin_angular_vel)"/>
+    <param name="spin_revolutions" value="$(arg goal_sender_spin_revolutions)"/>
+    <param name="goal_reach_xy_tol" value="$(arg goal_sender_goal_reach_xy_tol)"/>
+  </node>
+
+  <node if="$(arg open_move_base_status_timeline)"
+        name="move_base_status_timeline" pkg="move_base_monitor" type="move_base_status_timeline.py" output="screen"/>
+
+  <!-- ===== SII / SGI — cùng chương trình chung với exp1–3 (horizontal) =====
+       Costmap POS vẫn dùng /social_state latch; đo SII/SGI từ /social_state_gt.
+  -->
+  <include file="$(find social_navigation_monitor)/launch/track_d_sii_sgi_monitor.launch">
+    <arg name="enabled" value="true"/>
+    <arg name="use_scenario_gt" value="$(arg use_scenario_gt_for_sii_sgi)"/>
+    <arg name="scenario_gt_path" value="$(arg scenario_gt_path)"/>
+    <arg name="open_dashboard" value="$(arg open_sii_sgi_dashboard)"/>
+    <arg name="dashboard_layout" value="horizontal"/>
+    <arg name="dashboard_image_width" value="1840"/>
+    <arg name="dashboard_image_height" value="0"/>
+  </include>
+
+  <group if="$(arg open_rviz)">
+    <node pkg="rviz" type="rviz" name="rviz_navigation"
+          args="-d $(arg rviz_config)"
+          output="screen" required="false"/>
+  </group>
+</launch>

@@ -1,0 +1,8 @@
+# Track D — map riêng cho thí nghiệm real exp4/5/6 (nhánh *_pos).
+# Bản sao từ trackD_real_map — chỉnh .pgm này bằng GIMP, không đụng map exp1–3.
+image: trackD_real_map_exp456.pgm
+resolution: 0.050000
+origin: [-51.200024, -51.200024, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196

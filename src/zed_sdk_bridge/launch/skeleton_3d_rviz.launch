@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!--
+  Launch file để hiển thị Skeleton 3D trong RViz
+  Chạy body tracking + skeleton visualizer + RViz cùng lúc
+  
+  Sử dụng:
+    roslaunch zed_sdk_bridge skeleton_3d_rviz.launch
+    
+  Tùy chọn:
+    body_format: 18 hoặc 34 keypoints (mặc định: 34)
+    detection_model: HUMAN_BODY_FAST, HUMAN_BODY_MEDIUM, HUMAN_BODY_ACCURATE (mặc định: HUMAN_BODY_FAST)
+    use_rviz: true/false để bật/tắt RViz (mặc định: true)
+    show_image: true/false để mở image_view window hiển thị ảnh 2D với skeleton (mặc định: false)
+                LƯU Ý: Topic /image_skeleton luôn được publish (có thể xem trong RViz hoặc rqt_image_view)
+-->
+<launch>
+    <!-- Arguments -->
+    <arg name="body_format" default="34" doc="Body format: 18 or 34 keypoints" />
+    <arg name="detection_model" default="HUMAN_BODY_FAST" doc="Detection model: HUMAN_BODY_FAST, HUMAN_BODY_MEDIUM, or HUMAN_BODY_ACCURATE" />
+    <arg name="use_rviz" default="true" doc="Launch RViz for 3D visualization" />
+    <arg name="show_image" default="false" doc="Open image_view window to show 2D image with skeleton overlay. Topic /image_skeleton is always published (can view in RViz or rqt_image_view)" />
+    <arg name="joint_radius" default="0.02" doc="Radius of joint markers in meters (for 3D visualization). Default 2cm - mịn hơn" />
+    <arg name="bone_width" default="0.015" doc="Width of bone lines in meters (for 3D visualization). Default 1.5cm - mịn hơn" />
+    
+    <!-- ZED Body Tracking Node -->
+    <node pkg="zed_sdk_bridge" type="zed_body_imu_node" name="zed_body_imu_node" output="screen">
+        <!-- Camera frame ID -->
+        <param name="camera_frame_id" value="zed2i_camera_center" />
+        
+        <!-- Detection model -->
+        <param name="detection_model" value="$(arg detection_model)" />
+        
+        <!-- Enable tracking across frames -->
+        <param name="enable_tracking" value="true" />
+        
+        <!-- Enable body fitting (smooth skeleton movements) -->
+        <param name="enable_body_fitting" value="true" />
+        
+        <!-- Enable segmentation mask -->
+        <param name="enable_segmentation" value="false" />
+        
+        <!-- Body format: 18 or 34 keypoints -->
+        <param name="body_format" value="$(arg body_format)" />
+        
+        <!-- Detection confidence threshold (0-100) -->
+        <param name="detection_confidence_threshold" value="40.0" />
+        
+        <!-- Skeleton smoothing (0.0-1.0) -->
+        <param name="skeleton_smoothing" value="0.7" />
+        
+        <!-- Camera resolution: 0=AUTO, 1=HD2K, 2=HD1080, 3=HD720, 4=SVGA, 5=VGA -->
+        <param name="camera_resolution" value="2" />
+        
+        <!-- Depth mode: 0=PERFORMANCE, 1=QUALITY, 2=ULTRA, 3=NEURAL -->
+        <param name="depth_mode" value="3" />
+    </node>
+    
+    <!-- Skeleton Visualizer Node -->
+    <node pkg="zed_sdk_bridge" type="skeleton_visualizer" name="skeleton_visualizer" output="screen">
+        <!-- Subscribe topics -->
+        <remap from="bodies" to="/bodies" />
+        <remap from="image_raw" to="/image_raw" />
+        
+        <!-- Publish topics -->
+        <remap from="image_skeleton" to="/image_skeleton" />
+        <remap from="skeleton_markers" to="/skeleton_markers" />
+        
+        <!-- Parameters -->
+        <!-- show_on_image: Luôn publish /image_skeleton với skeleton overlay -->
+        <!-- show_image arg chỉ kiểm soát việc có mở image_view window hay không -->
+        <param name="show_on_image" value="true" />
+        
+        <!-- Publish markers cho RViz 3D -->
+        <param name="publish_markers" value="true" />
+        
+        <!-- Kích thước joints (meters cho 3D markers) -->
+        <param name="joint_radius" value="$(arg joint_radius)" />
+        
+        <!-- Độ dày đường nối (meters cho 3D markers) -->
+        <param name="link_width" value="$(arg bone_width)" />
+        
+        <!-- Camera frame ID -->
+        <param name="camera_frame_id" value="zed2i_camera_center" />
+    </node>
+    
+    <!-- RViz for 3D Skeleton Visualization -->
+    <arg name="rviz_config" default="$(find zed_sdk_bridge)/rviz/skeleton.rviz" />
+    <node if="$(arg use_rviz)" pkg="rviz" type="rviz" name="rviz_skeleton_3d" 
+          args="-d $(arg rviz_config)" output="screen" />
+    
+    <!-- Image View (optional, chỉ khi bật show_image) -->
+    <node if="$(arg show_image)" pkg="image_view" type="image_view" name="skeleton_image_view" output="screen">
+        <remap from="image" to="/image_skeleton" />
+    </node>
+</launch>
+

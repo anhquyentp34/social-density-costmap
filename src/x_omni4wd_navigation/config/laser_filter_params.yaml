@@ -1,0 +1,10 @@
+scan_filter_chain:
+  - name: range
+    type: laser_filters/LaserScanRangeFilter
+    params:
+      use_message_range_limits: false
+      # rplidar_ros publishes range_min=0.15 and range_max=max_distance (typical A2M8 ~12m)
+      lower_threshold: 0.15
+      upper_threshold: 12.0
+      lower_replacement_value: .inf
+      upper_replacement_value: .inf

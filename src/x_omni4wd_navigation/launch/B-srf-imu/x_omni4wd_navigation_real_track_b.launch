@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Track B — Robot thật — Odom ablation (17 odom_mode) -->
+  <arg name="exp_variant" default="SI"/>
+  <arg name="nav_config_dir" default="$(find x_omni4wd_navigation)/config/B-srf-imu/common"/>
+  <arg name="map_file" default="$(find x_omni4wd_navigation)/maps/B-srf-imu/trackB_real_map.yaml"/>
+  <arg name="goal_sender_waypoints_file" default="$(find goal_sender)/config/B-srf-imu/waypoints_trackB_real.yaml"/>
+  <arg name="odom_mode" default="srf_zed_imu"/>
+  <arg name="hardware_respawn" default="false"/>
+
+  <include file="$(find x_omni4wd_navigation)/launch/navigation_with_selectable_odom.launch">
+    <arg name="nav_config_dir" value="$(arg nav_config_dir)"/>
+    <arg name="map_file" value="$(arg map_file)"/>
+    <arg name="hardware_respawn" value="$(arg hardware_respawn)"/>
+    <arg name="odom_mode" value="$(arg odom_mode)"/>
+    <arg name="use_scan_static_filter" value="true"/>
+    <arg name="scan_static_use_body_filter" value="false"/>
+    <arg name="use_yolo" value="false"/>
+    <arg name="use_yolo_obstacle_layer" value="false"/>
+    <arg name="use_social_density_fusion" value="false"/>
+    <arg name="use_path_density_weight_controller" value="false"/>
+    <arg name="use_zed_sdk_bridge" value="false"/>
+    <arg name="zed_body_enable_visualizer" value="false"/>
+    <arg name="goal_sender_waypoints_file" value="$(arg goal_sender_waypoints_file)"/>
+    <arg name="goal_sender_num_cycles" value="3"/>
+    <arg name="goal_sender_extra_delay" value="3.0"/>
+    <arg name="use_move_base_monitor" value="true"/>
+  </include>
+</launch>

@@ -1,0 +1,85 @@
+# odom_mode: srf_zed
+# P6 fixed-cov fusion: SRF pose (+ vx/vy) + ZED VIO pose (R_VIO nới — xem zed_sdk_bridge)
+# Không fuse raw IMU cùng VIO (VIO đã dùng IMU nội bộ SDK).
+# Backup: ekf_srf_zed.yaml.bak_20260805
+
+frequency: 50.0
+sensor_timeout: 0.35
+two_d_mode: true
+print_diagnostics: true
+publish_tf: true
+publish_acceleration: false
+
+map_frame: map
+odom_frame: odom
+base_link_frame: base_footprint
+world_frame: odom
+
+use_control: false
+stamped_control: false
+control_timeout: 0.3
+control_config: [true, true, false, false, false, true]
+acceleration_limits: [0.5, 0.5, 0.0, 0.0, 0.0, 1.2]
+deceleration_limits: [0.5, 0.5, 0.0, 0.0, 0.0, 1.2]
+acceleration_gains: [0.8, 0.8, 0.0, 0.0, 0.0, 0.9]
+deceleration_gains: [1.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+
+# ----- SRF: neo chính xy/yaw + omni twist -----
+odom0: /odom_srf
+odom0_config: [true,  true,  false,
+               false, false, true,
+               true,  true,  false,
+               false, false, false,
+               false, false, false]
+odom0_queue_size: 10
+odom0_nodelay: true
+odom0_differential: false
+odom0_relative: false
+odom0_pose_rejection_threshold: 8.0
+odom0_twist_rejection_threshold: 2.5
+
+# ----- VIO: pose bổ sung (R lớn hơn trên publisher); rejection chặt hơn SRF -----
+odom1: /odom_zed
+odom1_config: [true,  true,  false,
+               false, false, true,
+               false, false, false,
+               false, false, false,
+               false, false, false]
+odom1_queue_size: 10
+odom1_nodelay: true
+odom1_differential: false
+odom1_relative: false
+odom1_pose_rejection_threshold: 4.0
+odom1_twist_rejection_threshold: 2.0
+
+process_noise_covariance: [0.12, 0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0.12, 0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0.06, 0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0.03, 0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0.03, 0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0.08, 0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0.040, 0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0.040, 0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0.04, 0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0.01, 0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0.01, 0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0.03, 0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0.03, 0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0.03, 0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0.02]
+
+initial_estimate_covariance: [1e-9, 0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    1e-9, 0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    1e-9, 0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    1e-9, 0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    1e-9, 0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    1e-9, 0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    1e-9, 0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    1e-9, 0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    1e-9, 0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    1e-9,  0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     1e-9,  0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     1e-9,  0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     1e-9, 0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    1e-9, 0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    1e-9]

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<package>
+
+  <name>srf_laser_odometry</name>
+  <version>1.0.0</version>
+  <description>
+    Estimation of 2D odometry based on planar laser scans. Useful for mobile robots with innacurate base odometry.
+    For full description of the algorithm, please refer to:
+    Planar Odometry from a Radial Laser Scanner. A Range Flow-based Approach. ICRA 2016
+    Available at: http://mapir.isa.uma.es/mapirwebsite/index.php/mapir-downloads/papers/217
+
+    VCCA2026: ported to ROS Noetic / MRPT 2.x (no mrpt_bridge).
+    Install system MRPT via: sudo apt install ros-noetic-mrpt2
+    CMake finds it with find_package(MRPT REQUIRED COMPONENTS ...).
+  </description>
+
+  <maintainer email="jgmonroy@uma.es">Javier G. Monroy</maintainer>
+  <author email="marianojt@uma.es"> Mariano Jaimez</author>
+  <author email="jgmonroy@uma.es"> Javier G. Monroy</author>
+  <license>GPLv3</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>cmake_modules</build_depend>
+
+  <run_depend>nav_msgs</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>cmake_modules</run_depend>
+
+</package>

@@ -1,0 +1,91 @@
+# Track A C0 — social như Track D real_tn3 (không YOLO obstacle)
+local_costmap:
+  global_frame: odom
+  robot_base_frame: base_footprint
+  transform_tolerance: 0.75
+  update_frequency: 10.0
+  publish_frequency: 5.0
+  width: 10.0
+  height: 10.0
+  resolution: 0.05
+  footprint_padding: 0.005
+  rolling_window: true
+  plugins:
+    - { name: obstacles_layer,    type: "costmap_2d::ObstacleLayer" }
+    - { name: inflation_layer,    type: "costmap_2d::InflationLayer" }
+    - { name: proxemic,           type: "social_navigation_layers::ProxemicLayer" }
+    # - { name: passing,            type: "social_navigation_layers::PassingLayer" }
+    - { name: human_group_layer,  type: "social_navigation_layers::HumanGroupLayer" }
+    - { name: human_object_layer, type: "social_navigation_layers::HumanObjectLayer" }
+    - { name: emotion_layer,      type: "social_navigation_layers::EmotionLayer" }
+
+  obstacles_layer:
+    observation_sources: base_scan
+    base_scan:
+      data_type: LaserScan
+      sensor_frame: lidar_link
+      topic: /scan
+      clearing: true
+      marking: true
+      inf_is_valid: true
+      observation_persistence: 0.0
+      expected_update_rate: 0.5
+      obstacle_range: 10.0
+      raytrace_range: 12.0
+    track_unknown_space: false
+    footprint_clearing_enabled: true
+    combination_method: 1
+    mark_threshold: 0
+    clear_threshold: 1
+
+  inflation_layer:
+    enabled: true
+    cost_scaling_factor: 53.78
+    inflation_radius: 0.32
+
+  proxemic:
+    enabled: true
+    cutoff: 10.0
+    amplitude: 77.0
+    covariance: 0.25
+    factor: 5.0
+    min_radius: 0.6
+    proxemic_density_weight: 22.0
+    keep_time: 0.75
+
+  # passing:
+  #   enabled: true
+  #   cutoff: 10.0
+  #   amplitude: 77.0
+  #   covariance: 0.25
+  #   factor: 5.0
+  #   min_radius: 0.6
+  #   density_weight: 22.0
+  #   keep_time: 0.75
+
+  emotion_layer:
+    enabled: true
+    cutoff: 10.0
+    amplitude: 77.0
+    covariance: 0.25
+    emotion_density_weight: 10.0
+    keep_time: 1.5
+
+  human_object_layer:
+    enabled: true
+    cutoff: 10.0
+    amplitude: 77.0
+    covar: 0.25
+    factor: 1.0
+    human_object_density_weight: 22.0
+    keep_time: 1.5
+
+  human_group_layer:
+    enabled: true
+    cutoff: 10.0
+    amplitude: 77.0
+    covar: 0.25
+    factor: 1.0
+    human_group_density_weight: 50
+    # Giữ costmap nhóm khi ZED mất track ngắn (social_state rỗng)
+    keep_time: 2.0

@@ -1,0 +1,33 @@
+# Tham số Hector Mapping cho x_omni4wd (RPLIDAR trên lidar_link, RF2O cung cấp odom->base_footprint).
+# Khớp frame với x_omni4wd_bringup.launch: odom, base_footprint, lidar_link.
+
+map_frame: map
+# base_frame và odom_frame có thể ghi đè từ launch
+base_frame: base_footprint
+odom_frame: odom
+
+use_tf_scan_transformation: true
+use_tf_pose_start_estimate: false
+pub_map_odom_transform: true
+pub_odometry: false
+
+map_resolution: 0.05
+map_size: 2048
+map_start_x: 0.5
+map_start_y: 0.5
+map_multi_res_levels: 3
+
+update_factor_free: 0.4
+update_factor_occupied: 0.9
+map_update_distance_thresh: 0.4
+map_update_angle_thresh: 0.35
+
+laser_min_dist: 0.15
+laser_max_dist: 30.0
+laser_z_min_value: -1.0
+laser_z_max_value: 1.0
+
+advertise_map_service: true
+scan_subscriber_queue_size: 5
+
+tf_map_scanmatch_transform_frame_name: scanmatcher_frame

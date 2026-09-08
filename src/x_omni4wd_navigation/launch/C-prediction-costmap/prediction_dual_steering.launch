@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Hai cửa sổ steering: robot /cmd_vel · người /cmd_vel5.
+       ~default_topic bắt buộc — không để Qt restore đè topic. -->
+  <node name="rqt_robot_steering" pkg="rqt_omni_robot_steering"
+        type="rqt_omni_robot_steering" output="screen">
+    <param name="default_topic" value="/cmd_vel"/>
+  </node>
+  <node name="rqt_pedestrian_steering" pkg="rqt_omni_robot_steering"
+        type="rqt_omni_robot_steering" output="screen">
+    <param name="default_topic" value="/cmd_vel5"/>
+  </node>
+</launch>

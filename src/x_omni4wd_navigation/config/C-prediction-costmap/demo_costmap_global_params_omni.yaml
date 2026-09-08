@@ -1,0 +1,68 @@
+# Demo global costmap — prediction cost tube trên omni 4WD.
+# Dựa trên ICR2026/costmap_global_params_x_omni4wd.yaml; layer tube BẬT sẵn.
+# Không dùng cho Track C runner (primary ICR2026 giữ enabled: false).
+
+global_costmap:
+  global_frame: map
+  robot_base_frame: base_footprint
+  transform_tolerance: 0.7
+  update_frequency: 2.0
+  publish_frequency: 0.5
+  resolution: 0.05
+  footprint_padding: 0.005
+  rolling_window: false
+
+  plugins:
+    - { name: static_layer, type: "costmap_2d::StaticLayer" }
+    - { name: obstacles_layer, type: "costmap_2d::ObstacleLayer" }
+    - { name: inflation_layer, type: "costmap_2d::InflationLayer" }
+    - {
+        name: prediction_aware_cost_tube_layer,
+        type: "prediction_costmap_layers::PredictionAwareCostTubeLayer",
+      }
+
+  static_layer:
+    enabled: true
+
+  obstacles_layer:
+    observation_sources: base_scan
+    base_scan:
+      data_type: LaserScan
+      sensor_frame: lidar_link
+      topic: /scan_filtered
+      clearing: true
+      marking: true
+      inf_is_valid: true
+      observation_persistence: 0.0
+      expected_update_rate: 0.5
+      obstacle_range: 10.0
+      raytrace_range: 12.0
+    track_unknown_space: false
+    footprint_clearing_enabled: true
+    combination_method: 1
+    mark_threshold: 0
+    clear_threshold: 1
+
+  inflation_layer:
+    enabled: true
+    cost_scaling_factor: 53.78
+    inflation_radius: 0.32
+
+  # temporal amplitude decay (sigma cố định); TTL + empty-clear trong C++ layer
+  prediction_aware_cost_tube_layer:
+    enabled: true
+    prediction_topic: /pedestrian/predicted_trajectories
+    max_cost: 252.0
+    temporal_decay: 0.3
+    use_temporal_decay: true
+    sigma_social_x: 0.35
+    sigma_social_y: 0.35
+    gaussian_cutoff_sigma: 3.0
+    covariance_scale: 1.0
+    epsilon_regularization: 0.000001
+    min_cost_threshold: 0.5
+    use_message_amplitude: true
+    use_density_amplitude_scaling: false
+    density_amplitude_gain: 0.0
+    prediction_ttl: 0.5
+    tf_lookup_timeout: 0.05

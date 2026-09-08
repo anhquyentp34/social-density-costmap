@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>x_omni4wd_bringup</name>
+  <version>2.0.0</version>
+  <description>
+    Bringup robot thật x_omni4wd (costmapex_unified_ws): URDF, joint/robot_state_publisher,
+    cmd_vel -&gt; vận tốc bánh qua x_omni4wd_control/cmd_vel_to_omni_wheels (Jacobian X-drive, REP-103),
+    tùy chọn ros_control (controller_manager + velocity controllers), LiDAR + RF2O, ZED, RViz;
+    firmware Arduino MSD_H20_OMNI_Bridge (thư mục firmware/) cho bridge PC-MSD khi chạy phần cứng.
+  </description>
+
+  <maintainer email="quyenanhpt@todo.todo">quyenanhpt</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>rospy</build_depend>
+  <build_export_depend>rospy</build_export_depend>
+  <exec_depend>rospy</exec_depend>
+
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>tf2_ros</depend>
+
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>x_omni4wd_description</exec_depend>
+  <exec_depend>x_omni4wd_control</exec_depend>
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>joint_state_controller</exec_depend>
+  <exec_depend>velocity_controllers</exec_depend>
+
+  <exec_depend>rplidar_ros</exec_depend>
+  <exec_depend>x_omni4wd_slam</exec_depend>
+  <exec_depend>rf2o_laser_odometry</exec_depend>
+  <exec_depend>rviz</exec_depend>
+  <exec_depend>rqt_omni_robot_steering</exec_depend>
+  <exec_depend>better_teleop</exec_depend>
+
+  <exec_depend>zed_wrapper</exec_depend>
+  <exec_depend>zed_sdk_bridge</exec_depend>
+
+  <export/>
+</package>

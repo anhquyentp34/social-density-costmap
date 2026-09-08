@@ -1,0 +1,141 @@
+# Đồng bộ với ICARCV2026 (sim)
+local_costmap:
+  global_frame: odom
+  robot_base_frame: base_footprint
+  transform_tolerance: 0.75
+  update_frequency: 5.0 # 5 Hz: giảm tải khi YOLO+ZED+RViz
+  publish_frequency: 2.0 # 2 Hz đủ RViz/planner
+  width: 10.0
+  height: 10.0
+  resolution: 0.05
+  footprint_padding: 0.005
+  # static_map: false
+  # always_send_full_costmap: true
+  rolling_window: true
+  # shutdown_costmaps: false
+
+  plugins:
+    - { name: obstacles_layer, type: "costmap_2d::ObstacleLayer" }
+    # Bài A: YOLO /objects → /yolo_obstacle_cloud (bật bằng use_yolo_obstacle_layer)
+    - { name: yolo_obstacles_layer, type: "costmap_2d::ObstacleLayer" }
+    - { name: inflation_layer, type: "costmap_2d::InflationLayer" }
+    - { name: proxemic, type: "social_navigation_layers::ProxemicLayer" }
+    # - { name: passing, type: "social_navigation_layers::PassingLayer" }
+    - {
+        name: human_group_layer,
+        type: "social_navigation_layers::HumanGroupLayer",
+      }
+    - {
+        name: human_object_layer,
+        type: "social_navigation_layers::HumanObjectLayer",
+      }
+    # - { name: emotion_layer, type: "social_navigation_layers::EmotionLayer" }
+
+  obstacles_layer:
+    observation_sources: base_scan
+    base_scan:
+      data_type: LaserScan
+      sensor_frame: lidar_link
+      topic: /scan
+      clearing: true
+      marking: true
+      inf_is_valid: true # Quan trọng: xử lý đúng giá trị vô cực
+      observation_persistence: 0.0 # Không lưu giữ quan sát cũ
+      expected_update_rate: 0.5 # Chấp nhận scan mỗi 0.5s (2Hz), tránh "sensor out of date" khi CPU nặng
+      obstacle_range: 10.0 # Tầm phát hiện chướng ngại
+      raytrace_range: 12.0 # Khớp max range lidar A2M8
+    track_unknown_space: false # Không theo dõi vùng unknown để tránh ghost
+    footprint_clearing_enabled: true
+    combination_method: 1
+    mark_threshold: 0
+    clear_threshold: 1
+
+  # Mark + clear theo detect (tránh bóng ma ObstacleLayer chỉ-marking)
+  yolo_obstacles_layer:
+    enabled: false
+    observation_sources: yolo_mark yolo_clear
+    yolo_mark:
+      data_type: PointCloud2
+      topic: /yolo_obstacle_cloud
+      sensor_frame: camera_link
+      marking: true
+      clearing: false
+      # 0: không giữ cloud cũ trong camera_link (tránh vệt xoay theo robot).
+      # Flicker YOLO được chống bằng hold_sec trong node (điểm lưu theo odom).
+      observation_persistence: 0.0
+      expected_update_rate: 2.5
+      obstacle_range: 8.0
+      raytrace_range: 8.0
+      min_obstacle_height: 0.0
+      max_obstacle_height: 2.2
+      inf_is_valid: false
+    yolo_clear:
+      data_type: PointCloud2
+      topic: /yolo_obstacle_clear
+      sensor_frame: camera_link
+      marking: false
+      clearing: true
+      observation_persistence: 0.0
+      expected_update_rate: 2.5
+      obstacle_range: 8.0
+      raytrace_range: 8.0
+      min_obstacle_height: 0.0
+      max_obstacle_height: 2.2
+      inf_is_valid: false
+    track_unknown_space: false
+    footprint_clearing_enabled: true
+    combination_method: 1
+    mark_threshold: 0
+    clear_threshold: 1
+
+  inflation_layer:
+    enabled: true
+    # Đồng bộ với global_costmap — TEB đọc local map; lệch inflation là robot “cắt” vùng vàng local.
+    # robot_radius=0.26 → inflation_radius=0.32 (lề an toàn ~6 cm).
+    # Cost mép ≈ proxemic.cutoff=10:
+    #   factor = ln(252/10) / (0.32 - 0.26) ≈ 53.78
+    cost_scaling_factor: 53.78
+    inflation_radius: 0.32
+
+  proxemic:
+    enabled: true
+    cutoff: 10.0
+    amplitude: 77.0
+    covariance: 0.25
+    factor: 5.0
+    min_radius: 0.6
+    proxemic_density_weight: 22.0
+    keep_time: 0.75
+
+  passing:
+    enabled: true
+    cutoff: 10.0
+    amplitude: 77.0
+    covariance: 0.25
+    factor: 5.0
+    min_radius: 0.6
+    density_weight: 22.0
+    keep_time: 0.75
+
+  emotion_layer:
+    enabled: true
+    cutoff: 10.0
+    amplitude: 77.0
+    covariance: 0.25
+    emotion_density_weight: 10.0
+
+  human_object_layer:
+    enabled: true
+    cutoff: 10.0
+    amplitude: 77.0
+    covar: 0.25
+    factor: 1.0
+    human_object_density_weight: 22.0
+
+  human_group_layer:
+    enabled: true
+    cutoff: 10.0
+    amplitude: 77.0
+    covar: 0.25
+    factor: 1.0
+    human_group_density_weight: 50

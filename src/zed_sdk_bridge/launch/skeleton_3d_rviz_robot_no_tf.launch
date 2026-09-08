@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!--
+  Launch file để hiển thị Skeleton 3D trong RViz với Transform từ URDF Robot
+  PHIÊN BẢN KHÔNG TẠO STATIC TRANSFORM (dùng transform từ URDF)
+  
+  Sử dụng khi URDF đã có transform chain đầy đủ:
+  base_link → base_sensor_link → zed2i_camera_link → zed2i_camera_center
+  
+  Sử dụng:
+    roslaunch zed_sdk_bridge skeleton_3d_rviz_robot_no_tf.launch
+-->
+<launch>
+    <!-- Arguments -->
+    <arg name="body_format" default="34" doc="Body format: 18 or 34 keypoints" />
+    <arg name="detection_model" default="HUMAN_BODY_FAST" doc="Detection model" />
+    <arg name="use_rviz" default="true" doc="Launch RViz" />
+    <arg name="show_image" default="false" doc="Open image_view window to show 2D image with skeleton overlay" />
+    
+    <!-- Costmap parameters -->
+    <arg name="selected_bones" default="5,6" doc="Selected bones for costmap" />
+    <arg name="voxel_resolution" default="0.03" doc="Voxel resolution in meters" />
+    <arg name="inflation_radius" default="0.3" doc="Inflation radius in meters" />
+    
+    <!-- Transform parameters từ URDF -->
+    <arg name="base_frame" default="base_link" doc="Base frame của robot" />
+    <arg name="camera_frame" default="zed2i_camera_center" doc="Camera frame từ ZED body tracking" />
+    
+    <!-- 
+      KHÔNG TẠO STATIC TRANSFORM - Dùng transform từ URDF
+      URDF đã có transform chain:
+      base_link → base_sensor_link → zed2i_camera_link → zed2i_camera_center
+    -->
+    
+    <!-- Include launch file gốc (tắt RViz để tránh conflict) -->
+    <include file="$(find zed_sdk_bridge)/launch/skeleton_3d_rviz.launch">
+        <arg name="body_format" value="$(arg body_format)" />
+        <arg name="detection_model" value="$(arg detection_model)" />
+        <arg name="use_rviz" value="false" />
+        <arg name="show_image" value="$(arg show_image)" />
+    </include>
+    
+    <!-- Skeleton Costmap 3D Node -->
+    <include file="$(find zed_sdk_bridge)/launch/skeleton_costmap_3d.launch">
+        <arg name="voxel_resolution" value="$(arg voxel_resolution)" />
+        <arg name="inflation_radius" value="$(arg inflation_radius)" />
+        <arg name="selected_bones" value="$(arg selected_bones)" />
+        <arg name="joint_radius" value="0.02" />
+        <arg name="bone_radius" value="0.015" />
+        <arg name="frame_id" value="zed2i_camera_center" />
+        <arg name="launch_body_tracking" value="false" />
+    </include>
+    
+    <!-- RViz với config cho robot (Fixed Frame = base_link) -->
+    <node if="$(arg use_rviz)" pkg="rviz" type="rviz" name="rviz_skeleton_3d_robot" 
+          args="-d $(find zed_sdk_bridge)/rviz/skeleton_robot.rviz" output="screen" />
+</launch>
+

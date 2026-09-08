@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!--
+  GTSAM Pose2 sliding-window LIVO (thử nghiệm).
+  Yêu cầu bringup: use_zed_sdk_bridge:=true publish_imu:=true publish_vio_odom:=true
+  Và odometry_modes với SRF (srf_zed_imu hoặc srf_only) + reliability nếu dùng soft VIO.
+-->
+<launch>
+  <arg name="enable_reliability" default="true"/>
+  <arg name="enable_odom_modes" default="true"/>
+  <arg name="odom_mode" default="srf_zed_imu"/>
+  <arg name="srf_topic" default="/odom_srf"/>
+  <arg name="vio_topic" default="/odom_zed_soft"/>
+  <arg name="lag_s" default="3.0"/>
+
+  <group if="$(arg enable_reliability)">
+    <include file="$(find x_omni4wd_slam)/launch/reliability.launch">
+      <arg name="enable_directional_cov" value="true"/>
+      <arg name="enable_soft_vio_gate" value="true"/>
+      <arg name="republish_gated_odom" value="true"/>
+    </include>
+  </group>
+
+  <group if="$(arg enable_odom_modes)">
+    <include file="$(find x_omni4wd_slam)/launch/odometry_modes.launch">
+      <arg name="odom_mode" value="$(arg odom_mode)"/>
+      <arg name="relay_filtered_to_odom" value="true"/>
+    </include>
+  </group>
+
+  <node pkg="x_omni4wd_slam" type="gtsam_livo_node.py" name="gtsam_livo" output="screen">
+    <param name="srf_topic" value="/odom_srf_directional"/>
+    <param name="srf_fallback" value="/odom_srf"/>
+    <param name="imu_topic" value="/zed_imu"/>
+    <param name="vio_topic" value="$(arg vio_topic)"/>
+    <param name="soft_topic" value="/reliability/vio_soft"/>
+    <param name="srf_rel_topic" value="/reliability/srf"/>
+    <param name="lag_s" value="$(arg lag_s)"/>
+    <param name="max_keys" value="60"/>
+    <param name="vio_min_soft" value="0.18"/>
+    <param name="compute_marginal" value="false"/>
+  </node>
+</launch>

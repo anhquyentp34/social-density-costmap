@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<launch>
+  <!--
+    Unified RF2O launch for two modes:
+      1) Gazebo simulation (simulation:=true)
+      2) Real robot (simulation:=false), using RPLidar driver
+
+    Goal:
+      - Keep one consistent RF2O parameter set across simulation and real robot.
+      - Only switch sensor source and runtime environment via launch args.
+  -->
+
+  <!-- Mode selection -->
+  <arg name="simulation" default="true"/>
+
+  <!-- Unified RF2O parameters (used in both modes) -->
+  <arg name="scan_topic" default="/scan"/>
+  <arg name="odom_topic" default="/odom"/>
+  <arg name="base_frame" default="base_footprint"/>
+  <arg name="odom_frame" default="odom"/>
+  <arg name="publish_tf" default="true"/>
+  <arg name="init_pose_from_topic" default=""/>
+  <arg name="rf2o_freq" default="10.0"/>
+
+  <!-- LiDAR driver parameters (real robot mode) -->
+  <arg name="laser_port" default="/dev/robot_lidar"/>
+  <arg name="laser_baud" default="115200"/>
+  <arg name="laser_frame" default="lidar_link"/>
+
+  <!-- Gazebo parameters (simulation mode) -->
+  <arg name="world" default="empty"/>
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+  <arg name="x" default="0.0"/>
+  <arg name="y" default="0.0"/>
+  <arg name="z" default="0.1"/>
+  <arg name="urdf_file" default="$(find x_omni4wd_description)/urdf/x_omni4wd_description.urdf"/>
+  <arg name="use_rviz" default="true"/>
+  <arg name="use_rqt_omni_robot_steering" default="true"/>
+
+  <!-- Gazebo simulation with robot and controllers -->
+  <group if="$(arg simulation)">
+    <include file="$(find x_omni4wd_control)/launch/gazebo_velocity_control.launch">
+      <arg name="world" value="$(arg world)"/>
+      <arg name="paused" value="$(arg paused)"/>
+      <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+      <arg name="gui" value="$(arg gui)"/>
+      <arg name="headless" value="$(arg headless)"/>
+      <arg name="debug" value="$(arg debug)"/>
+      <arg name="x" value="$(arg x)"/>
+      <arg name="y" value="$(arg y)"/>
+      <arg name="z" value="$(arg z)"/>
+      <arg name="urdf_file" value="$(arg urdf_file)"/>
+      <arg name="use_rviz" value="$(arg use_rviz)"/>
+      <arg name="use_rqt_omni_robot_steering" value="$(arg use_rqt_omni_robot_steering)"/>
+    </include>
+  </group>
+
+  <!-- Real robot mode: optional RPLidar driver -->
+  <group unless="$(arg simulation)">
+    <node name="rplidarNode" pkg="rplidar_ros" type="rplidarNode" output="screen" respawn="true" respawn_delay="5">
+      <param name="serial_port" type="string" value="$(arg laser_port)"/>
+      <param name="serial_baudrate" type="int" value="$(arg laser_baud)"/>
+      <param name="frame_id" type="string" value="$(arg laser_frame)"/>
+      <param name="inverted" type="bool" value="false"/>
+      <param name="angle_compensate" type="bool" value="true"/>
+      <remap from="scan" to="$(arg scan_topic)"/>
+    </node>
+  </group>
+
+  <!-- RF2O Laser Odometry node (shared for both modes) -->
+  <node name="rf2o_laser_odometry"
+        pkg="rf2o_laser_odometry"
+        type="rf2o_laser_odometry_node"
+        output="screen">
+    <rosparam command="load" file="$(find x_omni4wd_slam)/config/rf2o_x_omni4wd.yaml"/>
+    <param name="laser_scan_topic" value="$(arg scan_topic)"/>
+    <param name="odom_topic" value="$(arg odom_topic)"/>
+    <param name="publish_tf" value="$(arg publish_tf)"/>
+    <param name="base_frame_id" value="$(arg base_frame)"/>
+    <param name="odom_frame_id" value="$(arg odom_frame)"/>
+    <param name="init_pose_from_topic" value="$(arg init_pose_from_topic)"/>
+    <param name="freq" value="$(arg rf2o_freq)"/>
+    <!-- Khớp laser_fps với rf2o_freq để scale odom đúng nếu bạn đổi tần số -->
+    <param name="laser_fps" value="$(arg rf2o_freq)"/>
+  </node>
+
+</launch>
+

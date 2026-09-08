@@ -1,0 +1,103 @@
+# odom_mode: srf_zed_imu
+# Chiến lược complementary:
+#   IMU  → yaw-rate wz (ngắn hạn, nhạy quay)
+#   SRF  → neo pose dài hạn (x, y, yaw) + twist vx/vy (omni)
+#
+# QUAN TRỌNG: two_d_mode MUST true trên robot mặt đất.
+#   Lần fuse roll/pitch + wx/wy với two_d_mode=false → z EKF phân kỳ
+#   (quan sát: z từ ~0 → hàng trăm mét, TF odom→base “nhảy”).
+# Không fuse yaw tuyệt đối / ax ay az / /odom_zed VIO.
+#
+# 2026-08-04: deg/s→rad/s + TIME_REFERENCE::CURRENT trên /zed_imu.
+# 2026-08-05 tune (P2 evidence):
+#   - Fuse SRF vx,vy (holonomic); KHÔNG fuse SRF wz (để IMU)
+#   - Tăng Q_yaw, giảm Q_wz → IMU wz ảnh hưởng giữa các scan SRF hơn
+#   - Siết imu twist rejection nhẹ; giữ R wz publisher (tránh drift đứng yên)
+# 2026-08-07: GT T2 thước — odom yaw over ~+1.2%; imu0=/zed_imu_scaled (scale_wz=0.988);
+#             pose_cov_yaw SRF 0.12→0.18 để IMU scaled đóng góp rõ hơn khi quay.
+# 2026-08-07: odom0=/odom_srf_scaled — GT T1 scale_xy=0.9667 (odom dài hơn ~3.5%).
+# Backup: ekf_srf_zed_imu.yaml.bak_20260805
+
+frequency: 50.0
+sensor_timeout: 0.35
+two_d_mode: true
+print_diagnostics: true
+publish_tf: true
+publish_acceleration: false
+
+map_frame: map
+odom_frame: odom
+base_link_frame: base_footprint
+world_frame: odom
+
+use_control: false
+stamped_control: false
+control_timeout: 0.3
+control_config: [true, true, false, false, false, true]
+acceleration_limits: [0.5, 0.5, 0.0, 0.0, 0.0, 1.2]
+deceleration_limits: [0.5, 0.5, 0.0, 0.0, 0.0, 1.2]
+acceleration_gains: [0.8, 0.8, 0.0, 0.0, 0.0, 0.9]
+deceleration_gains: [1.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+
+# ----- SRF: neo pose + omni twist (không wz); qua /odom_srf_scaled (GT T1 scale_xy) -----
+# [x y z | roll pitch yaw | vx vy vz | vroll vpitch vyaw | ax ay az]
+odom0: /odom_srf_scaled
+odom0_config: [true,  true,  false,
+               false, false, true,
+               true,  true,  false,
+               false, false, false,
+               false, false, false]
+odom0_queue_size: 10
+odom0_nodelay: true
+odom0_differential: false
+odom0_relative: false
+odom0_pose_rejection_threshold: 8.0
+odom0_twist_rejection_threshold: 2.5
+
+# ----- IMU: chỉ wz (qua /zed_imu_scaled — GT T2 scale≈0.988) -----
+imu0: /zed_imu_scaled
+imu0_config: [false, false, false,
+              false, false, false,
+              false, false, false,
+              false, false, true,
+              false, false, false]
+imu0_nodelay: true
+imu0_differential: false
+imu0_relative: true
+imu0_queue_size: 100
+imu0_remove_gravitational_acceleration: true
+imu0_pose_rejection_threshold: 5.0
+imu0_twist_rejection_threshold: 3.0
+
+# Q: x,y hơi tăng (cho phép twist SRF kéo); yaw↑ wz↓ để complementary rõ hơn
+process_noise_covariance: [0.14, 0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0.14, 0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0.06, 0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0.03, 0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0.03, 0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0.10, 0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0.050, 0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0.050, 0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0.04, 0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0.01, 0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0.01, 0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0.025, 0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0.03, 0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0.03, 0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0.02]
+
+initial_estimate_covariance: [1e-9, 0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    1e-9, 0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    1e-9, 0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    1e-9, 0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    1e-9, 0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    1e-9, 0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    1e-9, 0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    1e-9, 0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    1e-9, 0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    1e-9,  0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     1e-9,  0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     1e-9,  0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     1e-9, 0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    1e-9, 0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    1e-9]

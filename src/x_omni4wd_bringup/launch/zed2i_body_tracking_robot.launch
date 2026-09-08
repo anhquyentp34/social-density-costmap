@@ -1,0 +1,229 @@
+<?xml version="1.0"?>
+<!--
+  ZED 2i Body Tracking cho robot x_omni4wd (mở camera bằng ZED SDK trực tiếp).
+
+  KHÔNG chạy cùng zed_wrapper / zed2i_robot.launch (cùng tranh camera).
+  Frame mặc định: camera_link (đã có trong URDF → TF tới base_footprint).
+
+  Publish:
+    /bodies            — vị trí, vận tốc, keypoints (pose) từng người
+    /objects           — YOLO→bridge (use_yolo:=true) hoặc ZED OD (enable_object_detection:=true)
+    /image_raw         — ảnh left BGRA
+    /depth             — depth 32FC1 (cho YOLO bridge)
+    /camera_info       — intrinsics left
+    /image_skeleton    — ảnh + overlay skeleton (nếu enable_visualizer)
+    /skeleton_markers  — MarkerArray 3D cho RViz
+    /yolo_result       — YOLO ~80 lớp (nếu use_yolo:=true)
+    /yolo_result_image — ảnh overlay YOLO
+
+  Ví dụ:
+    roslaunch x_omni4wd_bringup zed2i_body_tracking_robot.launch
+    roslaunch x_omni4wd_bringup zed2i_body_tracking_robot.launch use_yolo:=false enable_object_detection:=true
+-->
+<launch>
+  <arg name="camera_frame_id" default="camera_link"/>
+  <!-- CAMERA (default): BodyData camera-relative. WORLD: ZED PT world ≠ ROS map. -->
+  <arg name="measure3d_reference_frame" default="camera"/>
+  <arg name="bodies_frame_id" default=""/>
+  <arg name="detection_model" default="HUMAN_BODY_FAST"/>
+  <arg name="enable_tracking" default="true"/>
+  <arg name="enable_positional_tracking" default="true"/>
+  <arg name="enable_body_fitting" default="true"/>
+  <arg name="enable_segmentation" default="false"/>
+  <arg name="body_format" default="34"/>
+  <arg name="detection_confidence_threshold" default="40.0"/>
+  <arg name="skeleton_smoothing" default="0.85"/>
+  <!-- 0=AUTO, 1=HD2K, 2=HD1080, 3=HD720 -->
+  <arg name="camera_resolution" default="0"/>
+  <!-- 0=PERFORMANCE (nhẹ GPU), 1=QUALITY, 2=ULTRA, 3=NEURAL -->
+  <arg name="depth_mode" default="0"/>
+  <arg name="publish_depth" default="false"/>
+  <arg name="camera_fps" default="30"/>
+  <!-- SN từ /usr/local/zed/settings/SN*.conf; 0 = auto -->
+  <arg name="camera_serial_number" default="0"/>
+  <arg name="open_timeout_sec" default="15.0"/>
+  <arg name="open_retry_delay_sec" default="15.0"/>
+  <arg name="body_instance_module_id" default="0"/>
+  <arg name="zed_respawn" default="true"/>
+  <arg name="zed_respawn_delay" default="25.0"/>
+  <arg name="zed_launch_delay" default="3.0"/>
+
+  <!-- ZED VIO (Positional Tracking → /odom_zed). Chạy đồng thời với Body Tracking. -->
+  <arg name="publish_vio_odom" default="false"/>
+  <arg name="publish_vio_tf" default="false"/>
+  <arg name="publish_imu" default="false"/>
+  <arg name="vio_odom_topic" default="/odom_zed"/>
+  <arg name="imu_topic" default="/zed_imu"/>
+  <arg name="odom_frame_id" default="odom"/>
+  <arg name="base_frame_id" default="base_footprint"/>
+  <arg name="vio_two_d_mode" default="true"/>
+  <arg name="enable_area_memory" default="true"/>
+  <arg name="enable_imu_fusion" default="true"/>
+  <!-- URDF base_link → camera_link -->
+  <arg name="cam_pos_x" default="0.052484109778863"/>
+  <arg name="cam_pos_y" default="8.47956709802977e-05"/>
+  <arg name="cam_pos_z" default="1.05312524052101"/>
+  <arg name="cam_roll" default="0.0"/>
+  <arg name="cam_pitch" default="0.0"/>
+  <arg name="cam_yaw" default="0.0"/>
+  <arg name="vio_publish_hz" default="15.0"/>
+
+  <!-- Object Detection concurrent (SDK multi-class) -->
+  <arg name="enable_object_detection" default="false"/>
+  <arg name="od_model" default="MULTI_CLASS_BOX_FAST"/>
+  <arg name="od_confidence_threshold" default="40.0"/>
+  <arg name="od_max_range" default="15.0"/>
+  <arg name="od_enable_tracking" default="true"/>
+  <arg name="od_filter_person" default="true"/>
+  <arg name="od_instance_module_id" default="1"/>
+  <arg name="od_mc_people" default="false"/>
+  <arg name="od_mc_vehicle" default="true"/>
+  <arg name="od_mc_bag" default="true"/>
+  <arg name="od_mc_animal" default="true"/>
+  <arg name="od_mc_electronics" default="true"/>
+  <arg name="od_mc_fruit_vegetable" default="false"/>
+  <arg name="od_mc_sport" default="false"/>
+
+  <arg name="enable_visualizer" default="true"/>
+  <arg name="publish_skeleton_markers" default="true"/>
+  <arg name="show_skeleton_overlay" default="true"/>
+  <!-- Nhãn trên bounding box /image_skeleton (ID, confidence, emotion, v) -->
+  <arg name="detection_label_font_scale" default="0.9"/>
+  <arg name="detection_label_font_thickness" default="3"/>
+  <arg name="show_image_view" default="false"/>
+  <arg name="enable_proxemic" default="false"/>
+  <arg name="enable_costmap_3d" default="false"/>
+  <!-- YOLO Ultralytics (~80 lớp COCO) trên /image_raw; xem ảnh trong RViz -->
+  <arg name="use_yolo" default="true"/>
+  <arg name="yolo_model" default="yolov8n.pt"/>
+  <arg name="yolo_conf_thres" default="0.25"/>
+  <arg name="yolo_debug" default="false"/>
+  <arg name="yolo_process_hz" default="3.0"/>
+  <arg name="yolo_device" default=""/>
+  <arg name="yolo_launch_delay" default="8.0"/>
+  <arg name="yolo_publish_result_image" default="false"/>
+
+  <!-- respawn+delay: phục hồi sau SIGSEGV GPU; node vẫn tự retry mở camera bên trong -->
+  <node pkg="zed_sdk_bridge" type="zed_sdk_bridge_node" name="zed_sdk_bridge_node"
+        output="screen" required="false"
+        respawn="$(arg zed_respawn)" respawn_delay="$(arg zed_respawn_delay)"
+        launch-prefix="bash -c 'sleep $(arg zed_launch_delay); exec $0 $@' --">
+    <param name="camera_frame_id" value="$(arg camera_frame_id)"/>
+    <param name="measure3d_reference_frame" value="$(arg measure3d_reference_frame)"/>
+    <param name="bodies_frame_id" value="$(arg bodies_frame_id)"/>
+    <param name="detection_model" value="$(arg detection_model)"/>
+    <param name="enable_tracking" value="$(arg enable_tracking)"/>
+    <param name="enable_positional_tracking" value="$(arg enable_positional_tracking)"/>
+    <param name="enable_body_fitting" value="$(arg enable_body_fitting)"/>
+    <param name="enable_segmentation" value="$(arg enable_segmentation)"/>
+    <param name="body_format" value="$(arg body_format)"/>
+    <param name="detection_confidence_threshold" value="$(arg detection_confidence_threshold)"/>
+    <param name="skeleton_smoothing" value="$(arg skeleton_smoothing)"/>
+    <param name="camera_resolution" value="$(arg camera_resolution)"/>
+    <param name="depth_mode" value="$(arg depth_mode)"/>
+    <param name="camera_fps" value="$(arg camera_fps)"/>
+    <param name="camera_serial_number" value="$(arg camera_serial_number)"/>
+    <param name="open_timeout_sec" value="$(arg open_timeout_sec)"/>
+    <param name="open_retry_delay_sec" value="$(arg open_retry_delay_sec)"/>
+    <param name="body_instance_module_id" value="$(arg body_instance_module_id)"/>
+    <param name="enable_object_detection" value="$(arg enable_object_detection)"/>
+    <param name="publish_depth" value="$(arg publish_depth)"/>
+    <param name="rgb_publish_hz" value="10.0"/>
+    <param name="depth_publish_hz" value="8.0"/>
+    <param name="publish_vio_odom" value="$(arg publish_vio_odom)"/>
+    <param name="publish_vio_tf" value="$(arg publish_vio_tf)"/>
+    <param name="publish_imu" value="$(arg publish_imu)"/>
+    <param name="vio_odom_topic" value="$(arg vio_odom_topic)"/>
+    <param name="imu_topic" value="$(arg imu_topic)"/>
+    <param name="odom_frame_id" value="$(arg odom_frame_id)"/>
+    <param name="base_frame_id" value="$(arg base_frame_id)"/>
+    <param name="vio_two_d_mode" value="$(arg vio_two_d_mode)"/>
+    <param name="enable_area_memory" value="$(arg enable_area_memory)"/>
+    <param name="enable_imu_fusion" value="$(arg enable_imu_fusion)"/>
+    <param name="cam_pos_x" value="$(arg cam_pos_x)"/>
+    <param name="cam_pos_y" value="$(arg cam_pos_y)"/>
+    <param name="cam_pos_z" value="$(arg cam_pos_z)"/>
+    <param name="cam_roll" value="$(arg cam_roll)"/>
+    <param name="cam_pitch" value="$(arg cam_pitch)"/>
+    <param name="cam_yaw" value="$(arg cam_yaw)"/>
+    <param name="vio_publish_hz" value="$(arg vio_publish_hz)"/>
+    <param name="od_model" value="$(arg od_model)"/>
+    <param name="od_confidence_threshold" value="$(arg od_confidence_threshold)"/>
+    <param name="od_max_range" value="$(arg od_max_range)"/>
+    <param name="od_enable_tracking" value="$(arg od_enable_tracking)"/>
+    <param name="od_filter_person" value="$(arg od_filter_person)"/>
+    <param name="od_instance_module_id" value="$(arg od_instance_module_id)"/>
+    <param name="od_mc_people" value="$(arg od_mc_people)"/>
+    <param name="od_mc_vehicle" value="$(arg od_mc_vehicle)"/>
+    <param name="od_mc_bag" value="$(arg od_mc_bag)"/>
+    <param name="od_mc_animal" value="$(arg od_mc_animal)"/>
+    <param name="od_mc_electronics" value="$(arg od_mc_electronics)"/>
+    <param name="od_mc_fruit_vegetable" value="$(arg od_mc_fruit_vegetable)"/>
+    <param name="od_mc_sport" value="$(arg od_mc_sport)"/>
+  </node>
+
+  <group if="$(arg enable_visualizer)">
+    <node pkg="zed_sdk_bridge" type="skeleton_visualizer" name="skeleton_visualizer"
+          output="screen" required="false" respawn="$(arg zed_respawn)" respawn_delay="$(arg zed_respawn_delay)">
+      <remap from="bodies" to="/bodies"/>
+      <remap from="objects" to="/objects"/>
+      <remap from="image_raw" to="/image_raw"/>
+      <remap from="image_skeleton" to="/image_skeleton"/>
+      <remap from="skeleton_markers" to="/skeleton_markers"/>
+      <param name="show_on_image" value="true"/>
+      <param name="publish_markers" value="$(arg publish_skeleton_markers)"/>
+      <param name="show_skeleton_overlay" value="$(arg show_skeleton_overlay)"/>
+      <param name="label_font_scale" value="$(arg detection_label_font_scale)"/>
+      <param name="label_font_thickness" value="$(arg detection_label_font_thickness)"/>
+      <param name="show_objects" value="true"/>
+      <param name="joint_radius" value="0.025"/>
+      <param name="link_width" value="0.012"/>
+      <param name="joint_radius_2d" value="3.0"/>
+      <param name="link_width_2d" value="2.0"/>
+      <param name="velocity_smoothing" value="0.85"/>
+      <param name="velocity_min_display" value="0.05"/>
+      <param name="marker_lifetime_sec" value="0.5"/>
+      <param name="use_latest_tf" value="true"/>
+      <param name="object_marker_size" value="0.3"/>
+      <!-- Tối ưu RViz: không phóng ảnh (kéo panel Image); giới hạn Hz -->
+      <param name="image_display_scale" value="1.0"/>
+      <param name="max_image_hz" value="8.0"/>
+      <param name="max_marker_hz" value="8.0"/>
+      <param name="camera_frame_id" value="$(arg camera_frame_id)"/>
+    </node>
+
+    <!-- RViz Image /image_skeleton cần camera_info cùng namespace -->
+    <node pkg="topic_tools" type="relay" name="image_skeleton_camera_info_relay"
+          args="/camera_info /image_skeleton/camera_info"/>
+  </group>
+
+  <node if="$(arg show_image_view)" pkg="image_view" type="image_view" name="skeleton_image_view" output="screen">
+    <remap from="image" to="/image_skeleton"/>
+  </node>
+
+  <group if="$(arg enable_proxemic)">
+    <include file="$(find zed_sdk_bridge)/launch/proxemic_pointcloud.launch"/>
+  </group>
+
+  <group if="$(arg enable_costmap_3d)">
+    <include file="$(find zed_sdk_bridge)/launch/skeleton_costmap_3d.launch">
+      <arg name="launch_body_tracking" value="false"/>
+      <arg name="frame_id" value="$(arg camera_frame_id)"/>
+      <arg name="body_format" value="$(arg body_format)"/>
+    </include>
+  </group>
+
+  <!-- YOLO COCO ~80 lớp; delay sau khi ZED publish /image_raw -->
+  <group if="$(arg use_yolo)">
+    <include file="$(find ultralytics_ros)/launch/zed_body_yolo.launch">
+      <arg name="input_topic" value="/image_raw"/>
+      <arg name="yolo_model" value="$(arg yolo_model)"/>
+      <arg name="conf_thres" value="$(arg yolo_conf_thres)"/>
+      <arg name="debug" value="$(arg yolo_debug)"/>
+      <arg name="process_hz" value="$(arg yolo_process_hz)"/>
+      <arg name="device" value="$(arg yolo_device)"/>
+      <arg name="launch_delay" value="$(arg yolo_launch_delay)"/>
+      <arg name="publish_result_image" value="$(arg yolo_publish_result_image)"/>
+    </include>
+  </group>
+</launch>

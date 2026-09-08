@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!--
+  DEPRECATED: dùng EKF fusion trong x_omni4wd_slam thay cho complementary filter.
+
+  roslaunch x_omni4wd_slam ekf_odom_fusion.launch
+-->
+<launch>
+  <include file="$(find x_omni4wd_slam)/launch/ekf_odom_fusion.launch"/>
+</launch>

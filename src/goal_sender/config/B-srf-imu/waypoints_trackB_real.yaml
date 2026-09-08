@@ -1,0 +1,28 @@
+# Track B — Robot thật — Waypoints (cùng lộ trình để so sánh odom W/S/SI)
+num_cycles: 3
+movement_mode: "cycle"
+
+waypoints:
+  - name: "START"
+    x: -2.2909
+    y: -28.4764
+    yaw: 0.05348135
+    color: [0.0, 1.0, 0.0]
+
+  - name: "GOAL_1"
+    x: 1.1135
+    y: -29.5260
+    yaw: 0.01284416
+    color: [0.0, 0.5, 1.0]
+
+  - name: "GOAL_2"
+    x: 2.0250
+    y: -23.9649
+    yaw: 0.19474063
+    color: [0.0, 0.5, 1.0]
+
+  - name: "GOAL_3"
+    x: 7.1630
+    y: -23.2650
+    yaw: 1.60188885
+    color: [0.0, 0.5, 1.0]

@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!--
+  ZED VIO standalone helper — thực chất bật Body Tracking + publish /odom_zed.
+
+  Không mở zed_wrapper (tránh tranh camera). Positional Tracking / VIO do
+  zed_sdk_bridge_node xuất từ ZED SDK getPosition().
+
+  Ví dụ:
+    roslaunch x_omni4wd_bringup zed_vio.launch
+    roslaunch x_omni4wd_bringup zed_vio.launch publish_imu:=true
+-->
+<launch>
+  <arg name="camera_frame_id" default="camera_link"/>
+  <arg name="odom_frame_id" default="odom"/>
+  <arg name="base_frame_id" default="base_footprint"/>
+  <arg name="vio_odom_topic" default="/odom_zed"/>
+  <arg name="imu_topic" default="/zed_imu"/>
+  <arg name="publish_vio_tf" default="false"/>
+  <arg name="publish_imu" default="false"/>
+  <arg name="vio_two_d_mode" default="true"/>
+  <arg name="enable_area_memory" default="true"/>
+  <arg name="enable_imu_fusion" default="true"/>
+  <arg name="use_yolo" default="false"/>
+  <arg name="enable_visualizer" default="false"/>
+
+  <include file="$(find x_omni4wd_bringup)/launch/zed2i_body_tracking_robot.launch">
+    <arg name="camera_frame_id" value="$(arg camera_frame_id)"/>
+    <arg name="enable_positional_tracking" value="true"/>
+    <arg name="publish_vio_odom" value="true"/>
+    <arg name="publish_vio_tf" value="$(arg publish_vio_tf)"/>
+    <arg name="publish_imu" value="$(arg publish_imu)"/>
+    <arg name="vio_odom_topic" value="$(arg vio_odom_topic)"/>
+    <arg name="imu_topic" value="$(arg imu_topic)"/>
+    <arg name="odom_frame_id" value="$(arg odom_frame_id)"/>
+    <arg name="base_frame_id" value="$(arg base_frame_id)"/>
+    <arg name="vio_two_d_mode" value="$(arg vio_two_d_mode)"/>
+    <arg name="enable_area_memory" value="$(arg enable_area_memory)"/>
+    <arg name="enable_imu_fusion" value="$(arg enable_imu_fusion)"/>
+    <arg name="use_yolo" value="$(arg use_yolo)"/>
+    <arg name="enable_visualizer" value="$(arg enable_visualizer)"/>
+  </include>
+</launch>

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!--
+  P10 engineering full stack (GTSAM chưa cài — dùng EKF LIVO).
+  Yêu cầu bringup đã chạy với:
+    use_zed_sdk_bridge:=true publish_imu:=true publish_vio_odom:=true
+
+  Ghép: reliability (P7–P9) + EKF (SRF directional + soft VIO + IMU wz) + /odom_livo
+-->
+<launch>
+  <arg name="relay_to_odom" default="true"/>
+  <arg name="enable_deskew" default="false"/>  <!-- P3 FAIL — mặc định tắt -->
+  <arg name="scan_topic" default="/scan"/>
+
+  <include file="$(find x_omni4wd_slam)/launch/reliability.launch">
+    <arg name="enable_directional_cov" value="true"/>
+    <arg name="enable_soft_vio_gate" value="true"/>
+    <arg name="republish_gated_odom" value="true"/>
+  </include>
+
+  <group if="$(arg enable_deskew)">
+    <include file="$(find x_omni4wd_slam)/launch/scan_deskew.launch"/>
+  </group>
+
+  <include file="$(find x_omni4wd_slam)/launch/odometry_modes.launch">
+    <arg name="odom_mode" value="livo_full"/>
+    <arg name="scan_topic" value="$(arg scan_topic)"/>
+    <arg name="relay_filtered_to_odom" value="false"/>
+  </include>
+
+  <node pkg="x_omni4wd_slam" type="odom_livo_relay.py" name="odom_livo_relay" output="screen">
+    <param name="source" value="/odometry/filtered"/>
+    <param name="relay_to_odom" value="$(arg relay_to_odom)"/>
+  </node>
+</launch>

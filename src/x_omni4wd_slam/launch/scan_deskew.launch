@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Gyro rotation-only deskew: /scan → /scan_deskewed -->
+  <arg name="scan_in" default="/scan"/>
+  <arg name="scan_out" default="/scan_deskewed"/>
+  <arg name="imu_topic" default="/zed2i/zed_node/imu/data_raw"/>
+  <arg name="lidar_frame" default="lidar_link"/>
+  <arg name="imu_frame" default=""/>
+  <arg name="imu_time_offset" default="0.0"/>
+  <arg name="enabled" default="true"/>
+  <arg name="bypass_if_fail" default="true"/>
+
+  <node pkg="x_omni4wd_slam" type="scan_deskew_node.py" name="scan_deskew" output="screen">
+    <param name="scan_in" value="$(arg scan_in)"/>
+    <param name="scan_out" value="$(arg scan_out)"/>
+    <param name="imu_topic" value="$(arg imu_topic)"/>
+    <param name="lidar_frame" value="$(arg lidar_frame)"/>
+    <param name="imu_frame" value="$(arg imu_frame)"/>
+    <param name="imu_time_offset" value="$(arg imu_time_offset)"/>
+    <param name="enabled" value="$(arg enabled)"/>
+    <param name="bypass_if_fail" value="$(arg bypass_if_fail)"/>
+    <param name="imu_buffer_sec" value="1.5"/>
+    <param name="min_imu_for_scan" value="3"/>
+  </node>
+</launch>

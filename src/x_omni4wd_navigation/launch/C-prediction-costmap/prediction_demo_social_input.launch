@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- /social_state demo: vị trí cố định + vận tốc /cmd_vel5 (không đụng fusion). -->
+  <arg name="fixed_x" default="0.8"/>
+  <arg name="fixed_y" default="0.0"/>
+  <arg name="publish_rate" default="20.0"/>
+  <arg name="single_actor" default="true"/>
+
+  <node pkg="pedestrian_prediction" type="social_state_simulator.py"
+        name="social_state_simulator" output="screen">
+    <param name="position_mode" value="fixed"/>
+    <param name="fixed_x" value="$(arg fixed_x)"/>
+    <param name="fixed_y" value="$(arg fixed_y)"/>
+    <param name="velocity_source" value="cmd_vel5_only"/>
+    <param name="single_actor" value="$(arg single_actor)"/>
+    <param name="virtual_actor" value="true"/>
+    <param name="publish_rate" value="$(arg publish_rate)"/>
+    <param name="integrate_angle" value="true"/>
+  </node>
+</launch>

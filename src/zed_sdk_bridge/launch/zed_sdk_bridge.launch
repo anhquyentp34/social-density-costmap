@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- ZED Body Tracking Node -->
+    <node pkg="zed_sdk_bridge" type="zed_body_imu_node" name="zed_body_imu_node" output="screen">
+        <!-- Camera frame ID -->
+        <param name="camera_frame_id" value="zed2i_camera_center" />
+        
+        <!-- Detection model: HUMAN_BODY_FAST, HUMAN_BODY_ACCURATE, or HUMAN_BODY_MEDIUM -->
+        <param name="detection_model" value="HUMAN_BODY_FAST" />
+        
+        <!-- Enable tracking across frames -->
+        <param name="enable_tracking" value="true" />
+        
+        <!-- Enable body fitting (smooth skeleton movements) -->
+        <param name="enable_body_fitting" value="false" />
+        
+        <!-- Enable segmentation mask -->
+        <param name="enable_segmentation" value="false" />
+        
+        <!-- Body format: 18 or 34 keypoints -->
+        <param name="body_format" value="34" />
+        
+        <!-- Detection confidence threshold (0-100) -->
+        <param name="detection_confidence_threshold" value="40.0" />
+        
+        <!-- Skeleton smoothing (0.0-1.0) -->
+        <param name="skeleton_smoothing" value="0.7" />
+        
+        <!-- Camera resolution: 0=AUTO, 1=HD2K, 2=HD1080, 3=HD720, 4=SVGA, 5=VGA -->
+        <param name="camera_resolution" value="2" />
+        
+        <!-- Depth mode: 0=PERFORMANCE, 1=QUALITY, 2=ULTRA, 3=NEURAL -->
+        <param name="depth_mode" value="3" />
+    </node>
+    
+    <!-- RViz (optional) -->
+    <!-- Uncomment to launch RViz -->
+    <!--
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find zed_sdk_bridge)/rviz/body_tracking.rviz" />
+    -->
+</launch>
+

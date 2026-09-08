@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>x_omni4wd_gazebo</name>
+  <version>0.0.1</version>
+  <description>Minimal package providing person_standing mesh for RViz visualization.</description>
+  <maintainer email="anhquyentp34@gmail.com">Pham Tran Quyen Anh</maintainer>
+  <license>MIT</license>
+  <buildtool_depend>catkin</buildtool_depend>
+</package>

@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!--
+  Cartographer 2D trên x_omni4wd (cùng luồng bringup + RPLIDAR như Hector).
+
+  Thư viện Cartographer build từ mã nguồn workspace: src/cartographer (+ cartographer_ros trong install_isolated).
+  Cấu hình Lua: my_cartographer_config/config/x_omni4wd_cartographer_2d.lua
+    - /scan -> LiDAR; /odom -> RF2O; frame: map, odom, base_footprint, lidar_link (TF từ URDF/bringup).
+
+  Chạy:
+    source /opt/ros/noetic/setup.bash
+    source ~/costmapex_unified_ws/install_isolated/setup.bash
+    source ~/costmapex_unified_ws/devel/setup.bash
+    roslaunch x_omni4wd_slam x_omni4wd_cartographer_mapping.launch
+
+  Lưu map (terminal khác):
+    rosrun map_server map_saver -f /home/quyenanhpt/costmapex_unified_ws/src/x_omni4wd_navigation/maps/t21
+
+  Ghi chú:
+    - use_zed mặc định false để nhẹ khi chỉ mapping (giống Hector).
+    - Không thêm static TF base->laser: bringup + URDF đã có lidar_link.
+    - remap odom nếu RF2O đổi topic (mặc định /odom).
+    - TF: Lua dùng provide_odom_frame=true; bringup truyền rf2o_publish_tf:=false để Cartographer
+      là chủ TF map->odom->base (RF2O vẫn gửi /odom cho use_odometry). Tránh lỗi RViz "odom -> map".
+-->
+<launch>
+  <arg name="use_sim_time" default="false"/>
+  <arg name="scan_topic" default="/scan"/>
+  <arg name="odom_topic" default="/odom"/>
+  <arg name="odom_frame" default="odom"/>
+  <arg name="base_frame" default="base_footprint"/>
+  <arg name="laser_frame" default="lidar_link"/>
+  <arg name="lidar_port" default="/dev/robot_lidar"/>
+  <arg name="lidar_baud" default="115200"/>
+  <arg name="use_zed" default="false"/>
+  <arg name="open_rviz" default="true"/>
+  <!-- RViz: x_omni4wd_cartographer_mapping.rviz không gắn MarkerArray constraint/trajectory (tránh cảnh báo marker rỗng); Submaps dùng base_footprint -->
+  <arg name="rviz_config" default="$(find x_omni4wd_slam)/rviz/x_omni4wd_cartographer_mapping.rviz"/>
+  <arg name="carto_resolution" default="0.05"/>
+
+  <include file="$(find x_omni4wd_bringup)/launch/x_omni4wd_bringup.launch">
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="scan_topic" value="$(arg scan_topic)"/>
+    <arg name="odom_frame" value="$(arg odom_frame)"/>
+    <arg name="base_frame" value="$(arg base_frame)"/>
+    <arg name="laser_frame" value="$(arg laser_frame)"/>
+    <arg name="lidar_port" value="$(arg lidar_port)"/>
+    <arg name="lidar_baud" value="$(arg lidar_baud)"/>
+    <arg name="use_lidar" value="true"/>
+    <arg name="use_zed" value="$(arg use_zed)"/>
+    <arg name="open_rviz" value="false"/>
+    <arg name="use_rqt_omni_robot_steering" value="false"/>
+    <!-- Tránh trùng TF với Cartographer (map->odom->base); RF2O vẫn publish /odom cho use_odometry -->
+    <arg name="rf2o_publish_tf" value="false"/>
+  </include>
+
+  <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node"
+        args="-configuration_directory $(find my_cartographer_config)/config -configuration_basename x_omni4wd_cartographer_2d.lua"
+        output="screen">
+    <remap from="scan" to="$(arg scan_topic)"/>
+    <remap from="odom" to="$(arg odom_topic)"/>
+  </node>
+
+  <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros"
+        type="cartographer_occupancy_grid_node" args="-resolution $(arg carto_resolution)"/>
+
+  <node if="$(arg open_rviz)" pkg="rviz" type="rviz" name="rviz_cartographer_mapping"
+        args="-d $(arg rviz_config)" output="screen" required="false"/>
+</launch>

@@ -1,0 +1,11 @@
+# Kịch bản DỄ: 2–3 điểm, đường tương đối thẳng, ít rẽ.
+# Spawn tại (-10, -7), vòng ngắn.
+waypoints:
+  - name: GOAL_1
+    x: -2.0
+    y: 7.0
+    yaw: -1.57
+  - name: GOAL_2
+    x: -10.0
+    y: -7.0
+    yaw: 1.57

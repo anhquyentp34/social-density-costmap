@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<launch>
+  <!--
+    Bài C — cầu prediction (VCCA độc lập):
+      /social_state → IMM|Kalman|ensemble_cv|diffusion_* → /pedestrian/predicted_trajectories
+      → prediction_costmap_layers::PredictionAwareCostTubeLayer
+  -->
+  <arg name="prediction_model" default="imm"
+       doc="imm | kalman | cv | ensemble_cv | diffusion_single | diffusion_joint"/>
+  <arg name="input_topic" default="/social_state"/>
+  <arg name="output_topic" default="/pedestrian/predicted_trajectories"/>
+  <arg name="enable_viz" default="true"/>
+  <arg name="use_social_velocity" default="true"/>
+  <arg name="diffusion_weights" default=""/>
+  <arg name="diffusion_device" default="cpu"/>
+
+  <arg name="use_imm_kalman"
+       default="$(eval prediction_model in ('imm', 'kalman', 'cv'))"/>
+  <arg name="use_diffusion"
+       default="$(eval prediction_model in ('ensemble_cv', 'diffusion', 'diffusion_single', 'diffusion_joint'))"/>
+  <arg name="use_null"
+       default="$(eval prediction_model == 'null')"
+       doc="C0s shadow: bridge+layer on, empty predictions (pipeline-increment control)"/>
+
+  <node if="$(arg use_null)"
+        pkg="pedestrian_prediction" type="null_prediction_node.py"
+        name="null_prediction_node" output="screen">
+    <param name="input_topic" value="$(arg input_topic)"/>
+    <param name="output_topic" value="$(arg output_topic)"/>
+  </node>
+
+  <node if="$(arg use_imm_kalman)"
+        pkg="pedestrian_prediction" type="pedestrian_prediction_node.py"
+        name="pedestrian_prediction_node" output="screen">
+    <param name="predictor" value="$(arg prediction_model)"/>
+    <param name="input_topic" value="$(arg input_topic)"/>
+    <param name="output_topic" value="$(arg output_topic)"/>
+    <param name="use_social_velocity" value="$(arg use_social_velocity)"/>
+    <param name="temporal_decay" value="0.3"/>
+    <param name="max_cost" value="252.0"/>
+    <param name="publish_mode_probabilities" value="true"/>
+  </node>
+
+  <node if="$(arg use_diffusion)"
+        pkg="pedestrian_diffusion_prediction" type="pedestrian_diffusion_prediction_node.py"
+        name="pedestrian_diffusion_prediction_node" output="screen">
+    <param name="predictor" value="$(arg prediction_model)"/>
+    <param name="weights" value="$(arg diffusion_weights)"/>
+    <param name="device" value="$(arg diffusion_device)"/>
+    <param name="input_topic" value="$(arg input_topic)"/>
+    <param name="output_topic" value="$(arg output_topic)"/>
+    <param name="use_social_velocity" value="$(arg use_social_velocity)"/>
+    <param name="temporal_decay" value="0.3"/>
+    <param name="max_cost" value="252.0"/>
+    <param name="K" value="16"/>
+    <param name="dt" value="0.25"/>
+    <param name="T_fut" value="20"/>
+    <param name="min_history" value="5"/>
+  </node>
+
+  <node if="$(arg enable_viz)" pkg="pedestrian_prediction" type="pedestrian_prediction_viz.py"
+        name="pedestrian_prediction_viz" output="screen">
+    <param name="input_topic" value="$(arg output_topic)"/>
+    <param name="marker_topic" value="/pedestrian_prediction/markers"/>
+  </node>
+</launch>

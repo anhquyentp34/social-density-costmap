@@ -1,0 +1,355 @@
+<?xml version="1.0"?>
+<launch>
+  <!--
+    Chọn nguồn odometry theo odom_mode.
+    Đầu ra thống nhất: /odometry/filtered (+ relay → /odom) + TF odom→base_footprint từ EKF.
+
+    odom_mode:
+      baseline       — ekf_x_omni4wd.yaml (wheel+RF2O hiện tại, không đổi)
+      wheel_only     — chỉ wheel twist
+      rf2o_only      — chỉ RF2O pose
+      srf_only       — chỉ SRF pose
+      zed_vio_only   — chỉ ZED VIO pose
+      wheel_rf2o     — wheel+RF2O (YAML thống nhất)
+      wheel_srf      — wheel+SRF
+      wheel_zed      — wheel+ZED VIO
+      rf2o_zed       — RF2O+ZED VIO
+      srf_zed        — SRF+ZED VIO
+      srf_zed_dir    — SRF directional R + ZED VIO (P8; tự bật reliability.launch)
+      srf_zed_soft   — SRF directional + VIO soft-gate (P9; tự bật reliability.launch)
+      livo_full      — P10: directional SRF + soft VIO + IMU wz (EKF; tự bật reliability.launch)
+      gtsam_livo     — GTSAM ISAM2 Pose2 → /odom_livo (+ TF); cần IMU+VIO+reliability
+      srf_zed_imu    — SRF pose + ZED raw IMU (/zed_imu, không VIO)
+      wheel_rf2o_zed — wheel+RF2O+ZED VIO
+      wheel_srf_zed  — wheel+SRF+ZED VIO
+
+    RF2O và SRF XOR (không chạy song song trong cùng một mode).
+    Không xuất TF từ wheel / RF2O / SRF / ZED VIO khi dùng làm đầu vào EKF.
+    Không đưa /odometry/filtered cũ vào EKF mới (tránh double-count).
+    Mode srf_zed_imu: không bật /odom_zed; cần publish_imu:=true từ bringup.
+    Mode gtsam_livo: cần publish_imu:=true + publish_vio_odom:=true; không chạy EKF.
+    Mode srf_zed_dir / srf_zed_soft / livo_full: tự bật reliability.launch (P8–P10).
+  -->
+
+  <arg name="odom_mode" default="baseline"/>
+
+  <arg name="cmd_vel_topic" default="/cmd_vel"/>
+  <arg name="scan_topic" default="/scan"/>
+  <arg name="odom_topic" default="/odom"/>
+  <arg name="wheel_odom_topic" default="/odom_wheel"/>
+  <arg name="rf2o_odom_topic" default="/odom_rf2o"/>
+  <arg name="srf_odom_topic" default="/odom_srf"/>
+  <arg name="zed_odom_topic" default="/odom_zed"/>
+  <arg name="ekf_filtered_topic" default="/odometry/filtered"/>
+  <arg name="gtsam_lag_s" default="5.0"/>
+
+  <arg name="odom_frame" default="odom"/>
+  <arg name="base_frame" default="base_footprint"/>
+  <arg name="map_frame" default="map"/>
+
+  <arg name="joint_states_topic" default="/wheel_encoder_joint_states"/>
+  <arg name="R" default="0.2505"/>
+  <arg name="wheel_radius" default="0.0635"/>
+  <arg name="wheel_odom_rate" default="50.0"/>
+  <arg name="rf2o_freq" default="10.0"/>
+  <arg name="srf_operation_mode" default="HYBRID"/>
+  <arg name="srf_laser_decimation" default="1"/>
+  <arg name="srf_laser_min_range" default="0.20"/>
+  <arg name="srf_laser_max_range" default="-1.0"/>
+  <arg name="srf_xy_scale" default="0.9667"/>
+  <arg name="relay_filtered_to_odom" default="true"/>
+
+  <!-- ========== baseline: giữ nguyên ekf_odom_fusion.launch ========== -->
+  <group if="$(eval odom_mode == 'baseline')">
+    <include file="$(find x_omni4wd_slam)/launch/ekf_odom_fusion.launch">
+      <arg name="cmd_vel_topic" value="$(arg cmd_vel_topic)"/>
+      <arg name="scan_topic" value="$(arg scan_topic)"/>
+      <arg name="odom_topic" value="$(arg odom_topic)"/>
+      <arg name="wheel_odom_topic" value="$(arg wheel_odom_topic)"/>
+      <arg name="rf2o_odom_topic" value="$(arg rf2o_odom_topic)"/>
+      <arg name="ekf_filtered_topic" value="$(arg ekf_filtered_topic)"/>
+      <arg name="odom_frame" value="$(arg odom_frame)"/>
+      <arg name="base_frame" value="$(arg base_frame)"/>
+      <arg name="map_frame" value="$(arg map_frame)"/>
+      <arg name="joint_states_topic" value="$(arg joint_states_topic)"/>
+      <arg name="R" value="$(arg R)"/>
+      <arg name="wheel_radius" value="$(arg wheel_radius)"/>
+      <arg name="wheel_odom_rate" value="$(arg wheel_odom_rate)"/>
+      <arg name="rf2o_freq" value="$(arg rf2o_freq)"/>
+      <arg name="ekf_config" value="$(find x_omni4wd_slam)/config/ekf_x_omni4wd.yaml"/>
+      <arg name="use_wheel_odom" value="true"/>
+      <arg name="use_rf2o" value="true"/>
+      <arg name="relay_filtered_to_odom" value="$(arg relay_filtered_to_odom)"/>
+    </include>
+  </group>
+
+  <!-- ========== Các chế độ selectable (YAML tuyệt đối, không remap odomN) ========== -->
+  <group unless="$(eval odom_mode == 'baseline')">
+
+    <!-- Wheel source -->
+    <node if="$(eval odom_mode in ('wheel_only', 'wheel_rf2o', 'wheel_srf', 'wheel_zed', 'wheel_rf2o_zed', 'wheel_srf_zed'))"
+          name="wheel_odometry" pkg="x_omni4wd_slam" type="wheel_odometry_node.py" output="screen">
+      <rosparam command="load" file="$(find x_omni4wd_slam)/config/wheel_odom_x_omni4wd.yaml"/>
+      <param name="odom_topic" value="$(arg wheel_odom_topic)"/>
+      <param name="base_frame_id" value="$(arg base_frame)"/>
+      <param name="odom_frame_id" value="$(arg odom_frame)"/>
+      <param name="publish_tf" value="false"/>
+      <param name="wheel_radius" value="$(arg wheel_radius)"/>
+      <param name="R" value="$(arg R)"/>
+      <param name="rate" value="$(arg wheel_odom_rate)"/>
+      <param name="joint_states_topic" value="$(arg joint_states_topic)"/>
+    </node>
+
+    <!-- RF2O source (XOR with SRF) -->
+    <node if="$(eval odom_mode in ('rf2o_only', 'wheel_rf2o', 'rf2o_zed', 'wheel_rf2o_zed'))"
+          name="rf2o_laser_odometry" pkg="rf2o_laser_odometry" type="rf2o_laser_odometry_node" output="screen">
+      <rosparam command="load" file="$(find x_omni4wd_slam)/config/rf2o_x_omni4wd.yaml"/>
+      <param name="laser_scan_topic" value="$(arg scan_topic)"/>
+      <param name="odom_topic" value="$(arg rf2o_odom_topic)"/>
+      <param name="publish_tf" value="false"/>
+      <param name="base_frame_id" value="$(arg base_frame)"/>
+      <param name="odom_frame_id" value="$(arg odom_frame)"/>
+      <param name="freq" value="$(arg rf2o_freq)"/>
+      <param name="laser_fps" value="$(arg rf2o_freq)"/>
+    </node>
+
+    <!-- SRF source (XOR with RF2O) -->
+    <node if="$(eval odom_mode in ('srf_only', 'wheel_srf', 'srf_zed', 'srf_zed_dir', 'srf_zed_soft', 'livo_full', 'gtsam_livo', 'srf_zed_imu', 'wheel_srf_zed'))"
+          name="srf_laser_odometry" pkg="srf_laser_odometry" type="srf_laser_odometry_node" output="screen">
+      <rosparam command="load" file="$(find x_omni4wd_slam)/config/srf_x_omni4wd.yaml"/>
+      <param name="laser_scan_topic" value="$(arg scan_topic)"/>
+      <param name="odom_topic" value="$(arg srf_odom_topic)"/>
+      <param name="publish_tf" value="false"/>
+      <param name="base_frame_id" value="$(arg base_frame)"/>
+      <param name="odom_frame_id" value="$(arg odom_frame)"/>
+      <param name="init_pose_from_topic" value=""/>
+      <param name="operation_mode" value="$(arg srf_operation_mode)"/>
+      <param name="laser_decimation" value="$(arg srf_laser_decimation)"/>
+      <param name="laser_min_range" value="$(arg srf_laser_min_range)"/>
+      <param name="laser_max_range" value="$(arg srf_laser_max_range)"/>
+      <!-- srf_zed_imu: nới yaw cov SRF để IMU wz complementary mạnh hơn khi quay -->
+      <param if="$(eval odom_mode == 'srf_zed_imu')" name="pose_cov_yaw" value="0.18"/>
+    </node>
+
+    <!-- P8/P9/P10: directional SRF (+ soft VIO khi cần) trước EKF -->
+    <group if="$(eval odom_mode in ('srf_zed_dir', 'srf_zed_soft', 'livo_full'))">
+      <include file="$(find x_omni4wd_slam)/launch/reliability.launch">
+        <arg name="enable_directional_cov" value="true"/>
+        <arg name="enable_soft_vio_gate" value="$(eval odom_mode != 'srf_zed_dir')"/>
+        <arg name="republish_gated_odom" value="false"/>
+      </include>
+    </group>
+
+    <!-- EKF theo mode — ZED VIO topic do body-tracking node publish (/odom_zed) -->
+    <node if="$(eval odom_mode == 'wheel_only')"
+          pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"
+          clear_params="true" output="screen">
+      <rosparam command="load" file="$(find x_omni4wd_slam)/config/odometry/ekf_wheel_only.yaml"/>
+      <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+      <param name="odom_frame" value="$(arg odom_frame)"/>
+      <param name="base_link_frame" value="$(arg base_frame)"/>
+      <param name="map_frame" value="$(arg map_frame)"/>
+      <param name="world_frame" value="$(arg odom_frame)"/>
+    </node>
+
+    <node if="$(eval odom_mode == 'rf2o_only')"
+          pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"
+          clear_params="true" output="screen">
+      <rosparam command="load" file="$(find x_omni4wd_slam)/config/odometry/ekf_rf2o_only.yaml"/>
+      <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+      <param name="odom_frame" value="$(arg odom_frame)"/>
+      <param name="base_link_frame" value="$(arg base_frame)"/>
+      <param name="map_frame" value="$(arg map_frame)"/>
+      <param name="world_frame" value="$(arg odom_frame)"/>
+    </node>
+
+    <node if="$(eval odom_mode == 'zed_vio_only')"
+          pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"
+          clear_params="true" output="screen">
+      <rosparam command="load" file="$(find x_omni4wd_slam)/config/odometry/ekf_zed_vio_only.yaml"/>
+      <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+      <param name="odom_frame" value="$(arg odom_frame)"/>
+      <param name="base_link_frame" value="$(arg base_frame)"/>
+      <param name="map_frame" value="$(arg map_frame)"/>
+      <param name="world_frame" value="$(arg odom_frame)"/>
+    </node>
+
+    <node if="$(eval odom_mode == 'wheel_rf2o')"
+          pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"
+          clear_params="true" output="screen">
+      <rosparam command="load" file="$(find x_omni4wd_slam)/config/odometry/ekf_wheel_rf2o.yaml"/>
+      <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+      <param name="odom_frame" value="$(arg odom_frame)"/>
+      <param name="base_link_frame" value="$(arg base_frame)"/>
+      <param name="map_frame" value="$(arg map_frame)"/>
+      <param name="world_frame" value="$(arg odom_frame)"/>
+    </node>
+
+    <node if="$(eval odom_mode == 'wheel_zed')"
+          pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"
+          clear_params="true" output="screen">
+      <rosparam command="load" file="$(find x_omni4wd_slam)/config/odometry/ekf_wheel_zed.yaml"/>
+      <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+      <param name="odom_frame" value="$(arg odom_frame)"/>
+      <param name="base_link_frame" value="$(arg base_frame)"/>
+      <param name="map_frame" value="$(arg map_frame)"/>
+      <param name="world_frame" value="$(arg odom_frame)"/>
+    </node>
+
+    <node if="$(eval odom_mode == 'rf2o_zed')"
+          pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"
+          clear_params="true" output="screen">
+      <rosparam command="load" file="$(find x_omni4wd_slam)/config/odometry/ekf_rf2o_zed.yaml"/>
+      <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+      <param name="odom_frame" value="$(arg odom_frame)"/>
+      <param name="base_link_frame" value="$(arg base_frame)"/>
+      <param name="map_frame" value="$(arg map_frame)"/>
+      <param name="world_frame" value="$(arg odom_frame)"/>
+    </node>
+
+    <node if="$(eval odom_mode == 'wheel_rf2o_zed')"
+          pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"
+          clear_params="true" output="screen">
+      <rosparam command="load" file="$(find x_omni4wd_slam)/config/odometry/ekf_wheel_rf2o_zed.yaml"/>
+      <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+      <param name="odom_frame" value="$(arg odom_frame)"/>
+      <param name="base_link_frame" value="$(arg base_frame)"/>
+      <param name="map_frame" value="$(arg map_frame)"/>
+      <param name="world_frame" value="$(arg odom_frame)"/>
+    </node>
+
+    <node if="$(eval odom_mode == 'srf_only')"
+          pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"
+          clear_params="true" output="screen">
+      <rosparam command="load" file="$(find x_omni4wd_slam)/config/odometry/ekf_srf_only.yaml"/>
+      <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+      <param name="odom_frame" value="$(arg odom_frame)"/>
+      <param name="base_link_frame" value="$(arg base_frame)"/>
+      <param name="map_frame" value="$(arg map_frame)"/>
+      <param name="world_frame" value="$(arg odom_frame)"/>
+    </node>
+
+    <node if="$(eval odom_mode == 'wheel_srf')"
+          pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"
+          clear_params="true" output="screen">
+      <rosparam command="load" file="$(find x_omni4wd_slam)/config/odometry/ekf_wheel_srf.yaml"/>
+      <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+      <param name="odom_frame" value="$(arg odom_frame)"/>
+      <param name="base_link_frame" value="$(arg base_frame)"/>
+      <param name="map_frame" value="$(arg map_frame)"/>
+      <param name="world_frame" value="$(arg odom_frame)"/>
+    </node>
+
+    <node if="$(eval odom_mode == 'srf_zed')"
+          pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"
+          clear_params="true" output="screen">
+      <rosparam command="load" file="$(find x_omni4wd_slam)/config/odometry/ekf_srf_zed.yaml"/>
+      <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+      <param name="odom_frame" value="$(arg odom_frame)"/>
+      <param name="base_link_frame" value="$(arg base_frame)"/>
+      <param name="map_frame" value="$(arg map_frame)"/>
+      <param name="world_frame" value="$(arg odom_frame)"/>
+    </node>
+
+    <node if="$(eval odom_mode == 'srf_zed_dir')"
+          pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"
+          clear_params="true" output="screen">
+      <rosparam command="load" file="$(find x_omni4wd_slam)/config/odometry/ekf_srf_zed_directional.yaml"/>
+      <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+      <param name="odom_frame" value="$(arg odom_frame)"/>
+      <param name="base_link_frame" value="$(arg base_frame)"/>
+      <param name="map_frame" value="$(arg map_frame)"/>
+      <param name="world_frame" value="$(arg odom_frame)"/>
+    </node>
+
+    <node if="$(eval odom_mode == 'srf_zed_soft')"
+          pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"
+          clear_params="true" output="screen">
+      <rosparam command="load" file="$(find x_omni4wd_slam)/config/odometry/ekf_srf_zed_soft.yaml"/>
+      <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+      <param name="odom_frame" value="$(arg odom_frame)"/>
+      <param name="base_link_frame" value="$(arg base_frame)"/>
+      <param name="map_frame" value="$(arg map_frame)"/>
+      <param name="world_frame" value="$(arg odom_frame)"/>
+    </node>
+
+    <node if="$(eval odom_mode == 'livo_full')"
+          pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"
+          clear_params="true" output="screen">
+      <rosparam command="load" file="$(find x_omni4wd_slam)/config/odometry/ekf_livo_full.yaml"/>
+      <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+      <param name="odom_frame" value="$(arg odom_frame)"/>
+      <param name="base_link_frame" value="$(arg base_frame)"/>
+      <param name="map_frame" value="$(arg map_frame)"/>
+      <param name="world_frame" value="$(arg odom_frame)"/>
+    </node>
+
+    <node if="$(eval odom_mode == 'srf_zed_imu')"
+          pkg="x_omni4wd_slam" type="odom_xy_scale_node.py" name="odom_xy_scale" output="screen">
+      <param name="input" value="$(arg srf_odom_topic)"/>
+      <param name="output" value="/odom_srf_scaled"/>
+      <!-- GT T1 20260807: mean odom/gt ≈ 1.0345 → scale_xy = 0.9667 -->
+      <param name="scale_xy" value="$(arg srf_xy_scale)"/>
+    </node>
+
+    <node if="$(eval odom_mode == 'srf_zed_imu')"
+          pkg="x_omni4wd_slam" type="imu_yaw_scale_node.py" name="imu_yaw_scale" output="screen">
+      <param name="input" value="/zed_imu"/>
+      <param name="output" value="/zed_imu_scaled"/>
+      <!-- GT T2 20260806: mean odom/gt ≈ 1.012 → 1/1.012 -->
+      <param name="scale_wz" value="0.988"/>
+    </node>
+
+    <node if="$(eval odom_mode == 'srf_zed_imu')"
+          pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"
+          clear_params="true" output="screen">
+      <rosparam command="load" file="$(find x_omni4wd_slam)/config/odometry/ekf_srf_zed_imu.yaml"/>
+      <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+      <param name="odom_frame" value="$(arg odom_frame)"/>
+      <param name="base_link_frame" value="$(arg base_frame)"/>
+      <param name="map_frame" value="$(arg map_frame)"/>
+      <param name="world_frame" value="$(arg odom_frame)"/>
+    </node>
+
+    <node if="$(eval odom_mode == 'wheel_srf_zed')"
+          pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"
+          clear_params="true" output="screen">
+      <rosparam command="load" file="$(find x_omni4wd_slam)/config/odometry/ekf_wheel_srf_zed.yaml"/>
+      <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+      <param name="odom_frame" value="$(arg odom_frame)"/>
+      <param name="base_link_frame" value="$(arg base_frame)"/>
+      <param name="map_frame" value="$(arg map_frame)"/>
+      <param name="world_frame" value="$(arg odom_frame)"/>
+    </node>
+
+    <!-- GTSAM LIVO: reliability + ISAM2 → /odom_livo + TF; relay → /odom (không EKF) -->
+    <group if="$(eval odom_mode == 'gtsam_livo')">
+      <include file="$(find x_omni4wd_slam)/launch/reliability.launch">
+        <arg name="enable_directional_cov" value="true"/>
+        <arg name="enable_soft_vio_gate" value="true"/>
+        <arg name="republish_gated_odom" value="true"/>
+      </include>
+      <node pkg="x_omni4wd_slam" type="gtsam_livo_node.py" name="gtsam_livo" output="screen">
+        <param name="srf_topic" value="/odom_srf_directional"/>
+        <param name="srf_fallback" value="$(arg srf_odom_topic)"/>
+        <param name="imu_topic" value="/zed_imu"/>
+        <param name="vio_topic" value="/odom_zed_soft"/>
+        <param name="soft_topic" value="/reliability/vio_soft"/>
+        <param name="srf_rel_topic" value="/reliability/srf"/>
+        <param name="lag_s" value="$(arg gtsam_lag_s)"/>
+        <param name="max_keys" value="60"/>
+        <param name="vio_min_soft" value="0.18"/>
+        <param name="compute_marginal" value="false"/>
+        <param name="publish_tf" value="true"/>
+        <param name="odom_frame" value="$(arg odom_frame)"/>
+        <param name="base_frame" value="$(arg base_frame)"/>
+      </node>
+      <node if="$(arg relay_filtered_to_odom)" pkg="topic_tools" type="relay" name="gtsam_odom_relay"
+            args="/odom_livo $(arg odom_topic)"/>
+    </group>
+
+    <node if="$(eval relay_filtered_to_odom and odom_mode != 'gtsam_livo')"
+          pkg="topic_tools" type="relay" name="ekf_odom_relay"
+          args="$(arg ekf_filtered_topic) $(arg odom_topic)"/>
+  </group>
+</launch>

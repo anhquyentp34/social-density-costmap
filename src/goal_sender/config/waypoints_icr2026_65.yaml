@@ -1,0 +1,40 @@
+# ICR2026: waypoints suy ra từ log /amcl_pose (rostopic echo), lấy theo header seq 1..9.
+# Phần đầu log (seq ~220–224, vùng ~-10,-4) là pose trung gian khi di chuyển, không dùng làm goal.
+# yaw: rad, từ quaternion (planar): atan2(2*w*z, 1-2*z^2).
+waypoints:
+  - name: WAYPOINT_1
+    x: -13
+    y: 11
+    yaw: 0.0
+  - name: WAYPOINT_2
+    x: -9.0
+    y: 11.0
+    yaw: 0.0
+  - name: WAYPOINT_3
+    x: -9.0
+    y: -11.0
+    yaw: 0.0
+  - name: WAYPOINT_4
+    x: -1.0
+    y: -11.0
+    yaw: 1.57
+  - name: WAYPOINT_5
+    x: -1.0
+    y: -3.0
+    yaw: 1.57
+  - name: WAYPOINT_6
+    x: -1.0
+    y: 11
+    yaw: 0.0
+  - name: WAYPOINT_7
+    x: 9.0
+    y: 12.0
+    yaw: -1.57
+  - name: WAYPOINT_8
+    x: 9.0
+    y: -4.0
+    yaw: -1.57
+  - name: GOAL
+    x: 10.0
+    y: -12
+    yaw: -1.57

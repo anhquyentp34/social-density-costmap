@@ -1,0 +1,91 @@
+# Move Base Monitor Configuration
+# File: config/monitor_params.yaml
+
+# Cấu hình logging
+logging:
+  # Tần số log (Hz)
+  log_frequency: 10.0
+  
+  # Thư mục lưu log
+  log_directory: "~/move_base_logs"
+  
+  # Format tên file log
+  log_filename_format: "move_base_state_{timestamp}.csv"
+  
+  # Giữ lại số lượng file log gần nhất (0 = không giới hạn)
+  max_log_files: 10
+
+# Cấu hình visualization
+visualization:
+  # Bật/tắt real-time visualization
+  enable_realtime_plot: true
+  
+  # Tần số update plot (Hz)
+  plot_update_frequency: 1.0
+  
+  # Kích thước cửa sổ plot
+  plot_window_size: [12, 8]
+  
+  # Số điểm dữ liệu tối đa hiển thị
+  max_data_points: 1000
+
+# Cấu hình monitoring
+monitoring:
+  # Các topic cần monitor
+  topics:
+    move_base_status: "/move_base/status"
+    move_base_goal: "/move_base/current_goal"
+    robot_odom: "/odom"
+    robot_cmd_vel: "/cmd_vel"
+  
+  # Các frame cần theo dõi
+  frames:
+    map_frame: "map"
+    odom_frame: "odom"
+    base_frame: "base_footprint"
+  
+  # Threshold cho các thay đổi
+  thresholds:
+    position_threshold: 0.01  # m
+    orientation_threshold: 0.01  # rad
+    velocity_threshold: 0.01  # m/s
+
+# Cấu hình analysis
+analysis:
+  # Bật/tắt tự động phân tích sau khi kết thúc
+  auto_analyze: false
+  
+  # Các loại phân tích
+  analysis_types:
+    - timeline
+    - distribution
+    - trajectory
+    - report
+  
+  # Format output
+  output_formats:
+    - png
+    - pdf
+    - txt
+
+# Cấu hình alerts
+alerts:
+  # Bật/tắt cảnh báo
+  enable_alerts: true
+  
+  # Cảnh báo khi state ở quá lâu
+  state_timeout:
+    active_timeout: 60.0  # giây
+    pending_timeout: 10.0  # giây
+  
+  # Cảnh báo khi có lỗi
+  error_states:
+    - "ABORTED"
+    - "REJECTED"
+    - "LOST"
+  
+  # Cảnh báo khi robot không di chuyển
+  stuck_detection:
+    enabled: true
+    velocity_threshold: 0.01  # m/s
+    time_threshold: 5.0  # giây 

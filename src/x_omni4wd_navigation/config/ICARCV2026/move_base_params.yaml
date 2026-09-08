@@ -1,0 +1,28 @@
+# Tham số move_base gốc: https://wiki.ros.org/move_base (base_global_planner, planner_frequency, recovery, …).
+# Tham số plugin GlobalPlanner: wiki.ros.org/global_planner (không nằm trong bảng Parameters của move_base).
+shutdown_costmaps: false # Giu costmap online de social layer tiep tuc cap nhat khi dang ket duong
+planner_frequency: 3.0
+# Đồng bộ với launch cũ (10 Hz): vòng điều khiển mượt hơn; xem wiki.ros.org/move_base ~controller_frequency
+controller_frequency: 10.0
+# TANG patience de bo dieu khien density co du thoi gian "co" social costmap truoc khi move_base abort.
+planner_patience: 8.0
+controller_patience: 8.0
+max_planning_retries: -1
+conservative_reset_dist: 3.0
+recovery_behavior_enabled: true
+clearing_rotation_allowed: false
+oscillation_timeout: 10.0
+oscillation_distance: 0.5
+
+# Global planner: dùng global_costmap; ô lethal (>= lethal_cost) không đi qua được.
+# Ô inflation (cost 1..252) vẫn hợp lệ nhưng bị phạt — tăng cost_factor để đường đi lánh xa vùng có cost.
+GlobalPlanner:
+  lethal_cost: 9
+  neutral_cost: 8
+  # cost_factor thấp hơn → potential mượt hơn, GradientPath ít kẹt plateau/zero-gradient (wiki global_planner).
+  cost_factor: 2.5
+  publish_potential: false
+  # false: tránh viền lethal quanh costmap gây lỗi gradient khi biên map.
+  outline_map: false
+  # Dijkstra + GradientPath (mặc định). Nếu vẫn NO PATH thử use_grid_path: true.
+  use_dijkstra: true

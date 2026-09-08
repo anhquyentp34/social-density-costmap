@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<launch>
+  <!--
+    Launch file to spawn x_omni4wd robot model in Gazebo simulation and visualize in RViz.
+    
+    This launch file:
+    1. Starts Gazebo with empty world
+    2. Loads robot URDF description
+    3. Spawns robot model in Gazebo
+    4. Publishes static transform (base_footprint -> base_link)
+    5. Publishes robot state (TF) for RViz
+    6. Starts RViz for visualization
+    7. Publishes calibration message
+    
+    Note: This launch file does NOT include ROS Control.
+    For ROS Control velocity control simulation, use: x_omni4wd_control/gazebo_velocity_control.launch
+  -->
+  
+  <!-- Arguments -->
+  <arg name="world" default="empty" />
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+  <arg name="x" default="0.0" />
+  <arg name="y" default="0.0" />
+  <arg name="z" default="0.1" />
+  <arg name="urdf_file" default="$(find x_omni4wd_description)/urdf/x_omni4wd_description.urdf" />
+  <arg name="rviz_config" default="$(find x_omni4wd_description)/rviz/urdf.rviz" />
+  <arg name="use_rviz" default="true" />
+  <arg name="joint_states_topic" default="/joint_states" />
+  
+  <!-- Start Gazebo with empty world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find gazebo_ros)/worlds/empty.world"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="headless" value="$(arg headless)"/>
+    <arg name="debug" value="$(arg debug)"/>
+  </include>
+  
+  <!-- Load robot description -->
+  <param name="robot_description" 
+         textfile="$(arg urdf_file)" />
+  
+  <!-- Static transform from base_footprint to base_link -->
+  <!-- NOTE: This transform is now defined in URDF (base_footprint_joint) -->
+  <!-- robot_state_publisher will publish it automatically, so this node is not needed -->
+  <!-- <node name="tf_footprint_base" 
+        pkg="tf" 
+        type="static_transform_publisher"
+        args="0 0 0 0 0 0 base_footprint base_link 40" /> -->
+  
+  <!-- Spawn robot model in Gazebo -->
+  <node name="spawn_model" 
+        pkg="gazebo_ros" 
+        type="spawn_model"
+        args="-urdf 
+              -model x_omni4wd_description 
+              -param robot_description
+              -x $(arg x)
+              -y $(arg y)
+              -z $(arg z)"
+        output="screen" />
+  
+  <!-- Joint state publisher (publishes default joint positions when Gazebo doesn't publish joint_states) -->
+  <!-- This is needed when ros_control controllers are not loaded -->
+  <!-- publish_default_positions=true ensures all joints (including encoder joints) are published -->
+  <node name="joint_state_publisher"
+        pkg="joint_state_publisher" 
+        type="joint_state_publisher"
+        respawn="false" 
+        output="screen">
+    <param name="use_gui" value="false" />
+    <param name="publish_default_positions" value="true" />
+    <!-- $(arg) không tự thay trong nội dung rosparam nếu không có subst_value -->
+    <rosparam subst_value="true">
+      source_list: ["$(arg joint_states_topic)"]
+    </rosparam>
+  </node>
+  
+  <!-- Robot state publisher (for TF to RViz) -->
+  <!-- Subscribes to joint_states from joint_state_publisher (which includes all joints) -->
+  <node name="robot_state_publisher" 
+        pkg="robot_state_publisher" 
+        type="robot_state_publisher"
+        respawn="false" 
+        output="screen">
+    <param name="publish_frequency" type="double" value="30.0" />
+    <param name="use_tf_static" type="bool" value="true" />
+    <!-- Subscribe from joint_state_publisher output (includes all joints with default positions) -->
+    <remap from="/joint_states" to="/joint_states" />
+  </node>
+  
+  <!-- RViz visualization -->
+  <node if="$(arg use_rviz)"
+        name="rviz" 
+        pkg="rviz" 
+        type="rviz"
+        args="-d $(arg rviz_config)"
+        respawn="false"
+        output="screen" />
+  
+  <!-- Publish calibration message (for compatibility) -->
+  <node name="fake_joint_calibration" 
+        pkg="rostopic" 
+        type="rostopic" 
+        args="pub /calibrated std_msgs/Bool true" />
+
+</launch>
+

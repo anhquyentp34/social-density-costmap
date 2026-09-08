@@ -2,6 +2,10 @@ build/
 devel/
 install/
 logs/
+bags/
+videos/
+csv/
+runs/
 *.bag
 *.mp4
 __pycache__/
@@ -10,3 +14,4 @@ __pycache__/
 .idea/
 *.swp
 *~
+.catkin_workspace

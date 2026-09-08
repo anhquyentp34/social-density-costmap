@@ -1,0 +1,168 @@
+<?xml version="1.0"?>
+<!--
+  Bringup robot thật x_omni4wd — odom từ bánh (encoder MSD qua firmware WheelOdom).
+
+  Khác x_omni4wd_bringup.launch:
+    - Không RF2O; LiDAR chỉ cho /scan (AMCL, costmap).
+    - Firmware MSD_H20_OMNI_Bridge_WheelOdom: VXYW + WVEL.
+    - wheel_odometry_node: joint_states -> /odom + TF.
+
+  Firmware: x_omni4wd_bringup/firmware/MSD_H20_OMNI_Bridge_WheelOdom/
+
+  Ví dụ:
+    roslaunch x_omni4wd_bringup x_omni4wd_bringup_wheel_odom.launch
+-->
+<launch>
+  <arg name="use_sim_time" default="false"/>
+
+  <arg name="cmd_vel_topic" default="/cmd_vel"/>
+  <arg name="scan_topic" default="/scan"/>
+  <arg name="odom_topic" default="/odom"/>
+  <arg name="odom_frame" default="odom"/>
+  <arg name="base_frame" default="base_footprint"/>
+  <arg name="laser_frame" default="lidar_link"/>
+  <arg name="wheel_odom_publish_tf" default="true"/>
+
+  <arg name="open_rviz" default="true"/>
+  <arg name="use_rqt_omni_robot_steering" default="true"/>
+
+  <arg name="robot_description_file" default="$(find x_omni4wd_description)/urdf/x_omni4wd_description.urdf"/>
+
+  <arg name="arduino_port" default="/dev/robot_arduino"/>
+  <arg name="arduino_baud" default="19200"/>
+  <!-- Clamp cmd_vel. Motor Planet 24V: https://thegioichip.com.vn/products/dong-co-planet-24v
+       (24V/90W, 9000rpm, gear 19.2, 468rpm sau hộp số) — docs/MOTOR_PLANET_24V.md -->
+  <arg name="max_linear" default="0.7"/>
+  <arg name="max_angular" default="1.2"/>
+  <arg name="serial_cmd_timeout" default="0.8"/>
+  <arg name="lidar_port" default="/dev/robot_lidar"/>
+  <arg name="lidar_baud" default="115200"/>
+
+  <arg name="R" default="0.2505"/>
+  <arg name="wheel_radius" default="0.0635"/>
+  <arg name="gear_ratio" default="1.0"/>
+  <arg name="wheel_odom_rate" default="50.0"/>
+  <arg name="wheel_joint_states_topic" default="/wheel_encoder_joint_states"/>
+  <arg name="joint_states_topic" default="/joint_states"/>
+
+  <arg name="use_lidar" default="true"/>
+  <arg name="use_zed" default="true"/>
+  <!-- Body tracking mở camera SDK trực tiếp → không chạy cùng zed_wrapper -->
+  <arg name="use_zed_sdk_bridge" default="false"/>
+  <arg name="zed_body_enable_visualizer" default="true"/>
+  <arg name="zed_body_enable_proxemic" default="false"/>
+  <arg name="zed_body_enable_costmap_3d" default="false"/>
+  <arg name="zed_body_detection_model" default="HUMAN_BODY_FAST"/>
+  <arg name="zed_body_format" default="34"/>
+  <arg name="zed_camera_name" default="zed2i"/>
+  <!-- YOLO Ultralytics (~80 COCO) trên /image_raw (ultralytics_ros); mặc định tắt -->
+  <arg name="use_yolo" default="true"/>
+  <arg name="yolo_model" default="yolov8n.pt"/>
+  <arg name="yolo_conf_thres" default="0.25"/>
+  <arg name="yolo_debug" default="false"/>
+  <arg name="zed_base_frame" default="camera_link"/>
+  <arg name="zed_cam_pos_x" default="0.0"/>
+  <arg name="zed_cam_pos_y" default="0.0"/>
+  <arg name="zed_cam_pos_z" default="0.0"/>
+  <arg name="zed_cam_roll" default="0.0"/>
+  <arg name="zed_cam_pitch" default="0.0"/>
+  <arg name="zed_cam_yaw" default="0.0"/>
+
+  <param name="use_sim_time" value="$(arg use_sim_time)"/>
+  <param name="robot_description" textfile="$(arg robot_description_file)"/>
+
+  <!-- joint_states: vị trí URDF + vận tốc encoder từ Arduino -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" respawn="false" output="screen">
+    <param name="use_gui" value="false"/>
+    <param name="publish_default_positions" value="true"/>
+    <rosparam subst_value="true" param="source_list">["$(arg wheel_joint_states_topic)"]</rosparam>
+  </node>
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+    <param name="publish_frequency" value="50.0"/>
+  </node>
+
+  <!-- cmd_vel -> VXYW; WVEL -> wheel_encoder_joint_states -->
+  <node pkg="x_omni4wd_bringup" type="arduino_interface_omni_wheel_odom.py" name="arduino_interface_omni_wheel_odom" output="screen">
+    <param name="serial_port" value="$(arg arduino_port)"/>
+    <param name="baud_rate" value="$(arg arduino_baud)"/>
+    <param name="timeout" value="0.2"/>
+    <param name="cmd_vel_topic" value="$(arg cmd_vel_topic)"/>
+    <param name="max_linear" value="$(arg max_linear)"/>
+    <param name="max_angular" value="$(arg max_angular)"/>
+    <param name="cmd_timeout" value="$(arg serial_cmd_timeout)"/>
+    <param name="send_rate_hz" value="20.0"/>
+    <param name="wheel_joint_states_topic" value="$(arg wheel_joint_states_topic)"/>
+    <param name="R" value="$(arg R)"/>
+    <param name="wheel_radius" value="$(arg wheel_radius)"/>
+    <param name="use_cmd_vel_fallback" value="true"/>
+  </node>
+
+  <!-- Odom từ 4 bánh (không RF2O) -->
+  <node name="wheel_odometry" pkg="x_omni4wd_slam" type="wheel_odometry_node.py" output="screen">
+    <rosparam command="load" file="$(find x_omni4wd_slam)/config/wheel_odom_x_omni4wd.yaml"/>
+    <param name="odom_topic" value="$(arg odom_topic)"/>
+    <param name="publish_tf" value="$(arg wheel_odom_publish_tf)"/>
+    <param name="base_frame_id" value="$(arg base_frame)"/>
+    <param name="odom_frame_id" value="$(arg odom_frame)"/>
+    <param name="wheel_radius" value="$(arg wheel_radius)"/>
+    <param name="R" value="$(arg R)"/>
+    <param name="gear_ratio" value="$(arg gear_ratio)"/>
+    <param name="rate" value="$(arg wheel_odom_rate)"/>
+    <!-- Đọc trực tiếp encoder (joint_state_publisher không merge velocity đủ) -->
+    <param name="joint_states_topic" value="$(arg wheel_joint_states_topic)"/>
+  </node>
+
+  <!-- LiDAR: chỉ /scan cho navigation, không dùng cho odom -->
+  <group if="$(arg use_lidar)">
+    <node name="rplidarNode" pkg="rplidar_ros" type="rplidarNode" output="screen" respawn="false" respawn_delay="5">
+      <param name="serial_port" type="string" value="$(arg lidar_port)"/>
+      <param name="serial_baudrate" type="int" value="$(arg lidar_baud)"/>
+      <param name="frame_id" type="string" value="$(arg laser_frame)"/>
+      <param name="inverted" type="bool" value="false"/>
+      <param name="angle_compensate" type="bool" value="true"/>
+      <remap from="scan" to="$(arg scan_topic)"/>
+    </node>
+  </group>
+
+  <!-- zed_wrapper chỉ khi use_zed và KHÔNG bật body tracking -->
+  <group if="$(eval use_zed and not use_zed_sdk_bridge)">
+    <include file="$(find x_omni4wd_bringup)/launch/zed2i_robot.launch">
+      <arg name="camera_name" value="$(arg zed_camera_name)"/>
+      <arg name="base_frame" value="$(arg zed_base_frame)"/>
+    </include>
+    <rosparam file="$(find zed_wrapper)/params/zed2i.yaml" command="load" ns="$(arg zed_camera_name)/zed_node"/>
+    <param name="$(arg zed_camera_name)/zed_node/general/base_frame" value="$(arg zed_base_frame)"/>
+    <param name="$(arg zed_camera_name)/zed_node/pos_tracking/publish_tf" value="false"/>
+    <param name="$(arg zed_camera_name)/zed_node/pos_tracking/two_d_mode" value="true"/>
+    <param name="$(arg zed_camera_name)/zed_node/pos_tracking/pos_tracking_enabled" value="true"/>
+    <param name="$(arg zed_camera_name)/zed_node/mapping/mapping_enabled" value="false"/>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="zed_camera_link_to_left_camera_frame"
+          args="0 0 0 0 0 0 1 $(arg zed_base_frame) $(arg zed_camera_name)_left_camera_frame"/>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="zed_left_camera_to_optical_frame"
+          args="0 0 0 -1.5708 0 -1.5708 $(arg zed_camera_name)_left_camera_frame $(arg zed_camera_name)_left_camera_optical_frame"/>
+  </group>
+
+  <group if="$(arg use_zed_sdk_bridge)">
+    <include file="$(find x_omni4wd_bringup)/launch/zed2i_body_tracking_robot.launch">
+      <arg name="camera_frame_id" value="$(arg zed_base_frame)"/>
+      <arg name="detection_model" value="$(arg zed_body_detection_model)"/>
+      <arg name="body_format" value="$(arg zed_body_format)"/>
+      <arg name="enable_visualizer" value="$(arg zed_body_enable_visualizer)"/>
+      <arg name="enable_proxemic" value="$(arg zed_body_enable_proxemic)"/>
+      <arg name="enable_costmap_3d" value="$(arg zed_body_enable_costmap_3d)"/>
+      <arg name="use_yolo" value="$(arg use_yolo)"/>
+      <arg name="yolo_model" value="$(arg yolo_model)"/>
+      <arg name="yolo_conf_thres" value="$(arg yolo_conf_thres)"/>
+      <arg name="yolo_debug" value="$(arg yolo_debug)"/>
+    </include>
+  </group>
+
+  <group if="$(arg open_rviz)">
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find x_omni4wd_bringup)/rviz/bringup.rviz" output="screen" required="false"/>
+  </group>
+
+  <group if="$(arg use_rqt_omni_robot_steering)">
+    <node pkg="rqt_omni_robot_steering" type="rqt_omni_robot_steering" name="rqt_omni_robot_steering" output="screen"/>
+  </group>
+</launch>

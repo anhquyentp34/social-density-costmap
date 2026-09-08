@@ -1,0 +1,57 @@
+num_cycles: 1
+movement_mode: "sequence"
+
+waypoints:
+  - name: "START"
+    x: 3.3535
+    y: -1.4834
+    yaw: 0.04425
+    color: [0.0, 1.0, 0.0]
+
+  - name: "GOAL_1"
+    x: 4.1231
+    y: 3.1551
+    yaw: 0.05408
+    color: [1.0, 0.0, 0.0]
+
+  - name: "GOAL_2"
+    x: 9.9176
+    y: 3.1455
+    yaw: 1.57074
+    color: [1.0, 0.0, 0.0]
+
+  - name: "GOAL_3"
+    x: 9.3373
+    y: 16.3951
+    yaw: -2.8315
+    color: [1.0, 0.0, 0.0]
+
+  - name: "GOAL_4"
+    x: 4.0918
+    y: 14.3985
+    yaw: -1.53885
+    color: [1.0, 0.0, 0.0]
+
+  - name: "GOAL_5"
+    x: 3.9412
+    y: 7.5288
+    yaw: -1.43595
+    color: [1.0, 0.0, 0.0]
+
+  - name: "GOAL_6"
+    x: 3.9136
+    y: -1.0585
+    yaw: -2.7800
+    color: [1.0, 0.0, 0.0]
+
+  - name: "GOAL_7"
+    x: -0.4214
+    y: 0.8366
+    yaw: -3.08485
+    color: [1.0, 0.0, 0.0]
+
+  - name: "GOAL_8"
+    x: 3.3535
+    y: -1.4834
+    yaw: 0.04425
+    color: [1.0, 0.0, 0.0]

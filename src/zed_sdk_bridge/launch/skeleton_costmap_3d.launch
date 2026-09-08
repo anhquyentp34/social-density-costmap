@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!--
+  Launch file để tạo 3D Costmap từ Skeleton data
+  Tương tự costmap 2D trong ROS navigation nhưng cho không gian 3D
+  
+  Sử dụng:
+    roslaunch zed_sdk_bridge skeleton_costmap_3d.launch
+-->
+<launch>
+    <!-- Arguments -->
+    <arg name="voxel_resolution" default="0.05" doc="Voxel resolution in meters (giống costmap resolution). Default 5cm" />
+    <arg name="inflation_radius" default="0.5" doc="Inflation radius in meters (giống costmap inflation). Default 50cm" />
+    <arg name="lethal_cost_threshold" default="253" doc="Cost threshold for lethal cells (0-255). Default 253" />
+    <arg name="cost_scaling_factor" default="1.0" doc="Cost scaling factor. Default 1.0" />
+    <arg name="use_body_volume" default="false" doc="Use body volume (sphere) instead of keypoints. Default false" />
+    <arg name="use_bones_only" default="true" doc="Only use bones for costmap, ignore keypoints. Default true - chỉ tạo costmap quanh bones" />
+    <arg name="selected_bones" default="5,6" doc="Selected bones to create costmap (format: 'idx1,idx2' or 'idx1,idx2;idx3,idx4' for multiple). Empty = all bones. Default: '5,6' (LEFT_SHOULDER -> LEFT_ELBOW)" />
+    <arg name="body_radius" default="0.3" doc="Body radius in meters (if use_body_volume=true). Default 30cm" />
+    <arg name="joint_radius" default="0.02" doc="Joint radius in meters. Default 2cm - để costmap bám sát joints" />
+    <arg name="bone_radius" default="0.015" doc="Bone radius in meters. Default 1.5cm - để costmap bám sát bones" />
+    <arg name="map_size_x" default="0.0" doc="Map size X in meters (0 = auto from bounding box). Default 0" />
+    <arg name="map_size_y" default="0.0" doc="Map size Y in meters (0 = auto from bounding box). Default 0" />
+    <arg name="map_size_z" default="0.0" doc="Map size Z in meters (0 = auto from bounding box). Default 0" />
+    <arg name="frame_id" default="" doc="Frame ID for costmap (empty = use from bodies message)" />
+    <arg name="launch_body_tracking" default="true" doc="Launch ZED body tracking node. Set to false if already running" />
+    <arg name="body_format" default="34" doc="Body format: 18 or 34 keypoints" />
+    <arg name="detection_model" default="HUMAN_BODY_FAST" doc="Detection model: HUMAN_BODY_FAST, HUMAN_BODY_MEDIUM, or HUMAN_BODY_ACCURATE" />
+    
+    <!-- ZED Body Tracking Node (publish bodies data) -->
+    <group if="$(arg launch_body_tracking)">
+        <node pkg="zed_sdk_bridge" type="zed_body_imu_node" name="zed_body_imu_node" output="screen">
+            <param name="camera_frame_id" value="zed2i_camera_center" />
+            <param name="detection_model" value="$(arg detection_model)" />
+            <param name="enable_tracking" value="true" />
+            <param name="enable_body_fitting" value="false" />
+            <param name="enable_segmentation" value="false" />
+            <param name="body_format" value="$(arg body_format)" />
+            <param name="detection_confidence_threshold" value="40.0" />
+            <param name="skeleton_smoothing" value="0.7" />
+            <param name="camera_resolution" value="2" />
+            <param name="depth_mode" value="3" />
+        </node>
+    </group>
+    
+    <!-- Skeleton Costmap 3D Node -->
+    <node pkg="zed_sdk_bridge" type="skeleton_costmap_3d_node" name="skeleton_costmap_3d_node" output="screen">
+        <!-- Subscribe topics -->
+        <remap from="bodies" to="/bodies" />
+        
+        <!-- Publish topics -->
+        <remap from="costmap_3d" to="/costmap_3d" />
+        
+        <!-- Parameters -->
+        <param name="voxel_resolution" value="$(arg voxel_resolution)" />
+        <param name="inflation_radius" value="$(arg inflation_radius)" />
+        <param name="lethal_cost_threshold" value="$(arg lethal_cost_threshold)" />
+        <param name="cost_scaling_factor" value="$(arg cost_scaling_factor)" />
+        <param name="use_body_volume" value="$(arg use_body_volume)" />
+        <param name="use_bones_only" value="$(arg use_bones_only)" />
+        <param name="selected_bones" value="$(arg selected_bones)" />
+        <param name="body_radius" value="$(arg body_radius)" />
+        <param name="joint_radius" value="$(arg joint_radius)" />
+        <param name="bone_radius" value="$(arg bone_radius)" />
+        <param name="map_size_x" value="$(arg map_size_x)" />
+        <param name="map_size_y" value="$(arg map_size_y)" />
+        <param name="map_size_z" value="$(arg map_size_z)" />
+        <param name="frame_id" value="$(arg frame_id)" />
+    </node>
+</launch>
+

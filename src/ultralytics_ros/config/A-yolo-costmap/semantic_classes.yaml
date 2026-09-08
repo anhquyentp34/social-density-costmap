@@ -1,0 +1,31 @@
+# DeepLabV3 COCO/VOC (21 class) — policy lên costmap Track A C1
+# role: obstacle | free | ignore
+#
+# background (0): mọi thứ không thuộc 20 lớp VOC (sàn/tường/…) → free
+# person: ignore — social / ZED body xử lý người
+# furniture & object: obstacle
+
+palette_note: "VOC/DeepLabV3 pretrained on COCO"
+
+classes:
+  - { id: 0,  name: background,   role: free }
+  - { id: 1,  name: aeroplane,    role: ignore }
+  - { id: 2,  name: bicycle,      role: obstacle }
+  - { id: 3,  name: bird,         role: ignore }
+  - { id: 4,  name: boat,         role: ignore }
+  - { id: 5,  name: bottle,       role: obstacle }
+  - { id: 6,  name: bus,          role: obstacle }
+  - { id: 7,  name: car,          role: obstacle }
+  - { id: 8,  name: cat,          role: ignore }
+  - { id: 9,  name: chair,        role: obstacle }
+  - { id: 10, name: cow,          role: ignore }
+  - { id: 11, name: diningtable,  role: obstacle }
+  - { id: 12, name: dog,          role: ignore }
+  - { id: 13, name: horse,        role: ignore }
+  - { id: 14, name: motorbike,    role: obstacle }
+  - { id: 15, name: person,       role: ignore }
+  - { id: 16, name: pottedplant,  role: obstacle }
+  - { id: 17, name: sheep,        role: ignore }
+  - { id: 18, name: sofa,         role: obstacle }
+  - { id: 19, name: train,        role: ignore }
+  - { id: 20, name: tvmonitor,    role: obstacle }

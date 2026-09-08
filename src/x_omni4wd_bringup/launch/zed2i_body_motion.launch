@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!--
+  ZED 2i: Body Tracking + cảm biến chuyển động người.
+
+  Chế độ 1 — body_only (mặc định):
+    Skeleton + vị trí/vận tốc camera-relative trên /bodies.
+    Không cần robot chạy, không cần /odom.
+
+  Chế độ 2 — with_motion_fusion:
+    Bù vận tốc robot → vận tốc người trong frame map (/social_state).
+    Cần: robot_state_publisher + /odom (wheel/EKF) + TF map←camera_link.
+    Thường chạy cùng bringup hoặc navigation stack.
+
+  Ví dụ:
+    # Chỉ body tracking + RViz skeleton
+    roslaunch x_omni4wd_bringup zed2i_body_motion.launch
+
+    # Không RViz, xem topic
+    roslaunch x_omni4wd_bringup zed2i_body_motion.launch use_rviz:=false
+
+    # Có fusion vận tốc (robot đã publish /odom + TF)
+    roslaunch x_omni4wd_bringup zed2i_body_motion.launch with_motion_fusion:=true
+-->
+<launch>
+  <arg name="camera_frame_id" default="camera_link"/>
+  <arg name="body_format" default="34"/>
+  <arg name="detection_model" default="HUMAN_BODY_FAST"/>
+  <arg name="use_yolo" default="false"/>
+  <arg name="use_rviz" default="true"/>
+  <arg name="show_image_view" default="false"/>
+  <arg name="with_motion_fusion" default="false"/>
+  <arg name="robot_description_file"
+       default="$(find x_omni4wd_description)/urdf/x_omni4wd_description.urdf"/>
+
+  <!-- Body tracking: /bodies, /image_skeleton, /skeleton_markers -->
+  <include file="$(find x_omni4wd_bringup)/launch/zed2i_body_tracking_robot.launch">
+    <arg name="camera_frame_id" value="$(arg camera_frame_id)"/>
+    <arg name="body_format" value="$(arg body_format)"/>
+    <arg name="detection_model" value="$(arg detection_model)"/>
+    <arg name="use_yolo" value="$(arg use_yolo)"/>
+    <arg name="enable_visualizer" value="true"/>
+    <arg name="show_image_view" value="$(arg show_image_view)"/>
+    <arg name="enable_proxemic" value="false"/>
+    <arg name="enable_costmap_3d" value="false"/>
+  </include>
+
+  <!-- URDF TF: base_link → camera_link (cần cho fusion map-frame) -->
+  <group if="$(arg with_motion_fusion)">
+    <param name="robot_description" textfile="$(arg robot_description_file)"/>
+    <node pkg="robot_state_publisher" type="robot_state_publisher"
+          name="robot_state_publisher" output="screen">
+      <param name="publish_frequency" value="50.0"/>
+    </node>
+    <include file="$(find social_density_fusion)/launch/social_density_fusion_zed.launch">
+      <arg name="source_frame" value="$(arg camera_frame_id)"/>
+      <arg name="target_frame" value="map"/>
+      <arg name="body_measurement_reference" value="camera"/>
+      <arg name="velocity_compensation_mode" value="robot_odometry"/>
+      <arg name="robot_odom_topic" value="/odom"/>
+    </include>
+  </group>
+
+  <!-- RViz: skeleton 3D (Fixed Frame = camera_link) -->
+  <node if="$(arg use_rviz)" pkg="rviz" type="rviz" name="rviz_body_motion"
+        args="-d $(find zed_sdk_bridge)/rviz/skeleton.rviz" output="screen"
+        required="false"/>
+</launch>

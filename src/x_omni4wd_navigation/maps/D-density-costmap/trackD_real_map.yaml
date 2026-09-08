@@ -1,0 +1,8 @@
+# Track D — map thí nghiệm chung exp1–6 + annotation (bản v3).
+# Chỉnh ảnh: trackD_real_map_exp456_v3.pgm (GIMP). File này trỏ cùng ảnh.
+image: trackD_real_map_exp456_v3.pgm
+resolution: 0.050000
+origin: [-51.200024, -51.200024, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196

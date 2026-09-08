@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!--
+  Track D — SII / SGI monitor (CHUNG cho exp1–3 live và exp4–6 POS).
+
+  Độc lập: không nhúng hardcode theo phiên bản exp123; cả hai nhánh chỉ include file này.
+
+  Pipeline đo (chuẩn lab):
+    social_scenario_canonical_trackD_real.yaml
+      → /social_state_gt
+      → sii_calculator / sgi_calculator  (remap /social_state → /social_state_gt)
+      → /sii , /sgi
+      → social_navigation_dashboard (layout=horizontal → /social_dashboard/image)
+
+  Costmap / điều khiển VẪN dùng /social_state riêng của từng nhánh (live hoặc latch).
+-->
+<launch>
+  <arg name="enabled" default="true"/>
+  <arg name="use_scenario_gt" default="true"/>
+  <arg name="scenario_gt_path"
+       default="$(find social_density_fusion)/config/D-density-costmap/real/social_scenario_canonical_trackD_real.yaml"/>
+  <arg name="scenario_gt_rate" default="10.0"/>
+  <arg name="exclude_pedestrians" default="true"/>
+
+  <arg name="open_dashboard" default="true"/>
+  <!-- Chuẩn RViz Track D real: strip ngang SII|SGI dưới ô 3D -->
+  <arg name="dashboard_layout" default="horizontal"/>
+  <arg name="dashboard_image_width" default="1840"/>
+  <arg name="dashboard_image_height" default="0"/>
+  <arg name="dashboard_image_topic" default="/social_dashboard/image"/>
+  <arg name="plan_topic" default="/move_base/GlobalPlanner/plan"/>
+
+  <group if="$(arg enabled)">
+    <!-- GT kịch bản → /social_state_gt -->
+    <node if="$(arg use_scenario_gt)"
+          name="scenario_gt_social_state_publisher"
+          pkg="social_density_fusion"
+          type="scenario_gt_social_state_publisher.py"
+          output="screen">
+      <param name="scenario_path" value="$(arg scenario_gt_path)"/>
+      <param name="rate" value="$(arg scenario_gt_rate)"/>
+      <param name="exclude_pedestrians" value="$(arg exclude_pedestrians)"/>
+    </node>
+
+    <!-- Calculators: đọc GT khi use_scenario_gt, ngược lại đọc /social_state -->
+    <node name="sgi_calculator" pkg="social_navigation_monitor" type="sgi_calculator.py" output="screen">
+      <remap if="$(arg use_scenario_gt)" from="/social_state" to="/social_state_gt"/>
+    </node>
+    <node name="sii_calculator" pkg="social_navigation_monitor" type="sii_calculator.py" output="screen">
+      <remap if="$(arg use_scenario_gt)" from="/social_state" to="/social_state_gt"/>
+    </node>
+
+    <!-- Dashboard ảnh cho RViz — horizontal giống chuẩn exp1–3 -->
+    <node if="$(arg open_dashboard)"
+          name="social_navigation_dashboard"
+          pkg="social_navigation_monitor"
+          type="social_navigation_dashboard.py"
+          output="screen">
+      <param name="plan_topic" value="$(arg plan_topic)"/>
+      <param name="publish_image" value="true"/>
+      <param name="show_window" value="false"/>
+      <param name="layout" value="$(arg dashboard_layout)"/>
+      <param name="image_width" value="$(arg dashboard_image_width)"/>
+      <param name="image_height" value="$(arg dashboard_image_height)"/>
+      <param name="image_topic" value="$(arg dashboard_image_topic)"/>
+    </node>
+  </group>
+</launch>

@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Arguments -->
+    <arg name="body_format" default="18" doc="Body format: 18 or 34 keypoints" />
+    <arg name="detection_model" default="HUMAN_BODY_FAST" doc="Detection model: HUMAN_BODY_FAST, HUMAN_BODY_MEDIUM, or HUMAN_BODY_ACCURATE" />
+    
+    <!-- ZED Body Tracking Node -->
+    <node pkg="zed_sdk_bridge" type="zed_body_imu_node" name="zed_body_imu_node" output="screen">
+        <!-- Camera frame ID -->
+        <param name="camera_frame_id" value="zed2i_camera_center" />
+        
+        <!-- Detection model: HUMAN_BODY_FAST, HUMAN_BODY_ACCURATE, or HUMAN_BODY_MEDIUM -->
+        <param name="detection_model" value="$(arg detection_model)" />
+        
+        <!-- Enable tracking across frames -->
+        <param name="enable_tracking" value="true" />
+        
+        <!-- Enable body fitting (smooth skeleton movements) -->
+        <param name="enable_body_fitting" value="false" />
+        
+        <!-- Enable segmentation mask -->
+        <param name="enable_segmentation" value="false" />
+        
+        <!-- Body format: 18 or 34 keypoints -->
+        <param name="body_format" value="$(arg body_format)" />
+        
+        <!-- Detection confidence threshold (0-100) -->
+        <param name="detection_confidence_threshold" value="40.0" />
+        
+        <!-- Skeleton smoothing (0.0-1.0) -->
+        <param name="skeleton_smoothing" value="0.7" />
+        
+        <!-- Camera resolution: 0=AUTO, 1=HD2K, 2=HD1080, 3=HD720, 4=SVGA, 5=VGA -->
+        <param name="camera_resolution" value="2" />
+        
+        <!-- Depth mode: 0=PERFORMANCE, 1=QUALITY, 2=ULTRA, 3=NEURAL -->
+        <param name="depth_mode" value="3" />
+    </node>
+    
+    <!-- Skeleton Visualizer Node -->
+    <node pkg="zed_sdk_bridge" type="skeleton_visualizer" name="skeleton_visualizer" output="screen">
+        <!-- Subscribe topics -->
+        <remap from="bodies" to="/bodies" />
+        <remap from="image_raw" to="/image_raw" />
+        
+        <!-- Publish topics -->
+        <remap from="image_skeleton" to="/image_skeleton" />
+        <remap from="skeleton_markers" to="/skeleton_markers" />
+        
+        <!-- Parameters -->
+        <!-- Hiển thị skeleton trên ảnh -->
+        <param name="show_on_image" value="true" />
+        
+        <!-- Publish markers cho RViz -->
+        <param name="publish_markers" value="true" />
+        
+        <!-- Kích thước joints (pixels cho ảnh, meters cho markers) -->
+        <param name="joint_radius" value="3.0" />
+        
+        <!-- Độ dày đường nối (pixels cho ảnh, meters cho markers) -->
+        <param name="link_width" value="2.0" />
+        
+        <!-- Camera frame ID -->
+        <param name="camera_frame_id" value="zed2i_camera_center" />
+    </node>
+    
+    <!-- RViz (optional) -->
+    <arg name="use_rviz" default="true" />
+    <arg name="rviz_config" default="$(find zed_sdk_bridge)/rviz/skeleton.rviz" />
+    
+    <node if="$(arg use_rviz)" pkg="rviz" type="rviz" name="rviz" 
+          args="-d $(arg rviz_config)" output="screen" />
+    
+    <!-- Image View (optional, chỉ khi không dùng RViz) -->
+    <arg name="show_image_view" default="false" />
+    <group unless="$(arg use_rviz)">
+        <node if="$(arg show_image_view)" pkg="image_view" type="image_view" name="skeleton_image_view" output="screen">
+            <remap from="image" to="/image_skeleton" />
+        </node>
+    </group>
+</launch>
+
+

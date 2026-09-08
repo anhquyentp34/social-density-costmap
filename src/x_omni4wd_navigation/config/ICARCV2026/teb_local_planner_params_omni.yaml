@@ -1,0 +1,105 @@
+TebLocalPlannerROS:
+  odom_topic: /odom
+  # Wheel-limit-aware setpoint for max_wheel_speed=50 rad/s:
+  # k*(vx+vy)+R*w <= omega_max*r = 3.175  (k=0.7071, R=0.2505, r=0.0635)
+  max_vel_x: 1.2
+  max_vel_x_backwards: 1.2
+  max_vel_y: 1.2
+  max_vel_theta: 4.0
+  max_vel_trans: 1.7
+  acc_lim_x: 0.35
+  acc_lim_y: 0.35
+  acc_lim_theta: 0.7
+  footprint_model:
+    type: circular
+    radius: 0.26
+  teb_autosize: true
+  dt_ref: 0.4
+  dt_hysteresis: 0.15
+  max_samples: 200
+  global_plan_overwrite_orientation: false
+  allow_init_with_backwards_motion: true
+  max_global_plan_lookahead_dist: 4.0
+  # Via point dày hơn + weight_viapoint cao hơn → local path bám global corridor hơn.
+  global_plan_viapoint_sep: 0.3
+  global_plan_prune_distance: 1
+  exact_arc_length: false
+  # Chi kiem tra feasibility gan robot — tranh "trajectory is not feasible" vi cost xa
+  # (social layer day cost cao doc hanh lang; pose xa van co the ghi nhan cham vao vung vang/do).
+  feasibility_check_no_poses: 4
+  feasibility_check_lookahead_distance: 1.35
+  publish_feedback: true
+  xy_goal_tolerance: 0.2
+  yaw_goal_tolerance: 0.1
+  free_goal_vel: true
+  trans_stopped_vel: 0.12
+  theta_stopped_vel: 0.12
+  complete_global_plan: true
+  # Khoảng cách tới tâm các PointObstacle trích từ costmap (ô có cost >= costmap_obstacle_threshold). Nên > 0 để không “cạ” biên ô rời rạc.
+  # Sach hon 1 chut de quy dao toi uu khong “sat” bien costmap khi check footprint.
+  min_obstacle_dist: 0.04
+  # Vùng phạt mềm (EdgeInflatedObstacle): khoảng cách robot–điểm chướng ngại; phải > min_obstacle_dist.
+  # 0.42 không sai nhưng thường rộng hơn cần; ~bán kính robot (0.25) + lề ~0.07 m là gọn (khác inflation_radius của costmap_2d).
+  inflation_dist: 0.35
+  include_costmap_obstacles: true
+  # Ô local cost >= threshold thành PointObstacle. 1 = quá dày với social layer → tối ưu/khả thi hay xung đột.
+  # 20–80: vẫn né vùng có cost, giảm clutter; va chạm cứng vẫn do obstacles_layer + feasibility footprint.
+  costmap_obstacle_threshold: 10
+  costmap_obstacles_behind_robot_dist: 1.0
+  obstacle_poses_affected: 15
+  dynamic_obstacle_inflation_dist: 0.35
+  include_dynamic_obstacles: true
+  costmap_converter_plugin: ""
+  costmap_converter_spin_thread: true
+  costmap_converter_rate: 10
+  no_inner_iterations: 3
+  no_outer_iterations: 3
+  optimization_activate: true
+  optimization_verbose: false
+  penalty_epsilon: 0.1
+  obstacle_cost_exponent: 4
+  weight_max_vel_x: 2
+  weight_max_vel_y: 2
+  weight_max_vel_theta: 1
+  weight_acc_lim_x: 1
+  weight_acc_lim_y: 1
+  weight_acc_lim_theta: 1
+  weight_kinematics_nh: 0
+  weight_kinematics_forward_drive: 1
+  weight_kinematics_turning_radius: 1
+  weight_optimaltime: 1
+  # >0 bật cạnh rút ngắn độ dài quỹ đạo (TEB bỏ qua nếu =0) → giảm quỹ đạo phình/vòng xa không cần thiết.
+  weight_shortest_path: 3.0
+  # Giảm nhẹ so với 180 để không luôn “thắng” via point khi social layer nhuộm vàng rộng.
+  weight_obstacle: 140
+  weight_inflation: 12.0
+  weight_dynamic_obstacle: 10
+  weight_dynamic_obstacle_inflation: 0.2
+  weight_viapoint: 52
+  weight_adapt_factor: 2
+  enable_homotopy_class_planning: false
+  enable_multithreading: true
+  max_number_classes: 2
+  selection_cost_hysteresis: 1.0
+  selection_prefer_initial_plan: 0.99
+  selection_obst_cost_scale: 1.0
+  selection_alternative_time_cost: false
+  roadmap_graph_no_samples: 10
+  roadmap_graph_area_width: 5
+  roadmap_graph_area_length_scale: 1.0
+  h_signature_prescaler: 0.5
+  h_signature_threshold: 0.1
+  obstacle_heading_threshold: 0.45
+  switching_blocking_period: 1.5
+  viapoints_all_candidates: true
+  delete_detours_backwards: true
+  max_ratio_detours_duration_best_duration: 3.0
+  visualize_hc_graph: false
+  visualize_with_time_as_z_axis_scale: false
+  shrink_horizon_backup: true
+  shrink_horizon_min_duration: 10
+  oscillation_recovery: true
+  oscillation_v_eps: 0.1
+  oscillation_omega_eps: 0.1
+  oscillation_recovery_min_duration: 10
+  oscillation_filter_duration: 10

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<launch>
+  <!--
+    Lọc điểm động trên /scan → /scan_static (cho SRF/RF2O).
+    Costmap vẫn nên subscribe /scan gốc.
+  -->
+  <arg name="scan_in" default="/scan"/>
+  <arg name="scan_out" default="/scan_static"/>
+  <arg name="map_topic" default="/map"/>
+  <arg name="map_frame" default="map"/>
+  <arg name="use_map_filter" default="true"/>
+  <arg name="use_body_filter" default="false"/>
+  <arg name="bodies_topic" default="/bodies"/>
+  <arg name="body_radius" default="0.35"/>
+  <arg name="static_hit_tolerance" default="0.25"/>
+  <arg name="passthrough_if_no_map" default="true"/>
+
+  <node pkg="x_omni4wd_slam" type="scan_static_filter_node.py"
+        name="scan_static_filter" output="screen">
+    <param name="scan_in" value="$(arg scan_in)"/>
+    <param name="scan_out" value="$(arg scan_out)"/>
+    <param name="map_topic" value="$(arg map_topic)"/>
+    <param name="map_frame" value="$(arg map_frame)"/>
+    <param name="use_map_filter" value="$(arg use_map_filter)"/>
+    <param name="use_body_filter" value="$(arg use_body_filter)"/>
+    <param name="bodies_topic" value="$(arg bodies_topic)"/>
+    <param name="body_radius" value="$(arg body_radius)"/>
+    <param name="static_hit_tolerance" value="$(arg static_hit_tolerance)"/>
+    <param name="passthrough_if_no_map" value="$(arg passthrough_if_no_map)"/>
+  </node>
+</launch>

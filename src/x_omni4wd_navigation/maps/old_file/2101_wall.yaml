@@ -1,0 +1,6 @@
+image: 2101_wall.pgm
+resolution: 0.03
+origin: [-34.0, -34.0, 0.0]
+occupied_thresh: 0.65
+free_thresh: 0.196
+negate: 0

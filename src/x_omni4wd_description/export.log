@@ -1,0 +1,688 @@
+2026-03-16 15:34:46,806 INFO  AssemblyExportForm.cs: 309 - Saving URDF package to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description
+2026-03-16 15:34:46,809 INFO  ExportHelper.cs: 147 - Beginning the export process
+2026-03-16 15:34:46,811 INFO  ExportHelper.cs: 153 - Creating package directories with name x_omni4wd_description and save path E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description
+2026-03-16 15:34:50,643 INFO  ExportHelper.cs: 162 - Creating CMakeLists.txt at E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\CMakeLists.txt
+2026-03-16 15:34:50,643 INFO  ExportHelper.cs: 166 - Creating joint names config at E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\config\joint_names_x_omni4wd_description.yaml
+2026-03-16 15:34:50,643 INFO  ExportHelper.cs: 170 - Creating package.xml at E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\package.xml
+2026-03-16 15:34:50,643 INFO  PackageXMLWriter.cs: 21 - Creating package.xml at E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\package.xml
+2026-03-16 15:34:50,643 INFO  ExportHelper.cs: 177 - Creating RVIZ launch file in E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\launch\
+2026-03-16 15:34:50,643 INFO  ExportHelper.cs: 182 - Creating Gazebo launch file in E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\launch\
+2026-03-16 15:34:50,643 INFO  ExportHelper.cs: 187 - Saving existing STL preferences
+2026-03-16 15:34:50,643 INFO  ExportHelper.cs: 450 - Saving users preferences
+2026-03-16 15:34:50,643 INFO  ExportHelper.cs: 190 - Modifying STL preferences
+2026-03-16 15:34:50,643 INFO  ExportHelper.cs: 464 - Setting STL preferences
+2026-03-16 15:34:50,643 INFO  ExportHelper.cs: 196 - Found 0 hidden components 
+2026-03-16 15:34:50,643 INFO  ExportHelper.cs: 197 - Hiding all components
+2026-03-16 15:34:51,098 INFO  ExportHelper.cs: 204 - Beginning individual files export
+2026-03-16 15:34:51,131 INFO  ExportHelper.cs: 270 - Exporting link: base_link
+2026-03-16 15:34:51,131 INFO  ExportHelper.cs: 272 - Link base_link has 6 children
+2026-03-16 15:34:51,131 INFO  ExportHelper.cs: 270 - Exporting link: front_left_wheel_link
+2026-03-16 15:34:51,131 INFO  ExportHelper.cs: 272 - Link front_left_wheel_link has 22 children
+2026-03-16 15:34:51,131 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_21_1_link
+2026-03-16 15:34:51,131 INFO  ExportHelper.cs: 272 - Link roller_wheel_21_1_link has 0 children
+2026-03-16 15:34:51,131 INFO  ExportHelper.cs: 317 - roller_wheel_21_1_link: Exporting STL with coordinate frame Coordinate System21_1
+2026-03-16 15:34:51,131 INFO  ExportHelper.cs: 322 - roller_wheel_21_1_link: Reference geometry name 
+2026-03-16 15:34:51,344 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_21_1_link.STL
+2026-03-16 15:34:51,436 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:51,436 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_21_2_link
+2026-03-16 15:34:51,436 INFO  ExportHelper.cs: 272 - Link roller_wheel_21_2_link has 0 children
+2026-03-16 15:34:51,436 INFO  ExportHelper.cs: 317 - roller_wheel_21_2_link: Exporting STL with coordinate frame Coordinate System21_2
+2026-03-16 15:34:51,439 INFO  ExportHelper.cs: 322 - roller_wheel_21_2_link: Reference geometry name 
+2026-03-16 15:34:51,488 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_21_2_link.STL
+2026-03-16 15:34:51,550 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:51,566 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_21_3_link
+2026-03-16 15:34:51,566 INFO  ExportHelper.cs: 272 - Link roller_wheel_21_3_link has 0 children
+2026-03-16 15:34:51,566 INFO  ExportHelper.cs: 317 - roller_wheel_21_3_link: Exporting STL with coordinate frame Coordinate System21_3
+2026-03-16 15:34:51,566 INFO  ExportHelper.cs: 322 - roller_wheel_21_3_link: Reference geometry name 
+2026-03-16 15:34:51,614 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_21_3_link.STL
+2026-03-16 15:34:51,694 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:51,696 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_21_4_link
+2026-03-16 15:34:51,696 INFO  ExportHelper.cs: 272 - Link roller_wheel_21_4_link has 0 children
+2026-03-16 15:34:51,696 INFO  ExportHelper.cs: 317 - roller_wheel_21_4_link: Exporting STL with coordinate frame Coordinate System21_4
+2026-03-16 15:34:51,696 INFO  ExportHelper.cs: 322 - roller_wheel_21_4_link: Reference geometry name 
+2026-03-16 15:34:51,744 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_21_4_link.STL
+2026-03-16 15:34:51,824 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:51,824 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_21_5_link
+2026-03-16 15:34:51,826 INFO  ExportHelper.cs: 272 - Link roller_wheel_21_5_link has 0 children
+2026-03-16 15:34:51,826 INFO  ExportHelper.cs: 317 - roller_wheel_21_5_link: Exporting STL with coordinate frame Coordinate System21_5
+2026-03-16 15:34:51,826 INFO  ExportHelper.cs: 322 - roller_wheel_21_5_link: Reference geometry name 
+2026-03-16 15:34:51,876 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_21_5_link.STL
+2026-03-16 15:34:51,948 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:51,950 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_21_6_link
+2026-03-16 15:34:51,950 INFO  ExportHelper.cs: 272 - Link roller_wheel_21_6_link has 0 children
+2026-03-16 15:34:51,952 INFO  ExportHelper.cs: 317 - roller_wheel_21_6_link: Exporting STL with coordinate frame Coordinate System21_6
+2026-03-16 15:34:51,952 INFO  ExportHelper.cs: 322 - roller_wheel_21_6_link: Reference geometry name 
+2026-03-16 15:34:52,003 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_21_6_link.STL
+2026-03-16 15:34:52,074 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:52,080 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_21_7_link
+2026-03-16 15:34:52,080 INFO  ExportHelper.cs: 272 - Link roller_wheel_21_7_link has 0 children
+2026-03-16 15:34:52,080 INFO  ExportHelper.cs: 317 - roller_wheel_21_7_link: Exporting STL with coordinate frame Coordinate System21_7
+2026-03-16 15:34:52,080 INFO  ExportHelper.cs: 322 - roller_wheel_21_7_link: Reference geometry name 
+2026-03-16 15:34:52,126 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_21_7_link.STL
+2026-03-16 15:34:52,199 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:52,199 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_21_8_link
+2026-03-16 15:34:52,199 INFO  ExportHelper.cs: 272 - Link roller_wheel_21_8_link has 0 children
+2026-03-16 15:34:52,199 INFO  ExportHelper.cs: 317 - roller_wheel_21_8_link: Exporting STL with coordinate frame Coordinate System21_8
+2026-03-16 15:34:52,199 INFO  ExportHelper.cs: 322 - roller_wheel_21_8_link: Reference geometry name 
+2026-03-16 15:34:52,246 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_21_8_link.STL
+2026-03-16 15:34:52,333 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:52,333 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_21_9_link
+2026-03-16 15:34:52,333 INFO  ExportHelper.cs: 272 - Link roller_wheel_21_9_link has 0 children
+2026-03-16 15:34:52,335 INFO  ExportHelper.cs: 317 - roller_wheel_21_9_link: Exporting STL with coordinate frame Coordinate System21_9
+2026-03-16 15:34:52,335 INFO  ExportHelper.cs: 322 - roller_wheel_21_9_link: Reference geometry name 
+2026-03-16 15:34:52,428 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_21_9_link.STL
+2026-03-16 15:34:52,505 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:52,508 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_21_10_link
+2026-03-16 15:34:52,508 INFO  ExportHelper.cs: 272 - Link roller_wheel_21_10_link has 0 children
+2026-03-16 15:34:52,508 INFO  ExportHelper.cs: 317 - roller_wheel_21_10_link: Exporting STL with coordinate frame Coordinate System21_10
+2026-03-16 15:34:52,508 INFO  ExportHelper.cs: 322 - roller_wheel_21_10_link: Reference geometry name 
+2026-03-16 15:34:52,555 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_21_10_link.STL
+2026-03-16 15:34:52,631 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:52,633 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_21_11_link
+2026-03-16 15:34:52,633 INFO  ExportHelper.cs: 272 - Link roller_wheel_21_11_link has 0 children
+2026-03-16 15:34:52,633 INFO  ExportHelper.cs: 317 - roller_wheel_21_11_link: Exporting STL with coordinate frame Coordinate System21_11
+2026-03-16 15:34:52,633 INFO  ExportHelper.cs: 322 - roller_wheel_21_11_link: Reference geometry name 
+2026-03-16 15:34:52,684 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_21_11_link.STL
+2026-03-16 15:34:52,751 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:52,751 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_22_1_link
+2026-03-16 15:34:52,751 INFO  ExportHelper.cs: 272 - Link roller_wheel_22_1_link has 0 children
+2026-03-16 15:34:52,751 INFO  ExportHelper.cs: 317 - roller_wheel_22_1_link: Exporting STL with coordinate frame Coordinate System22_1
+2026-03-16 15:34:52,761 INFO  ExportHelper.cs: 322 - roller_wheel_22_1_link: Reference geometry name 
+2026-03-16 15:34:52,850 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_22_1_link.STL
+2026-03-16 15:34:52,928 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:52,928 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_22_2_link
+2026-03-16 15:34:52,928 INFO  ExportHelper.cs: 272 - Link roller_wheel_22_2_link has 0 children
+2026-03-16 15:34:52,928 INFO  ExportHelper.cs: 317 - roller_wheel_22_2_link: Exporting STL with coordinate frame Coordinate System22_2
+2026-03-16 15:34:52,928 INFO  ExportHelper.cs: 322 - roller_wheel_22_2_link: Reference geometry name 
+2026-03-16 15:34:52,977 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_22_2_link.STL
+2026-03-16 15:34:53,055 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:53,055 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_22_3_link
+2026-03-16 15:34:53,060 INFO  ExportHelper.cs: 272 - Link roller_wheel_22_3_link has 0 children
+2026-03-16 15:34:53,060 INFO  ExportHelper.cs: 317 - roller_wheel_22_3_link: Exporting STL with coordinate frame Coordinate System22_3
+2026-03-16 15:34:53,060 INFO  ExportHelper.cs: 322 - roller_wheel_22_3_link: Reference geometry name 
+2026-03-16 15:34:53,110 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_22_3_link.STL
+2026-03-16 15:34:53,189 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:53,191 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_22_4_link
+2026-03-16 15:34:53,191 INFO  ExportHelper.cs: 272 - Link roller_wheel_22_4_link has 0 children
+2026-03-16 15:34:53,191 INFO  ExportHelper.cs: 317 - roller_wheel_22_4_link: Exporting STL with coordinate frame Coordinate System22_4
+2026-03-16 15:34:53,191 INFO  ExportHelper.cs: 322 - roller_wheel_22_4_link: Reference geometry name 
+2026-03-16 15:34:53,247 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_22_4_link.STL
+2026-03-16 15:34:53,328 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:53,328 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_22_5_link
+2026-03-16 15:34:53,328 INFO  ExportHelper.cs: 272 - Link roller_wheel_22_5_link has 0 children
+2026-03-16 15:34:53,328 INFO  ExportHelper.cs: 317 - roller_wheel_22_5_link: Exporting STL with coordinate frame Coordinate System22_5
+2026-03-16 15:34:53,328 INFO  ExportHelper.cs: 322 - roller_wheel_22_5_link: Reference geometry name 
+2026-03-16 15:34:53,386 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_22_5_link.STL
+2026-03-16 15:34:53,463 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:53,465 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_22_6_link
+2026-03-16 15:34:53,465 INFO  ExportHelper.cs: 272 - Link roller_wheel_22_6_link has 0 children
+2026-03-16 15:34:53,465 INFO  ExportHelper.cs: 317 - roller_wheel_22_6_link: Exporting STL with coordinate frame Coordinate System22_6
+2026-03-16 15:34:53,465 INFO  ExportHelper.cs: 322 - roller_wheel_22_6_link: Reference geometry name 
+2026-03-16 15:34:53,520 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_22_6_link.STL
+2026-03-16 15:34:53,590 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:53,590 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_22_7_link
+2026-03-16 15:34:53,590 INFO  ExportHelper.cs: 272 - Link roller_wheel_22_7_link has 0 children
+2026-03-16 15:34:53,590 INFO  ExportHelper.cs: 317 - roller_wheel_22_7_link: Exporting STL with coordinate frame Coordinate System22_7
+2026-03-16 15:34:53,590 INFO  ExportHelper.cs: 322 - roller_wheel_22_7_link: Reference geometry name 
+2026-03-16 15:34:53,651 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_22_7_link.STL
+2026-03-16 15:34:53,723 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:53,725 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_22_8_link
+2026-03-16 15:34:53,725 INFO  ExportHelper.cs: 272 - Link roller_wheel_22_8_link has 0 children
+2026-03-16 15:34:53,727 INFO  ExportHelper.cs: 317 - roller_wheel_22_8_link: Exporting STL with coordinate frame Coordinate System22_8
+2026-03-16 15:34:53,727 INFO  ExportHelper.cs: 322 - roller_wheel_22_8_link: Reference geometry name 
+2026-03-16 15:34:53,779 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_22_8_link.STL
+2026-03-16 15:34:53,857 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:53,858 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_22_9_link
+2026-03-16 15:34:53,858 INFO  ExportHelper.cs: 272 - Link roller_wheel_22_9_link has 0 children
+2026-03-16 15:34:53,859 INFO  ExportHelper.cs: 317 - roller_wheel_22_9_link: Exporting STL with coordinate frame Coordinate System22_9
+2026-03-16 15:34:53,859 INFO  ExportHelper.cs: 322 - roller_wheel_22_9_link: Reference geometry name 
+2026-03-16 15:34:53,912 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_22_9_link.STL
+2026-03-16 15:34:53,992 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:53,992 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_22_10_link
+2026-03-16 15:34:53,994 INFO  ExportHelper.cs: 272 - Link roller_wheel_22_10_link has 0 children
+2026-03-16 15:34:53,994 INFO  ExportHelper.cs: 317 - roller_wheel_22_10_link: Exporting STL with coordinate frame Coordinate System22_10
+2026-03-16 15:34:53,994 INFO  ExportHelper.cs: 322 - roller_wheel_22_10_link: Reference geometry name 
+2026-03-16 15:34:54,048 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_22_10_link.STL
+2026-03-16 15:34:54,124 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:54,125 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_22_11_link
+2026-03-16 15:34:54,125 INFO  ExportHelper.cs: 272 - Link roller_wheel_22_11_link has 0 children
+2026-03-16 15:34:54,125 INFO  ExportHelper.cs: 317 - roller_wheel_22_11_link: Exporting STL with coordinate frame Coordinate System22_11
+2026-03-16 15:34:54,125 INFO  ExportHelper.cs: 322 - roller_wheel_22_11_link: Reference geometry name 
+2026-03-16 15:34:54,175 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_22_11_link.STL
+2026-03-16 15:34:54,252 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:54,252 INFO  ExportHelper.cs: 317 - front_left_wheel_link: Exporting STL with coordinate frame Coordinate System2
+2026-03-16 15:34:54,252 INFO  ExportHelper.cs: 322 - front_left_wheel_link: Reference geometry name 
+2026-03-16 15:34:54,333 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\front_left_wheel_link.STL
+2026-03-16 15:34:54,532 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:54,532 INFO  ExportHelper.cs: 270 - Exporting link: rear_left_wheel_link
+2026-03-16 15:34:54,534 INFO  ExportHelper.cs: 272 - Link rear_left_wheel_link has 22 children
+2026-03-16 15:34:54,534 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_31_1_link
+2026-03-16 15:34:54,534 INFO  ExportHelper.cs: 272 - Link roller_wheel_31_1_link has 0 children
+2026-03-16 15:34:54,534 INFO  ExportHelper.cs: 317 - roller_wheel_31_1_link: Exporting STL with coordinate frame Coordinate System31_1
+2026-03-16 15:34:54,534 INFO  ExportHelper.cs: 322 - roller_wheel_31_1_link: Reference geometry name 
+2026-03-16 15:34:54,714 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_31_1_link.STL
+2026-03-16 15:34:54,804 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:54,805 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_31_2_link
+2026-03-16 15:34:54,806 INFO  ExportHelper.cs: 272 - Link roller_wheel_31_2_link has 0 children
+2026-03-16 15:34:54,806 INFO  ExportHelper.cs: 317 - roller_wheel_31_2_link: Exporting STL with coordinate frame Coordinate System31_2
+2026-03-16 15:34:54,806 INFO  ExportHelper.cs: 322 - roller_wheel_31_2_link: Reference geometry name 
+2026-03-16 15:34:54,863 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_31_2_link.STL
+2026-03-16 15:34:54,942 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:54,944 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_31_3_link
+2026-03-16 15:34:54,945 INFO  ExportHelper.cs: 272 - Link roller_wheel_31_3_link has 0 children
+2026-03-16 15:34:54,945 INFO  ExportHelper.cs: 317 - roller_wheel_31_3_link: Exporting STL with coordinate frame Coordinate System31_3
+2026-03-16 15:34:54,945 INFO  ExportHelper.cs: 322 - roller_wheel_31_3_link: Reference geometry name 
+2026-03-16 15:34:55,000 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_31_3_link.STL
+2026-03-16 15:34:55,075 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:55,077 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_31_4_link
+2026-03-16 15:34:55,077 INFO  ExportHelper.cs: 272 - Link roller_wheel_31_4_link has 0 children
+2026-03-16 15:34:55,078 INFO  ExportHelper.cs: 317 - roller_wheel_31_4_link: Exporting STL with coordinate frame Coordinate System31_4
+2026-03-16 15:34:55,078 INFO  ExportHelper.cs: 322 - roller_wheel_31_4_link: Reference geometry name 
+2026-03-16 15:34:55,131 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_31_4_link.STL
+2026-03-16 15:34:55,208 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:55,210 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_31_5_link
+2026-03-16 15:34:55,210 INFO  ExportHelper.cs: 272 - Link roller_wheel_31_5_link has 0 children
+2026-03-16 15:34:55,210 INFO  ExportHelper.cs: 317 - roller_wheel_31_5_link: Exporting STL with coordinate frame Coordinate System31_5
+2026-03-16 15:34:55,211 INFO  ExportHelper.cs: 322 - roller_wheel_31_5_link: Reference geometry name 
+2026-03-16 15:34:55,265 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_31_5_link.STL
+2026-03-16 15:34:55,340 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:55,342 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_31_6_link
+2026-03-16 15:34:55,342 INFO  ExportHelper.cs: 272 - Link roller_wheel_31_6_link has 0 children
+2026-03-16 15:34:55,343 INFO  ExportHelper.cs: 317 - roller_wheel_31_6_link: Exporting STL with coordinate frame Coordinate System31_6
+2026-03-16 15:34:55,343 INFO  ExportHelper.cs: 322 - roller_wheel_31_6_link: Reference geometry name 
+2026-03-16 15:34:55,398 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_31_6_link.STL
+2026-03-16 15:34:55,475 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:55,476 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_31_7_link
+2026-03-16 15:34:55,477 INFO  ExportHelper.cs: 272 - Link roller_wheel_31_7_link has 0 children
+2026-03-16 15:34:55,477 INFO  ExportHelper.cs: 317 - roller_wheel_31_7_link: Exporting STL with coordinate frame Coordinate System31_7
+2026-03-16 15:34:55,478 INFO  ExportHelper.cs: 322 - roller_wheel_31_7_link: Reference geometry name 
+2026-03-16 15:34:55,531 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_31_7_link.STL
+2026-03-16 15:34:55,606 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:55,607 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_31_8_link
+2026-03-16 15:34:55,608 INFO  ExportHelper.cs: 272 - Link roller_wheel_31_8_link has 0 children
+2026-03-16 15:34:55,608 INFO  ExportHelper.cs: 317 - roller_wheel_31_8_link: Exporting STL with coordinate frame Coordinate System31_8
+2026-03-16 15:34:55,608 INFO  ExportHelper.cs: 322 - roller_wheel_31_8_link: Reference geometry name 
+2026-03-16 15:34:55,662 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_31_8_link.STL
+2026-03-16 15:34:55,743 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:55,744 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_31_9_link
+2026-03-16 15:34:55,745 INFO  ExportHelper.cs: 272 - Link roller_wheel_31_9_link has 0 children
+2026-03-16 15:34:55,745 INFO  ExportHelper.cs: 317 - roller_wheel_31_9_link: Exporting STL with coordinate frame Coordinate System31_9
+2026-03-16 15:34:55,745 INFO  ExportHelper.cs: 322 - roller_wheel_31_9_link: Reference geometry name 
+2026-03-16 15:34:55,802 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_31_9_link.STL
+2026-03-16 15:34:55,881 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:55,883 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_31_10_link
+2026-03-16 15:34:55,883 INFO  ExportHelper.cs: 272 - Link roller_wheel_31_10_link has 0 children
+2026-03-16 15:34:55,883 INFO  ExportHelper.cs: 317 - roller_wheel_31_10_link: Exporting STL with coordinate frame Coordinate System31_10
+2026-03-16 15:34:55,884 INFO  ExportHelper.cs: 322 - roller_wheel_31_10_link: Reference geometry name 
+2026-03-16 15:34:55,940 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_31_10_link.STL
+2026-03-16 15:34:56,022 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:56,023 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_31_11_link
+2026-03-16 15:34:56,024 INFO  ExportHelper.cs: 272 - Link roller_wheel_31_11_link has 0 children
+2026-03-16 15:34:56,037 INFO  ExportHelper.cs: 317 - roller_wheel_31_11_link: Exporting STL with coordinate frame Coordinate System31_11
+2026-03-16 15:34:56,037 INFO  ExportHelper.cs: 322 - roller_wheel_31_11_link: Reference geometry name 
+2026-03-16 15:34:56,103 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_31_11_link.STL
+2026-03-16 15:34:56,179 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:56,180 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_32_1_link
+2026-03-16 15:34:56,181 INFO  ExportHelper.cs: 272 - Link roller_wheel_32_1_link has 0 children
+2026-03-16 15:34:56,181 INFO  ExportHelper.cs: 317 - roller_wheel_32_1_link: Exporting STL with coordinate frame Coordinate System32_1
+2026-03-16 15:34:56,181 INFO  ExportHelper.cs: 322 - roller_wheel_32_1_link: Reference geometry name 
+2026-03-16 15:34:56,283 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_32_1_link.STL
+2026-03-16 15:34:56,360 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:56,361 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_32_2_link
+2026-03-16 15:34:56,361 INFO  ExportHelper.cs: 272 - Link roller_wheel_32_2_link has 0 children
+2026-03-16 15:34:56,361 INFO  ExportHelper.cs: 317 - roller_wheel_32_2_link: Exporting STL with coordinate frame Coordinate System32_2
+2026-03-16 15:34:56,363 INFO  ExportHelper.cs: 322 - roller_wheel_32_2_link: Reference geometry name 
+2026-03-16 15:34:56,419 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_32_2_link.STL
+2026-03-16 15:34:56,497 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:56,498 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_32_3_link
+2026-03-16 15:34:56,499 INFO  ExportHelper.cs: 272 - Link roller_wheel_32_3_link has 0 children
+2026-03-16 15:34:56,499 INFO  ExportHelper.cs: 317 - roller_wheel_32_3_link: Exporting STL with coordinate frame Coordinate System32_3
+2026-03-16 15:34:56,500 INFO  ExportHelper.cs: 322 - roller_wheel_32_3_link: Reference geometry name 
+2026-03-16 15:34:56,555 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_32_3_link.STL
+2026-03-16 15:34:56,631 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:56,633 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_32_4_link
+2026-03-16 15:34:56,633 INFO  ExportHelper.cs: 272 - Link roller_wheel_32_4_link has 0 children
+2026-03-16 15:34:56,634 INFO  ExportHelper.cs: 317 - roller_wheel_32_4_link: Exporting STL with coordinate frame Coordinate System32_4
+2026-03-16 15:34:56,634 INFO  ExportHelper.cs: 322 - roller_wheel_32_4_link: Reference geometry name 
+2026-03-16 15:34:56,688 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_32_4_link.STL
+2026-03-16 15:34:56,766 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:56,767 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_32_5_link
+2026-03-16 15:34:56,768 INFO  ExportHelper.cs: 272 - Link roller_wheel_32_5_link has 0 children
+2026-03-16 15:34:56,768 INFO  ExportHelper.cs: 317 - roller_wheel_32_5_link: Exporting STL with coordinate frame Coordinate System32_5
+2026-03-16 15:34:56,768 INFO  ExportHelper.cs: 322 - roller_wheel_32_5_link: Reference geometry name 
+2026-03-16 15:34:56,823 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_32_5_link.STL
+2026-03-16 15:34:56,902 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:56,903 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_32_6_link
+2026-03-16 15:34:56,903 INFO  ExportHelper.cs: 272 - Link roller_wheel_32_6_link has 0 children
+2026-03-16 15:34:56,904 INFO  ExportHelper.cs: 317 - roller_wheel_32_6_link: Exporting STL with coordinate frame Coordinate System32_6
+2026-03-16 15:34:56,904 INFO  ExportHelper.cs: 322 - roller_wheel_32_6_link: Reference geometry name 
+2026-03-16 15:34:56,958 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_32_6_link.STL
+2026-03-16 15:34:57,034 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:57,035 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_32_7_link
+2026-03-16 15:34:57,036 INFO  ExportHelper.cs: 272 - Link roller_wheel_32_7_link has 0 children
+2026-03-16 15:34:57,036 INFO  ExportHelper.cs: 317 - roller_wheel_32_7_link: Exporting STL with coordinate frame Coordinate System32_7
+2026-03-16 15:34:57,037 INFO  ExportHelper.cs: 322 - roller_wheel_32_7_link: Reference geometry name 
+2026-03-16 15:34:57,094 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_32_7_link.STL
+2026-03-16 15:34:57,172 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:57,173 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_32_8_link
+2026-03-16 15:34:57,174 INFO  ExportHelper.cs: 272 - Link roller_wheel_32_8_link has 0 children
+2026-03-16 15:34:57,174 INFO  ExportHelper.cs: 317 - roller_wheel_32_8_link: Exporting STL with coordinate frame Coordinate System32_8
+2026-03-16 15:34:57,174 INFO  ExportHelper.cs: 322 - roller_wheel_32_8_link: Reference geometry name 
+2026-03-16 15:34:57,230 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_32_8_link.STL
+2026-03-16 15:34:57,307 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:57,308 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_32_9_link
+2026-03-16 15:34:57,309 INFO  ExportHelper.cs: 272 - Link roller_wheel_32_9_link has 0 children
+2026-03-16 15:34:57,309 INFO  ExportHelper.cs: 317 - roller_wheel_32_9_link: Exporting STL with coordinate frame Coordinate System32_9
+2026-03-16 15:34:57,309 INFO  ExportHelper.cs: 322 - roller_wheel_32_9_link: Reference geometry name 
+2026-03-16 15:34:57,364 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_32_9_link.STL
+2026-03-16 15:34:57,444 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:57,445 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_32_10_link
+2026-03-16 15:34:57,445 INFO  ExportHelper.cs: 272 - Link roller_wheel_32_10_link has 0 children
+2026-03-16 15:34:57,446 INFO  ExportHelper.cs: 317 - roller_wheel_32_10_link: Exporting STL with coordinate frame Coordinate System32_10
+2026-03-16 15:34:57,446 INFO  ExportHelper.cs: 322 - roller_wheel_32_10_link: Reference geometry name 
+2026-03-16 15:34:57,500 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_32_10_link.STL
+2026-03-16 15:34:57,577 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:57,579 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_32_11_link
+2026-03-16 15:34:57,579 INFO  ExportHelper.cs: 272 - Link roller_wheel_32_11_link has 0 children
+2026-03-16 15:34:57,580 INFO  ExportHelper.cs: 317 - roller_wheel_32_11_link: Exporting STL with coordinate frame Coordinate System32_11
+2026-03-16 15:34:57,580 INFO  ExportHelper.cs: 322 - roller_wheel_32_11_link: Reference geometry name 
+2026-03-16 15:34:57,635 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_32_11_link.STL
+2026-03-16 15:34:57,712 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:57,713 INFO  ExportHelper.cs: 317 - rear_left_wheel_link: Exporting STL with coordinate frame Coordinate System3
+2026-03-16 15:34:57,713 INFO  ExportHelper.cs: 322 - rear_left_wheel_link: Reference geometry name 
+2026-03-16 15:34:57,798 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\rear_left_wheel_link.STL
+2026-03-16 15:34:57,988 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:57,990 INFO  ExportHelper.cs: 270 - Exporting link: rear_right_wheel_link
+2026-03-16 15:34:57,990 INFO  ExportHelper.cs: 272 - Link rear_right_wheel_link has 22 children
+2026-03-16 15:34:57,991 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_41_1_link
+2026-03-16 15:34:57,992 INFO  ExportHelper.cs: 272 - Link roller_wheel_41_1_link has 0 children
+2026-03-16 15:34:57,992 INFO  ExportHelper.cs: 317 - roller_wheel_41_1_link: Exporting STL with coordinate frame Coordinate System41_1
+2026-03-16 15:34:57,992 INFO  ExportHelper.cs: 322 - roller_wheel_41_1_link: Reference geometry name 
+2026-03-16 15:34:58,183 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_41_1_link.STL
+2026-03-16 15:34:58,267 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:58,269 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_41_2_link
+2026-03-16 15:34:58,269 INFO  ExportHelper.cs: 272 - Link roller_wheel_41_2_link has 0 children
+2026-03-16 15:34:58,270 INFO  ExportHelper.cs: 317 - roller_wheel_41_2_link: Exporting STL with coordinate frame Coordinate System41_2
+2026-03-16 15:34:58,270 INFO  ExportHelper.cs: 322 - roller_wheel_41_2_link: Reference geometry name 
+2026-03-16 15:34:58,327 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_41_2_link.STL
+2026-03-16 15:34:58,404 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:58,405 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_41_3_link
+2026-03-16 15:34:58,406 INFO  ExportHelper.cs: 272 - Link roller_wheel_41_3_link has 0 children
+2026-03-16 15:34:58,406 INFO  ExportHelper.cs: 317 - roller_wheel_41_3_link: Exporting STL with coordinate frame Coordinate System41_3
+2026-03-16 15:34:58,406 INFO  ExportHelper.cs: 322 - roller_wheel_41_3_link: Reference geometry name 
+2026-03-16 15:34:58,465 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_41_3_link.STL
+2026-03-16 15:34:58,544 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:58,545 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_41_4_link
+2026-03-16 15:34:58,546 INFO  ExportHelper.cs: 272 - Link roller_wheel_41_4_link has 0 children
+2026-03-16 15:34:58,546 INFO  ExportHelper.cs: 317 - roller_wheel_41_4_link: Exporting STL with coordinate frame Coordinate System41_4
+2026-03-16 15:34:58,546 INFO  ExportHelper.cs: 322 - roller_wheel_41_4_link: Reference geometry name 
+2026-03-16 15:34:58,603 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_41_4_link.STL
+2026-03-16 15:34:58,680 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:58,682 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_41_5_link
+2026-03-16 15:34:58,682 INFO  ExportHelper.cs: 272 - Link roller_wheel_41_5_link has 0 children
+2026-03-16 15:34:58,683 INFO  ExportHelper.cs: 317 - roller_wheel_41_5_link: Exporting STL with coordinate frame Coordinate System41_5
+2026-03-16 15:34:58,683 INFO  ExportHelper.cs: 322 - roller_wheel_41_5_link: Reference geometry name 
+2026-03-16 15:34:58,740 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_41_5_link.STL
+2026-03-16 15:34:58,819 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:58,820 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_41_6_link
+2026-03-16 15:34:58,821 INFO  ExportHelper.cs: 272 - Link roller_wheel_41_6_link has 0 children
+2026-03-16 15:34:58,821 INFO  ExportHelper.cs: 317 - roller_wheel_41_6_link: Exporting STL with coordinate frame Coordinate System41_6
+2026-03-16 15:34:58,821 INFO  ExportHelper.cs: 322 - roller_wheel_41_6_link: Reference geometry name 
+2026-03-16 15:34:58,878 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_41_6_link.STL
+2026-03-16 15:34:58,957 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:58,959 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_41_7_link
+2026-03-16 15:34:58,959 INFO  ExportHelper.cs: 272 - Link roller_wheel_41_7_link has 0 children
+2026-03-16 15:34:58,960 INFO  ExportHelper.cs: 317 - roller_wheel_41_7_link: Exporting STL with coordinate frame Coordinate System41_7
+2026-03-16 15:34:58,960 INFO  ExportHelper.cs: 322 - roller_wheel_41_7_link: Reference geometry name 
+2026-03-16 15:34:59,016 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_41_7_link.STL
+2026-03-16 15:34:59,095 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:59,097 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_41_8_link
+2026-03-16 15:34:59,097 INFO  ExportHelper.cs: 272 - Link roller_wheel_41_8_link has 0 children
+2026-03-16 15:34:59,097 INFO  ExportHelper.cs: 317 - roller_wheel_41_8_link: Exporting STL with coordinate frame Coordinate System41_8
+2026-03-16 15:34:59,098 INFO  ExportHelper.cs: 322 - roller_wheel_41_8_link: Reference geometry name 
+2026-03-16 15:34:59,155 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_41_8_link.STL
+2026-03-16 15:34:59,232 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:59,233 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_41_9_link
+2026-03-16 15:34:59,233 INFO  ExportHelper.cs: 272 - Link roller_wheel_41_9_link has 0 children
+2026-03-16 15:34:59,234 INFO  ExportHelper.cs: 317 - roller_wheel_41_9_link: Exporting STL with coordinate frame Coordinate System41_9
+2026-03-16 15:34:59,234 INFO  ExportHelper.cs: 322 - roller_wheel_41_9_link: Reference geometry name 
+2026-03-16 15:34:59,292 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_41_9_link.STL
+2026-03-16 15:34:59,369 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:59,370 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_41_10_link
+2026-03-16 15:34:59,371 INFO  ExportHelper.cs: 272 - Link roller_wheel_41_10_link has 0 children
+2026-03-16 15:34:59,371 INFO  ExportHelper.cs: 317 - roller_wheel_41_10_link: Exporting STL with coordinate frame Coordinate System41_10
+2026-03-16 15:34:59,371 INFO  ExportHelper.cs: 322 - roller_wheel_41_10_link: Reference geometry name 
+2026-03-16 15:34:59,428 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_41_10_link.STL
+2026-03-16 15:34:59,508 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:59,510 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_41_11_link
+2026-03-16 15:34:59,510 INFO  ExportHelper.cs: 272 - Link roller_wheel_41_11_link has 0 children
+2026-03-16 15:34:59,510 INFO  ExportHelper.cs: 317 - roller_wheel_41_11_link: Exporting STL with coordinate frame Coordinate System41_11
+2026-03-16 15:34:59,511 INFO  ExportHelper.cs: 322 - roller_wheel_41_11_link: Reference geometry name 
+2026-03-16 15:34:59,568 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_41_11_link.STL
+2026-03-16 15:34:59,645 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:59,647 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_42_1_link
+2026-03-16 15:34:59,647 INFO  ExportHelper.cs: 272 - Link roller_wheel_42_1_link has 0 children
+2026-03-16 15:34:59,647 INFO  ExportHelper.cs: 317 - roller_wheel_42_1_link: Exporting STL with coordinate frame Coordinate System42_1
+2026-03-16 15:34:59,647 INFO  ExportHelper.cs: 322 - roller_wheel_42_1_link: Reference geometry name 
+2026-03-16 15:34:59,748 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_42_1_link.STL
+2026-03-16 15:34:59,829 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:59,831 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_42_2_link
+2026-03-16 15:34:59,831 INFO  ExportHelper.cs: 272 - Link roller_wheel_42_2_link has 0 children
+2026-03-16 15:34:59,831 INFO  ExportHelper.cs: 317 - roller_wheel_42_2_link: Exporting STL with coordinate frame Coordinate System42_2
+2026-03-16 15:34:59,834 INFO  ExportHelper.cs: 322 - roller_wheel_42_2_link: Reference geometry name 
+2026-03-16 15:34:59,898 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_42_2_link.STL
+2026-03-16 15:34:59,978 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:34:59,980 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_42_3_link
+2026-03-16 15:34:59,980 INFO  ExportHelper.cs: 272 - Link roller_wheel_42_3_link has 0 children
+2026-03-16 15:34:59,980 INFO  ExportHelper.cs: 317 - roller_wheel_42_3_link: Exporting STL with coordinate frame Coordinate System42_3
+2026-03-16 15:34:59,981 INFO  ExportHelper.cs: 322 - roller_wheel_42_3_link: Reference geometry name 
+2026-03-16 15:35:00,040 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_42_3_link.STL
+2026-03-16 15:35:00,120 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:00,122 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_42_4_link
+2026-03-16 15:35:00,122 INFO  ExportHelper.cs: 272 - Link roller_wheel_42_4_link has 0 children
+2026-03-16 15:35:00,122 INFO  ExportHelper.cs: 317 - roller_wheel_42_4_link: Exporting STL with coordinate frame Coordinate System42_4
+2026-03-16 15:35:00,123 INFO  ExportHelper.cs: 322 - roller_wheel_42_4_link: Reference geometry name 
+2026-03-16 15:35:00,181 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_42_4_link.STL
+2026-03-16 15:35:00,261 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:00,262 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_42_5_link
+2026-03-16 15:35:00,263 INFO  ExportHelper.cs: 272 - Link roller_wheel_42_5_link has 0 children
+2026-03-16 15:35:00,263 INFO  ExportHelper.cs: 317 - roller_wheel_42_5_link: Exporting STL with coordinate frame Coordinate System42_5
+2026-03-16 15:35:00,264 INFO  ExportHelper.cs: 322 - roller_wheel_42_5_link: Reference geometry name 
+2026-03-16 15:35:00,323 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_42_5_link.STL
+2026-03-16 15:35:00,402 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:00,403 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_42_6_link
+2026-03-16 15:35:00,405 INFO  ExportHelper.cs: 272 - Link roller_wheel_42_6_link has 0 children
+2026-03-16 15:35:00,405 INFO  ExportHelper.cs: 317 - roller_wheel_42_6_link: Exporting STL with coordinate frame Coordinate System42_6
+2026-03-16 15:35:00,405 INFO  ExportHelper.cs: 322 - roller_wheel_42_6_link: Reference geometry name 
+2026-03-16 15:35:00,465 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_42_6_link.STL
+2026-03-16 15:35:00,543 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:00,544 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_42_7_link
+2026-03-16 15:35:00,545 INFO  ExportHelper.cs: 272 - Link roller_wheel_42_7_link has 0 children
+2026-03-16 15:35:00,545 INFO  ExportHelper.cs: 317 - roller_wheel_42_7_link: Exporting STL with coordinate frame Coordinate System42_7
+2026-03-16 15:35:00,545 INFO  ExportHelper.cs: 322 - roller_wheel_42_7_link: Reference geometry name 
+2026-03-16 15:35:00,601 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_42_7_link.STL
+2026-03-16 15:35:00,682 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:00,683 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_42_8_link
+2026-03-16 15:35:00,684 INFO  ExportHelper.cs: 272 - Link roller_wheel_42_8_link has 0 children
+2026-03-16 15:35:00,684 INFO  ExportHelper.cs: 317 - roller_wheel_42_8_link: Exporting STL with coordinate frame Coordinate System42_8
+2026-03-16 15:35:00,685 INFO  ExportHelper.cs: 322 - roller_wheel_42_8_link: Reference geometry name 
+2026-03-16 15:35:00,735 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_42_8_link.STL
+2026-03-16 15:35:00,818 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:00,825 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_42_9_link
+2026-03-16 15:35:00,825 INFO  ExportHelper.cs: 272 - Link roller_wheel_42_9_link has 0 children
+2026-03-16 15:35:00,825 INFO  ExportHelper.cs: 317 - roller_wheel_42_9_link: Exporting STL with coordinate frame Coordinate System42_9
+2026-03-16 15:35:00,825 INFO  ExportHelper.cs: 322 - roller_wheel_42_9_link: Reference geometry name 
+2026-03-16 15:35:00,882 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_42_9_link.STL
+2026-03-16 15:35:00,965 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:00,968 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_42_10_link
+2026-03-16 15:35:00,968 INFO  ExportHelper.cs: 272 - Link roller_wheel_42_10_link has 0 children
+2026-03-16 15:35:00,970 INFO  ExportHelper.cs: 317 - roller_wheel_42_10_link: Exporting STL with coordinate frame Coordinate System42_10
+2026-03-16 15:35:00,970 INFO  ExportHelper.cs: 322 - roller_wheel_42_10_link: Reference geometry name 
+2026-03-16 15:35:01,028 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_42_10_link.STL
+2026-03-16 15:35:01,156 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:01,158 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_42_11_link
+2026-03-16 15:35:01,158 INFO  ExportHelper.cs: 272 - Link roller_wheel_42_11_link has 0 children
+2026-03-16 15:35:01,159 INFO  ExportHelper.cs: 317 - roller_wheel_42_11_link: Exporting STL with coordinate frame Coordinate System42_11
+2026-03-16 15:35:01,159 INFO  ExportHelper.cs: 322 - roller_wheel_42_11_link: Reference geometry name 
+2026-03-16 15:35:01,234 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_42_11_link.STL
+2026-03-16 15:35:01,342 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:01,343 INFO  ExportHelper.cs: 317 - rear_right_wheel_link: Exporting STL with coordinate frame Coordinate System4
+2026-03-16 15:35:01,343 INFO  ExportHelper.cs: 322 - rear_right_wheel_link: Reference geometry name 
+2026-03-16 15:35:01,464 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\rear_right_wheel_link.STL
+2026-03-16 15:35:01,714 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:01,716 INFO  ExportHelper.cs: 270 - Exporting link: front_right_wheel_link
+2026-03-16 15:35:01,716 INFO  ExportHelper.cs: 272 - Link front_right_wheel_link has 22 children
+2026-03-16 15:35:01,717 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_51_1_link
+2026-03-16 15:35:01,718 INFO  ExportHelper.cs: 272 - Link roller_wheel_51_1_link has 0 children
+2026-03-16 15:35:01,718 INFO  ExportHelper.cs: 317 - roller_wheel_51_1_link: Exporting STL with coordinate frame Coordinate System51_1
+2026-03-16 15:35:01,718 INFO  ExportHelper.cs: 322 - roller_wheel_51_1_link: Reference geometry name 
+2026-03-16 15:35:02,046 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_51_1_link.STL
+2026-03-16 15:35:02,161 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:02,161 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_51_2_link
+2026-03-16 15:35:02,169 INFO  ExportHelper.cs: 272 - Link roller_wheel_51_2_link has 0 children
+2026-03-16 15:35:02,169 INFO  ExportHelper.cs: 317 - roller_wheel_51_2_link: Exporting STL with coordinate frame Coordinate System51_2
+2026-03-16 15:35:02,169 INFO  ExportHelper.cs: 322 - roller_wheel_51_2_link: Reference geometry name 
+2026-03-16 15:35:02,245 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_51_2_link.STL
+2026-03-16 15:35:02,352 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:02,353 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_51_3_link
+2026-03-16 15:35:02,353 INFO  ExportHelper.cs: 272 - Link roller_wheel_51_3_link has 0 children
+2026-03-16 15:35:02,353 INFO  ExportHelper.cs: 317 - roller_wheel_51_3_link: Exporting STL with coordinate frame Coordinate System51_3
+2026-03-16 15:35:02,353 INFO  ExportHelper.cs: 322 - roller_wheel_51_3_link: Reference geometry name 
+2026-03-16 15:35:02,421 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_51_3_link.STL
+2026-03-16 15:35:02,532 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:02,534 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_51_4_link
+2026-03-16 15:35:02,536 INFO  ExportHelper.cs: 272 - Link roller_wheel_51_4_link has 0 children
+2026-03-16 15:35:02,536 INFO  ExportHelper.cs: 317 - roller_wheel_51_4_link: Exporting STL with coordinate frame Coordinate System51_4
+2026-03-16 15:35:02,536 INFO  ExportHelper.cs: 322 - roller_wheel_51_4_link: Reference geometry name 
+2026-03-16 15:35:02,615 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_51_4_link.STL
+2026-03-16 15:35:02,705 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:02,707 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_51_5_link
+2026-03-16 15:35:02,707 INFO  ExportHelper.cs: 272 - Link roller_wheel_51_5_link has 0 children
+2026-03-16 15:35:02,707 INFO  ExportHelper.cs: 317 - roller_wheel_51_5_link: Exporting STL with coordinate frame Coordinate System51_5
+2026-03-16 15:35:02,709 INFO  ExportHelper.cs: 322 - roller_wheel_51_5_link: Reference geometry name 
+2026-03-16 15:35:02,787 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_51_5_link.STL
+2026-03-16 15:35:02,899 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:02,901 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_51_6_link
+2026-03-16 15:35:02,901 INFO  ExportHelper.cs: 272 - Link roller_wheel_51_6_link has 0 children
+2026-03-16 15:35:02,902 INFO  ExportHelper.cs: 317 - roller_wheel_51_6_link: Exporting STL with coordinate frame Coordinate System51_6
+2026-03-16 15:35:02,902 INFO  ExportHelper.cs: 322 - roller_wheel_51_6_link: Reference geometry name 
+2026-03-16 15:35:02,987 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_51_6_link.STL
+2026-03-16 15:35:03,113 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:03,115 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_51_7_link
+2026-03-16 15:35:03,115 INFO  ExportHelper.cs: 272 - Link roller_wheel_51_7_link has 0 children
+2026-03-16 15:35:03,116 INFO  ExportHelper.cs: 317 - roller_wheel_51_7_link: Exporting STL with coordinate frame Coordinate System51_7
+2026-03-16 15:35:03,116 INFO  ExportHelper.cs: 322 - roller_wheel_51_7_link: Reference geometry name 
+2026-03-16 15:35:03,195 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_51_7_link.STL
+2026-03-16 15:35:03,307 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:03,308 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_51_8_link
+2026-03-16 15:35:03,309 INFO  ExportHelper.cs: 272 - Link roller_wheel_51_8_link has 0 children
+2026-03-16 15:35:03,309 INFO  ExportHelper.cs: 317 - roller_wheel_51_8_link: Exporting STL with coordinate frame Coordinate System51_8
+2026-03-16 15:35:03,309 INFO  ExportHelper.cs: 322 - roller_wheel_51_8_link: Reference geometry name 
+2026-03-16 15:35:03,378 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_51_8_link.STL
+2026-03-16 15:35:03,469 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:03,471 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_51_9_link
+2026-03-16 15:35:03,471 INFO  ExportHelper.cs: 272 - Link roller_wheel_51_9_link has 0 children
+2026-03-16 15:35:03,472 INFO  ExportHelper.cs: 317 - roller_wheel_51_9_link: Exporting STL with coordinate frame Coordinate System51_9
+2026-03-16 15:35:03,472 INFO  ExportHelper.cs: 322 - roller_wheel_51_9_link: Reference geometry name 
+2026-03-16 15:35:03,559 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_51_9_link.STL
+2026-03-16 15:35:03,661 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:03,662 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_51_10_link
+2026-03-16 15:35:03,663 INFO  ExportHelper.cs: 272 - Link roller_wheel_51_10_link has 0 children
+2026-03-16 15:35:03,663 INFO  ExportHelper.cs: 317 - roller_wheel_51_10_link: Exporting STL with coordinate frame Coordinate System51_10
+2026-03-16 15:35:03,663 INFO  ExportHelper.cs: 322 - roller_wheel_51_10_link: Reference geometry name 
+2026-03-16 15:35:03,741 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_51_10_link.STL
+2026-03-16 15:35:03,850 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:03,852 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_51_11_link
+2026-03-16 15:35:03,852 INFO  ExportHelper.cs: 272 - Link roller_wheel_51_11_link has 0 children
+2026-03-16 15:35:03,853 INFO  ExportHelper.cs: 317 - roller_wheel_51_11_link: Exporting STL with coordinate frame Coordinate System51_11
+2026-03-16 15:35:03,853 INFO  ExportHelper.cs: 322 - roller_wheel_51_11_link: Reference geometry name 
+2026-03-16 15:35:03,918 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_51_11_link.STL
+2026-03-16 15:35:04,032 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:04,033 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_52_1_link
+2026-03-16 15:35:04,033 INFO  ExportHelper.cs: 272 - Link roller_wheel_52_1_link has 0 children
+2026-03-16 15:35:04,034 INFO  ExportHelper.cs: 317 - roller_wheel_52_1_link: Exporting STL with coordinate frame Coordinate System52_1
+2026-03-16 15:35:04,034 INFO  ExportHelper.cs: 322 - roller_wheel_52_1_link: Reference geometry name 
+2026-03-16 15:35:04,233 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_52_1_link.STL
+2026-03-16 15:35:04,347 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:04,348 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_52_2_link
+2026-03-16 15:35:04,349 INFO  ExportHelper.cs: 272 - Link roller_wheel_52_2_link has 0 children
+2026-03-16 15:35:04,349 INFO  ExportHelper.cs: 317 - roller_wheel_52_2_link: Exporting STL with coordinate frame Coordinate System52_2
+2026-03-16 15:35:04,349 INFO  ExportHelper.cs: 322 - roller_wheel_52_2_link: Reference geometry name 
+2026-03-16 15:35:04,436 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_52_2_link.STL
+2026-03-16 15:35:04,547 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:04,548 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_52_3_link
+2026-03-16 15:35:04,549 INFO  ExportHelper.cs: 272 - Link roller_wheel_52_3_link has 0 children
+2026-03-16 15:35:04,549 INFO  ExportHelper.cs: 317 - roller_wheel_52_3_link: Exporting STL with coordinate frame Coordinate System52_3
+2026-03-16 15:35:04,550 INFO  ExportHelper.cs: 322 - roller_wheel_52_3_link: Reference geometry name 
+2026-03-16 15:35:04,634 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_52_3_link.STL
+2026-03-16 15:35:04,755 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:04,755 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_52_4_link
+2026-03-16 15:35:04,758 INFO  ExportHelper.cs: 272 - Link roller_wheel_52_4_link has 0 children
+2026-03-16 15:35:04,758 INFO  ExportHelper.cs: 317 - roller_wheel_52_4_link: Exporting STL with coordinate frame Coordinate System52_4
+2026-03-16 15:35:04,758 INFO  ExportHelper.cs: 322 - roller_wheel_52_4_link: Reference geometry name 
+2026-03-16 15:35:04,908 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_52_4_link.STL
+2026-03-16 15:35:05,010 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:05,010 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_52_5_link
+2026-03-16 15:35:05,010 INFO  ExportHelper.cs: 272 - Link roller_wheel_52_5_link has 0 children
+2026-03-16 15:35:05,010 INFO  ExportHelper.cs: 317 - roller_wheel_52_5_link: Exporting STL with coordinate frame Coordinate System52_5
+2026-03-16 15:35:05,010 INFO  ExportHelper.cs: 322 - roller_wheel_52_5_link: Reference geometry name 
+2026-03-16 15:35:05,095 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_52_5_link.STL
+2026-03-16 15:35:05,203 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:05,210 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_52_6_link
+2026-03-16 15:35:05,210 INFO  ExportHelper.cs: 272 - Link roller_wheel_52_6_link has 0 children
+2026-03-16 15:35:05,210 INFO  ExportHelper.cs: 317 - roller_wheel_52_6_link: Exporting STL with coordinate frame Coordinate System52_6
+2026-03-16 15:35:05,210 INFO  ExportHelper.cs: 322 - roller_wheel_52_6_link: Reference geometry name 
+2026-03-16 15:35:05,296 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_52_6_link.STL
+2026-03-16 15:35:05,402 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:05,402 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_52_7_link
+2026-03-16 15:35:05,402 INFO  ExportHelper.cs: 272 - Link roller_wheel_52_7_link has 0 children
+2026-03-16 15:35:05,402 INFO  ExportHelper.cs: 317 - roller_wheel_52_7_link: Exporting STL with coordinate frame Coordinate System52_7
+2026-03-16 15:35:05,402 INFO  ExportHelper.cs: 322 - roller_wheel_52_7_link: Reference geometry name 
+2026-03-16 15:35:05,486 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_52_7_link.STL
+2026-03-16 15:35:05,603 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:05,603 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_52_8_link
+2026-03-16 15:35:05,608 INFO  ExportHelper.cs: 272 - Link roller_wheel_52_8_link has 0 children
+2026-03-16 15:35:05,608 INFO  ExportHelper.cs: 317 - roller_wheel_52_8_link: Exporting STL with coordinate frame Coordinate System52_8
+2026-03-16 15:35:05,608 INFO  ExportHelper.cs: 322 - roller_wheel_52_8_link: Reference geometry name 
+2026-03-16 15:35:05,688 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_52_8_link.STL
+2026-03-16 15:35:05,805 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:05,805 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_52_9_link
+2026-03-16 15:35:05,805 INFO  ExportHelper.cs: 272 - Link roller_wheel_52_9_link has 0 children
+2026-03-16 15:35:05,805 INFO  ExportHelper.cs: 317 - roller_wheel_52_9_link: Exporting STL with coordinate frame Coordinate System52_9
+2026-03-16 15:35:05,805 INFO  ExportHelper.cs: 322 - roller_wheel_52_9_link: Reference geometry name 
+2026-03-16 15:35:05,885 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_52_9_link.STL
+2026-03-16 15:35:05,994 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:05,994 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_52_10_link
+2026-03-16 15:35:05,994 INFO  ExportHelper.cs: 272 - Link roller_wheel_52_10_link has 0 children
+2026-03-16 15:35:05,994 INFO  ExportHelper.cs: 317 - roller_wheel_52_10_link: Exporting STL with coordinate frame Coordinate System52_10
+2026-03-16 15:35:05,994 INFO  ExportHelper.cs: 322 - roller_wheel_52_10_link: Reference geometry name 
+2026-03-16 15:35:06,077 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_52_10_link.STL
+2026-03-16 15:35:06,171 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:06,171 INFO  ExportHelper.cs: 270 - Exporting link: roller_wheel_52_11_link
+2026-03-16 15:35:06,171 INFO  ExportHelper.cs: 272 - Link roller_wheel_52_11_link has 0 children
+2026-03-16 15:35:06,171 INFO  ExportHelper.cs: 317 - roller_wheel_52_11_link: Exporting STL with coordinate frame Coordinate System52_11
+2026-03-16 15:35:06,171 INFO  ExportHelper.cs: 322 - roller_wheel_52_11_link: Reference geometry name 
+2026-03-16 15:35:06,249 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\roller_wheel_52_11_link.STL
+2026-03-16 15:35:06,360 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:06,360 INFO  ExportHelper.cs: 317 - front_right_wheel_link: Exporting STL with coordinate frame Coordinate System5
+2026-03-16 15:35:06,362 INFO  ExportHelper.cs: 322 - front_right_wheel_link: Reference geometry name 
+2026-03-16 15:35:06,460 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\front_right_wheel_link.STL
+2026-03-16 15:35:06,730 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:06,732 INFO  ExportHelper.cs: 270 - Exporting link: lidar_link
+2026-03-16 15:35:06,732 INFO  ExportHelper.cs: 272 - Link lidar_link has 0 children
+2026-03-16 15:35:06,732 INFO  ExportHelper.cs: 317 - lidar_link: Exporting STL with coordinate frame Coordinate System6
+2026-03-16 15:35:06,733 INFO  ExportHelper.cs: 322 - lidar_link: Reference geometry name 
+2026-03-16 15:35:06,917 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\lidar_link.STL
+2026-03-16 15:35:07,054 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:07,055 INFO  ExportHelper.cs: 270 - Exporting link: camera_link
+2026-03-16 15:35:07,056 INFO  ExportHelper.cs: 272 - Link camera_link has 0 children
+2026-03-16 15:35:07,056 INFO  ExportHelper.cs: 317 - camera_link: Exporting STL with coordinate frame Coordinate System7
+2026-03-16 15:35:07,056 INFO  ExportHelper.cs: 322 - camera_link: Reference geometry name 
+2026-03-16 15:35:07,170 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\camera_link.STL
+2026-03-16 15:35:07,414 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:07,414 INFO  ExportHelper.cs: 317 - base_link: Exporting STL with coordinate frame Coordinate System1
+2026-03-16 15:35:07,415 INFO  ExportHelper.cs: 322 - base_link: Reference geometry name 
+2026-03-16 15:35:07,903 INFO  ExportHelper.cs: 330 - Saving STL to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\meshes\base_link.STL
+2026-03-16 15:35:08,631 INFO  ExportHelper.cs: 405 - Removing SW header in STL file
+2026-03-16 15:35:08,632 INFO  ExportHelper.cs: 145 - Showing all components except previously hidden components
+2026-03-16 15:35:14,786 INFO  ExportHelper.cs: 145 - Resetting STL preferences
+2026-03-16 15:35:14,786 INFO  ExportHelper.cs: 478 - Returning STL preferences to user preferences
+2026-03-16 15:35:14,786 INFO  ExportHelper.cs: 228 - Writing URDF file to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\urdf\x_omni4wd_description.urdf
+2026-03-16 15:35:14,947 INFO  CSVImportExport.cs: 32 - Writing CSV file E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\urdf\x_omni4wd_description.csv
+2026-03-16 15:35:14,947 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,947 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,949 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,949 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,949 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,949 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,949 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,951 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,951 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,951 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,951 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,953 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,953 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,953 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,953 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,953 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,955 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,955 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,955 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,955 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,957 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,957 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,957 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,957 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,959 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,959 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,959 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,959 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,961 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,961 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,961 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,961 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,963 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,963 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,965 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,967 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,967 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,967 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,967 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,967 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,969 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,969 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,969 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,969 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,969 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,971 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,971 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,971 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,971 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,971 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,973 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,973 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,973 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,973 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,975 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,975 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,975 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,975 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,977 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,977 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,977 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,977 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,977 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,979 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,979 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,979 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,979 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,979 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,981 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,981 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,981 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,981 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,983 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,983 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,983 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,983 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,983 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,985 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,985 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,985 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,985 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,985 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,987 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,987 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,987 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,987 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,987 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,989 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,989 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,989 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,989 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,991 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,991 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,991 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,991 ERROR CSVImportExport.cs: 130 - The following columns were not written to the CSV: Link.Joint.ChildLink.link,
+2026-03-16 15:35:14,993 INFO  ExportHelper.cs: 234 - Copying log file
+2026-03-16 15:35:14,993 INFO  ExportHelper.cs: 439 - Copying C:\Users\Pham Tran Quyen Anh\sw2urdf_logs\sw2urdf.log to E:\3_Thesis PhD of QA\5_Quyen_Luan_An\9_2_Build_omni_robot\x_omni4wd_description\x_omni4wd_description\export.log

@@ -1,0 +1,261 @@
+<?xml version="1.0"?>
+<launch>
+  <!--
+    L2 Track C — demo / verification prediction cost tube trên robot omni 4WD.
+    Tương đương diffbot test_layer_costmap_extention / *_imm / *_kalman,
+    nhưng: RF2O, AMCL omni, cmd_vel holonomic, TEB omni, message pedestrian_prediction_msgs.
+
+    Artifact thuộc C-prediction-costmap/; spawn/PID L0 không sửa ở đây.
+    KHÔNG đụng runner: không sửa run_track_c_experiment.sh / ICR2026 primary yaml.
+    social_navigation_monitor và animated_marker_tutorial KHÔNG có trong omni4wd_ws
+    → gate bằng arg, mặc định tắt.
+
+    World/map mặc định: cặp NHẤT QUÁN prediction_trajectory_11 (copy nguyên bản từ
+    human_trajectory_prediction_ws/src/diffbot_gazebo/worlds + diffbot_navigation/maps).
+    Mặc định dùng perfect localization (static map→odom identity tại spawn) giống launch
+    diffbot gốc để RViz/costmap hiển thị đúng ngay; tắt arg để thử AMCL+RF2O.
+  -->
+
+  <!-- ===== World / Gazebo ===== -->
+  <arg name="world_name" default="$(find x_omni4wd_gazebo)/worlds/C-prediction-costmap/prediction_trajectory_11.world"/>
+  <arg name="map_file" default="$(find x_omni4wd_navigation)/maps/C-prediction-costmap/prediction_trajectory_11.yaml"/>
+  <arg name="debug" default="false"/>
+  <arg name="gui" default="true"/>
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="physics" default="ode"/>
+  <arg name="extra_gazebo_args" default="--verbose"/>
+  <arg name="spawn_delay" default="5.0"/>
+
+  <arg name="x_pos" default="-10.0"/>
+  <arg name="y_pos" default="0.0"/>
+  <arg name="yaw" default="0.0"/>
+  <arg name="z_pos_x_omni4wd" default="0.095"/>
+
+  <arg name="cmd_vel_topic" default="/cmd_vel"/>
+  <arg name="odom_topic" default="/odom"/>
+  <arg name="scan_raw_topic" default="/scan"/>
+  <arg name="scan_topic" default="/scan_filtered"/>
+  <arg name="rf2o_scan_topic" default="$(arg scan_raw_topic)"/>
+  <arg name="laser_filter_config" default="$(find x_omni4wd_simulation)/config/laser_filter_params.yaml"/>
+  <arg name="odom_frame_id" default="odom"/>
+  <arg name="base_frame_id" default="base_footprint"/>
+  <arg name="global_frame_id" default="map"/>
+  <arg name="local_planner" default="teb"/>
+
+  <!-- Holonomic wheel limits (khớp ICR2026 / cmd_vel_to_omni_wheels) -->
+  <arg name="R" default="0.2505"/>
+  <arg name="wheel_radius" default="0.0635"/>
+  <arg name="max_wheel_speed" default="50.0"/>
+  <arg name="cmd_vel_to_wheels_timeout" default="0.5"/>
+
+  <!-- true: bỏ AMCL+RF2O; static map→odom tại spawn + wheel odom (cô lập layer) -->
+  <!-- Mặc định true: giống launch diffbot gốc, bảo đảm RViz/costmap hiển thị đúng ngay -->
+  <arg name="use_perfect_localization" default="true"/>
+  <arg name="use_amcl_rf2o" default="$(eval not arg('use_perfect_localization'))"/>
+
+  <!-- Prediction -->
+  <arg name="prediction_model" default="imm" doc="imm | kalman | cv"/>
+  <arg name="prediction_enable_viz" default="true"/>
+  <arg name="use_social_state_simulator" default="true"
+       doc="true: /social_state từ simulator (giống diffbot imm); false: cần fusion"/>
+  <arg name="use_social_density_fusion" default="false"/>
+  <arg name="social_config_file" default="$(find social_density_fusion)/config/costmapEx_33_people.yaml"/>
+  <arg name="ped_fixed_x" default="-3.0" doc="trùng vị trí actor30 trong prediction_trajectory_11.world"/>
+  <arg name="ped_fixed_y" default="0.0"/>
+  <arg name="open_dual_steering" default="true"/>
+  <arg name="relay_cmd_vel5_to_actor" default="true"
+       doc="relay /cmd_vel5 → /cmd_vel30 để actor30 trong world đi cùng vận tốc steering, khớp người ảo của /social_state"/>
+
+  <!-- Optional extras (mặc định tắt — package có thể thiếu) -->
+  <arg name="enable_social_navigation_monitor" default="false"/>
+  <arg name="enable_animated_markers" default="false"/>
+  <arg name="enable_actor_path_publisher" default="false"/>
+  <arg name="enable_bird_view_relay" default="true"/>
+  <arg name="open_rviz" default="true"/>
+  <arg name="rvizconfig" default="$(find x_omni4wd_navigation)/rviz/C-prediction-costmap/test_layer_costmap_extention_omni.rviz"/>
+
+  <env name="GAZEBO_MODEL_PATH" value="$(find x_omni4wd_gazebo)/models:$(find gazebo_ros_actor_plugin)/config/skins:$(optenv GAZEBO_MODEL_PATH)"/>
+  <env name="GAZEBO_RESOURCE_PATH" value="$(find x_omni4wd_gazebo)/worlds:$(optenv GAZEBO_RESOURCE_PATH)"/>
+  <env name="GAZEBO_PLUGIN_PATH" value="$(optenv GAZEBO_PLUGIN_PATH):$(find gazebo_ros_actor_plugin)/../../devel/lib:$(find actor_collisions_plugin)/../../devel/lib"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg world_name)"/>
+    <arg name="debug" value="$(arg debug)"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="headless" value="$(arg headless)"/>
+    <arg name="physics" value="$(arg physics)"/>
+    <arg name="extra_gazebo_args" value="$(arg extra_gazebo_args)"/>
+  </include>
+
+  <!-- Perfect localization: map→odom cố định tại spawn (không identity thuần nếu spawn ≠ 0) -->
+  <!-- static_transform_publisher: x y z yaw pitch roll parent child -->
+  <node if="$(arg use_perfect_localization)"
+        pkg="tf2_ros" type="static_transform_publisher" name="map_to_odom_perfect"
+        args="$(arg x_pos) $(arg y_pos) 0 $(arg yaw) 0 0 $(arg global_frame_id) $(arg odom_frame_id)"/>
+
+  <!-- Robot spawn + control -->
+  <arg name="urdf_file_omni" value="$(find x_omni4wd_description)/urdf/x_omni4wd_description.urdf"/>
+  <param name="robot_description" textfile="$(arg urdf_file_omni)"/>
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+        args="-urdf -model robot -param robot_description -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos_x_omni4wd) -R 0 -P 0 -Y $(arg yaw)"
+        launch-prefix="bash -c 'sleep $(arg spawn_delay); $0 $@'"/>
+
+  <rosparam file="$(find x_omni4wd_control)/config/controllers.yaml" command="load"/>
+  <!-- KHÔNG load gazebo_ros_control_gains.yaml: velocity controller dùng ideal velocity
+       interface; thêm PID gains (p=8) khiến ODE nổ NaN (đã kiểm chứng run 7 vs sanity).
+       Lỗi "No p gain specified" khi khởi động là vô hại. -->
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/x_omni4wd"
+        args="joint_state_controller front_left_wheel_velocity_controller rear_left_wheel_velocity_controller rear_right_wheel_velocity_controller front_right_wheel_velocity_controller"
+        launch-prefix="bash -c 'sleep 8; $0 $@'"/>
+  <node name="cmd_vel_to_omni_wheels" pkg="x_omni4wd_control" type="cmd_vel_to_omni_wheels.py" output="screen">
+    <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+    <param name="R" value="$(arg R)"/>
+    <param name="wheel_radius" value="$(arg wheel_radius)"/>
+    <param name="max_wheel_speed" value="$(arg max_wheel_speed)"/>
+    <param name="cmd_timeout" value="$(arg cmd_vel_to_wheels_timeout)"/>
+  </node>
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" respawn="false" output="screen">
+    <param name="use_gui" value="false"/>
+    <param name="publish_default_positions" value="true"/>
+    <rosparam param="source_list">["/x_omni4wd/joint_states"]</rosparam>
+  </node>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+    <param name="publish_frequency" type="double" value="50.0"/>
+    <param name="tf_prefix" value=""/>
+    <param name="use_tf_static" value="true"/>
+  </node>
+
+  <!-- Odometry: RF2O (mặc định) hoặc wheel (perfect localization) -->
+  <node if="$(arg use_amcl_rf2o)"
+        name="rf2o_laser_odometry" pkg="rf2o_laser_odometry" type="rf2o_laser_odometry_node" output="screen">
+    <rosparam command="load" file="$(find x_omni4wd_slam)/config/rf2o_x_omni4wd.yaml"/>
+    <param name="laser_scan_topic" value="$(arg rf2o_scan_topic)"/>
+    <param name="odom_topic" value="$(arg odom_topic)"/>
+  </node>
+  <node if="$(arg use_perfect_localization)"
+        name="wheel_odometry" pkg="x_omni4wd_slam" type="wheel_odometry_node.py" output="screen">
+    <rosparam command="load" file="$(find x_omni4wd_slam)/config/wheel_odom_x_omni4wd.yaml"/>
+    <param name="odom_topic" value="$(arg odom_topic)"/>
+    <param name="publish_tf" value="true"/>
+    <param name="joint_states_topic" value="/joint_states"/>
+  </node>
+
+  <node if="$(arg enable_bird_view_relay)" pkg="topic_tools" type="relay" name="bird_view_image_relay"
+        args="/view_camera/bird_view/image_raw /view_camera/image_raw"/>
+  <node if="$(arg enable_bird_view_relay)" pkg="topic_tools" type="relay" name="bird_view_info_relay"
+        args="/view_camera/bird_view/camera_info /view_camera/camera_info"/>
+
+  <!-- Laser filter -->
+  <node pkg="laser_filters" type="scan_to_scan_filter_chain" name="laser_filter">
+    <rosparam command="load" file="$(arg laser_filter_config)"/>
+    <remap from="scan" to="$(arg scan_raw_topic)"/>
+    <remap from="scan_filtered" to="$(arg scan_topic)"/>
+  </node>
+
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)" output="screen">
+    <param name="frame_id" value="$(arg global_frame_id)"/>
+  </node>
+
+  <!-- AMCL demo (odom_model_type: omni) — chỉ khi không perfect localization -->
+  <node if="$(arg use_amcl_rf2o)" pkg="amcl" type="amcl" name="amcl" respawn="true" output="screen">
+    <rosparam file="$(find x_omni4wd_navigation)/config/C-prediction-costmap/demo_amcl_params_omni.yaml" command="load"/>
+    <param name="initial_pose_x" value="$(arg x_pos)"/>
+    <param name="initial_pose_y" value="$(arg y_pos)"/>
+    <param name="initial_pose_a" value="$(arg yaw)"/>
+    <param name="odom_frame_id" value="$(arg odom_frame_id)"/>
+    <param name="base_frame_id" value="$(arg base_frame_id)"/>
+    <param name="global_frame_id" value="$(arg global_frame_id)"/>
+    <remap from="scan" to="$(arg scan_topic)"/>
+  </node>
+
+  <!-- move_base: GlobalPlanner + TEB omni + demo costmap (tube enabled) -->
+  <node pkg="move_base" type="move_base" respawn="true" name="move_base" output="screen">
+    <rosparam file="$(find x_omni4wd_navigation)/config/ICR2026/costmap_common_params_x_omni4wd.yaml" command="load" ns="global_costmap"/>
+    <rosparam file="$(find x_omni4wd_navigation)/config/ICR2026/costmap_common_params_x_omni4wd.yaml" command="load" ns="local_costmap"/>
+    <rosparam file="$(find x_omni4wd_navigation)/config/C-prediction-costmap/demo_costmap_global_params_omni.yaml" command="load"/>
+    <rosparam file="$(find x_omni4wd_navigation)/config/C-prediction-costmap/demo_costmap_local_params_omni.yaml" command="load"/>
+    <rosparam file="$(find x_omni4wd_navigation)/config/ICR2026/move_base_params.yaml" command="load"/>
+    <rosparam if="$(eval local_planner == 'teb')"
+              file="$(find x_omni4wd_navigation)/config/ICR2026/teb_local_planner_params_omni.yaml" command="load"/>
+    <rosparam if="$(eval local_planner == 'dwa')"
+              file="$(find x_omni4wd_navigation)/config/ICR2026/dwa_local_planner_params.yaml" command="load"/>
+    <param name="base_global_planner" value="global_planner/GlobalPlanner"/>
+    <param if="$(eval local_planner == 'teb')"
+           name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS"/>
+    <param if="$(eval local_planner == 'dwa')"
+           name="base_local_planner" value="dwa_local_planner/DWAPlannerROS"/>
+    <param name="clearing_rotation_allowed" value="false"/>
+    <param name="global_costmap/global_frame" value="$(arg global_frame_id)"/>
+    <param name="global_costmap/robot_base_frame" value="$(arg base_frame_id)"/>
+    <param name="global_costmap/obstacles_layer/base_scan/topic" value="$(arg scan_topic)"/>
+    <param name="local_costmap/global_frame" value="$(arg odom_frame_id)"/>
+    <param name="local_costmap/robot_base_frame" value="$(arg base_frame_id)"/>
+    <param name="local_costmap/obstacles_layer/base_scan/topic" value="$(arg scan_topic)"/>
+    <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+  </node>
+
+  <!-- /social_state -->
+  <include if="$(arg use_social_state_simulator)"
+           file="$(find x_omni4wd_navigation)/launch/C-prediction-costmap/prediction_demo_social_input.launch">
+    <arg name="fixed_x" value="$(arg ped_fixed_x)"/>
+    <arg name="fixed_y" value="$(arg ped_fixed_y)"/>
+  </include>
+
+  <node if="$(arg use_social_density_fusion)"
+        name="lidar_map_polygon_node" pkg="social_density_fusion" type="lidar_map_polygon_node.py" output="screen">
+    <param name="scan_topic" value="$(arg scan_raw_topic)"/>
+    <param name="tf_lookup_timeout" value="0.25"/>
+    <param name="max_tf_cache_age" value="0.80"/>
+  </node>
+  <node if="$(arg use_social_density_fusion)"
+        name="social_density_fusion_node" pkg="social_density_fusion" type="social_density_fusion_node.py" output="screen">
+    <param name="config_path" value="$(arg social_config_file)"/>
+    <param name="auto_reload_config" value="true"/>
+    <param name="config_reload_interval_sec" value="1.0"/>
+    <param name="fusion_rate" value="20.0"/>
+    <param name="publish_rate" value="30.0"/>
+    <rosparam command="load" file="$(arg social_config_file)"/>
+    <remap if="$(arg use_social_state_simulator)" from="/social_state" to="/social_state_fusion"/>
+  </node>
+
+  <!-- /social_state → IMM|Kalman → /pedestrian/predicted_trajectories -->
+  <include file="$(find x_omni4wd_navigation)/launch/prediction_bridge.launch">
+    <arg name="prediction_model" value="$(arg prediction_model)"/>
+    <arg name="enable_viz" value="$(arg prediction_enable_viz)"/>
+    <arg name="use_social_velocity" value="true"/>
+  </include>
+
+  <include if="$(arg open_dual_steering)"
+           file="$(find x_omni4wd_navigation)/launch/C-prediction-costmap/prediction_dual_steering.launch"/>
+
+  <!-- Actor30 trong world nghe /cmd_vel30; steering người phát /cmd_vel5 → relay để khớp -->
+  <node if="$(arg relay_cmd_vel5_to_actor)" pkg="topic_tools" type="relay"
+        name="relay_cmd_vel5_to_cmd_vel30" args="/cmd_vel5 /cmd_vel30"/>
+
+  <node if="$(arg open_rviz)" pkg="rviz" type="rviz" name="rviz" required="false"
+        args="-d $(arg rvizconfig)"/>
+
+  <!-- Optional: actors path (world có actor 30/31) -->
+  <node if="$(arg enable_actor_path_publisher)"
+        name="multi_actor_path_publisher" pkg="gazebo_ros_actor_plugin"
+        type="multi_actor_path_publisher.py" output="screen">
+    <param name="startup_delay_sec" value="5.0"/>
+  </node>
+
+  <!-- Gate: packages KHÔNG nằm trong omni4wd_ws — chỉ bật khi user cài riêng -->
+  <node if="$(arg enable_social_navigation_monitor)"
+        name="sgi_calculator" pkg="social_navigation_monitor" type="sgi_calculator.py" output="screen"/>
+  <node if="$(arg enable_social_navigation_monitor)"
+        name="sii_calculator" pkg="social_navigation_monitor" type="sii_calculator.py" output="screen"/>
+  <node if="$(arg enable_animated_markers)"
+        name="actor_visualization_node" pkg="animated_marker_tutorial"
+        type="actor_visualization_node.py" output="screen"/>
+
+  <!-- Gazebo đôi khi pause → /clock đứng -->
+  <node pkg="pedestrian_prediction" type="unpause_gazebo.sh"
+        name="demo_unpause_gazebo" output="screen" args="12"/>
+</launch>

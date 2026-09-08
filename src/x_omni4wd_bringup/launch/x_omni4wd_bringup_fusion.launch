@@ -1,0 +1,220 @@
+<?xml version="1.0"?>
+<!--
+  Bringup robot thật — phần cứng cho EKF fusion (không publish /odom).
+
+  Cung cấp:
+    - URDF, joint_states (encoder WVEL), cmd_vel -> Arduino
+    - LiDAR /scan, ZED wrapper hoặc ZED Body Tracking (tùy chọn; không cùng lúc)
+
+  Odom (wheel + RF2O + EKF) do x_omni4wd_slam/launch/ekf_odom_fusion.launch khởi chạy
+  (thường qua x_omni4wd_navigation_real_ekf.launch).
+
+  Firmware: MSD_H20_OMNI_Bridge_WheelOdom
+
+  Ví dụ:
+    roslaunch x_omni4wd_bringup x_omni4wd_bringup_fusion.launch
+    roslaunch x_omni4wd_bringup x_omni4wd_bringup_fusion.launch use_zed_sdk_bridge:=true
+-->
+<launch>
+  <arg name="use_sim_time" default="false"/>
+
+  <arg name="cmd_vel_topic" default="/cmd_vel"/>
+  <arg name="scan_topic" default="/scan"/>
+  <arg name="odom_frame" default="odom"/>
+  <arg name="base_frame" default="base_footprint"/>
+  <arg name="laser_frame" default="lidar_link"/>
+
+  <arg name="open_rviz" default="false"/>
+  <arg name="use_rqt_omni_robot_steering" default="false"/>
+
+  <arg name="robot_description_file" default="$(find x_omni4wd_description)/urdf/x_omni4wd_description.urdf"/>
+
+  <arg name="arduino_port" default="/dev/robot_arduino"/>
+  <arg name="arduino_baud" default="19200"/>
+  <!-- Clamp cmd_vel (Arduino). Động cơ Planet 24V:
+       https://thegioichip.com.vn/products/dong-co-planet-24v
+       Chi tiết: docs/MOTOR_PLANET_24V.md -->
+  <arg name="max_linear" default="0.7"/>
+  <arg name="max_angular" default="1.2"/>
+  <arg name="serial_cmd_timeout" default="0.8"/>
+  <arg name="lidar_port" default="/dev/robot_lidar"/>
+  <arg name="lidar_baud" default="115200"/>
+
+  <arg name="R" default="0.2505"/>
+  <arg name="wheel_radius" default="0.0635"/>
+  <arg name="wheel_joint_states_topic" default="/wheel_encoder_joint_states"/>
+
+  <arg name="use_lidar" default="true"/>
+  <!-- false: Ctrl+C/roslaunch stop → LiDAR tắt hẳn (không tự sống lại) -->
+  <arg name="lidar_respawn" default="false"/>
+  <arg name="use_zed" default="true"/>
+  <!-- Body tracking mở camera SDK trực tiếp → không chạy cùng zed_wrapper -->
+  <arg name="use_zed_sdk_bridge" default="false"/>
+  <arg name="zed_respawn" default="false"/>
+  <arg name="use_hardware_shutdown_guard" default="true"/>
+  <arg name="zed_body_enable_visualizer" default="true"/>
+  <arg name="zed_publish_skeleton_markers" default="true"/>
+  <arg name="zed_show_skeleton_overlay" default="true"/>
+  <arg name="zed_detection_label_font_scale" default="0.9"/>
+  <arg name="zed_detection_label_font_thickness" default="3"/>
+  <arg name="zed_body_enable_proxemic" default="false"/>
+  <arg name="zed_body_enable_costmap_3d" default="false"/>
+  <arg name="zed_body_detection_model" default="HUMAN_BODY_FAST"/>
+  <arg name="zed_body_format" default="34"/>
+  <arg name="zed_camera_name" default="zed2i"/>
+  <arg name="zed_base_frame" default="camera_link"/>
+  <!-- YOLO Ultralytics (~80 COCO) trên /image_raw; mặc định tắt (nặng) -->
+  <arg name="use_yolo" default="true"/>
+  <arg name="yolo_model" default="yolov8n.pt"/>
+  <arg name="yolo_conf_thres" default="0.25"/>
+  <arg name="yolo_debug" default="false"/>
+  <arg name="yolo_process_hz" default="3.0"/>
+  <arg name="yolo_device" default=""/>
+  <arg name="yolo_launch_delay" default="8.0"/>
+  <arg name="yolo_publish_result_image" default="false"/>
+  <arg name="zed_depth_mode" default="0"/>
+  <arg name="zed_enable_positional_tracking" default="true"/>
+  <arg name="zed_publish_depth" default="false"/>
+  <arg name="zed_camera_fps" default="30"/>
+  <arg name="zed_launch_delay" default="3.0"/>
+  <arg name="zed_respawn_delay" default="25.0"/>
+  <!-- ZED VIO từ body-tracking node (không dùng zed_wrapper khi body tracking bật) -->
+  <arg name="publish_vio_odom" default="false"/>
+  <arg name="publish_vio_tf" default="false"/>
+  <arg name="publish_imu" default="false"/>
+  <arg name="vio_odom_topic" default="/odom_zed"/>
+  <arg name="imu_topic" default="/zed_imu"/>
+  <arg name="vio_two_d_mode" default="true"/>
+  <arg name="enable_area_memory" default="true"/>
+  <arg name="enable_imu_fusion" default="true"/>
+  <!-- Khớp URDF base_link → camera_link (dùng khi publish_vio_odom) -->
+  <arg name="zed_cam_pos_x" default="0.052484109778863"/>
+  <arg name="zed_cam_pos_y" default="8.47956709802977e-05"/>
+  <arg name="zed_cam_pos_z" default="1.05312524052101"/>
+  <arg name="zed_cam_roll" default="0.0"/>
+  <arg name="zed_cam_pitch" default="0.0"/>
+  <arg name="zed_cam_yaw" default="0.0"/>
+  <arg name="vio_publish_hz" default="15.0"/>
+
+  <param name="use_sim_time" value="$(arg use_sim_time)"/>
+  <param name="robot_description" textfile="$(arg robot_description_file)"/>
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" respawn="false" output="screen">
+    <param name="use_gui" value="false"/>
+    <param name="publish_default_positions" value="true"/>
+    <rosparam subst_value="true" param="source_list">["$(arg wheel_joint_states_topic)"]</rosparam>
+  </node>
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+    <param name="publish_frequency" value="50.0"/>
+  </node>
+
+  <node pkg="x_omni4wd_bringup" type="arduino_interface_omni_wheel_odom.py" name="arduino_interface_omni_wheel_odom" output="screen">
+    <param name="serial_port" value="$(arg arduino_port)"/>
+    <param name="baud_rate" value="$(arg arduino_baud)"/>
+    <param name="timeout" value="0.2"/>
+    <param name="cmd_vel_topic" value="$(arg cmd_vel_topic)"/>
+    <param name="max_linear" value="$(arg max_linear)"/>
+    <param name="max_angular" value="$(arg max_angular)"/>
+    <param name="cmd_timeout" value="$(arg serial_cmd_timeout)"/>
+    <param name="send_rate_hz" value="20.0"/>
+    <param name="wheel_joint_states_topic" value="$(arg wheel_joint_states_topic)"/>
+    <param name="R" value="$(arg R)"/>
+    <param name="wheel_radius" value="$(arg wheel_radius)"/>
+    <param name="use_cmd_vel_fallback" value="true"/>
+  </node>
+
+  <group if="$(arg use_lidar)">
+    <node name="rplidarNode" pkg="rplidar_ros" type="rplidarNode" output="screen"
+          respawn="$(arg lidar_respawn)" respawn_delay="5">
+      <param name="serial_port" type="string" value="$(arg lidar_port)"/>
+      <param name="serial_baudrate" type="int" value="$(arg lidar_baud)"/>
+      <param name="frame_id" type="string" value="$(arg laser_frame)"/>
+      <param name="inverted" type="bool" value="false"/>
+      <param name="angle_compensate" type="bool" value="true"/>
+      <remap from="scan" to="$(arg scan_topic)"/>
+    </node>
+  </group>
+
+  <!-- Trước khi kill node: stop_motor + cmd_vel=0 (tránh LiDAR vẫn quay) -->
+  <node if="$(arg use_hardware_shutdown_guard)"
+        pkg="x_omni4wd_bringup" type="hardware_shutdown_guard.py"
+        name="hardware_shutdown_guard" output="screen" required="false">
+    <param name="cmd_vel_topic" value="$(arg cmd_vel_topic)"/>
+  </node>
+
+  <!-- zed_wrapper chỉ khi use_zed và KHÔNG bật body tracking -->
+  <group if="$(eval use_zed and not use_zed_sdk_bridge)">
+    <!-- required=false: ZED crash không shutdown toàn stack (xem zed2i_robot.launch) -->
+    <include file="$(find x_omni4wd_bringup)/launch/zed2i_robot.launch">
+      <arg name="camera_name" value="$(arg zed_camera_name)"/>
+      <arg name="base_frame" value="$(arg zed_base_frame)"/>
+    </include>
+    <rosparam file="$(find zed_wrapper)/params/zed2i.yaml" command="load" ns="$(arg zed_camera_name)/zed_node"/>
+    <param name="$(arg zed_camera_name)/zed_node/general/base_frame" value="$(arg zed_base_frame)"/>
+    <param name="$(arg zed_camera_name)/zed_node/pos_tracking/publish_tf" value="false"/>
+    <param name="$(arg zed_camera_name)/zed_node/pos_tracking/two_d_mode" value="true"/>
+    <param name="$(arg zed_camera_name)/zed_node/pos_tracking/pos_tracking_enabled" value="true"/>
+    <param name="$(arg zed_camera_name)/zed_node/mapping/mapping_enabled" value="false"/>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="zed_camera_link_to_left_camera_frame"
+          args="0 0 0 0 0 0 1 $(arg zed_base_frame) $(arg zed_camera_name)_left_camera_frame"/>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="zed_left_camera_to_optical_frame"
+          args="0 0 0 -1.5708 0 -1.5708 $(arg zed_camera_name)_left_camera_frame $(arg zed_camera_name)_left_camera_optical_frame"/>
+  </group>
+
+  <group if="$(arg use_zed_sdk_bridge)">
+    <include file="$(find x_omni4wd_bringup)/launch/zed2i_body_tracking_robot.launch">
+      <arg name="camera_frame_id" value="$(arg zed_base_frame)"/>
+      <arg name="detection_model" value="$(arg zed_body_detection_model)"/>
+      <arg name="body_format" value="$(arg zed_body_format)"/>
+      <arg name="enable_visualizer" value="$(arg zed_body_enable_visualizer)"/>
+      <arg name="publish_skeleton_markers" value="$(arg zed_publish_skeleton_markers)"/>
+      <arg name="show_skeleton_overlay" value="$(arg zed_show_skeleton_overlay)"/>
+      <arg name="detection_label_font_scale" value="$(arg zed_detection_label_font_scale)"/>
+      <arg name="detection_label_font_thickness" value="$(arg zed_detection_label_font_thickness)"/>
+      <arg name="enable_proxemic" value="$(arg zed_body_enable_proxemic)"/>
+      <arg name="enable_costmap_3d" value="$(arg zed_body_enable_costmap_3d)"/>
+      <arg name="use_yolo" value="$(arg use_yolo)"/>
+      <arg name="yolo_model" value="$(arg yolo_model)"/>
+      <arg name="yolo_conf_thres" value="$(arg yolo_conf_thres)"/>
+      <arg name="yolo_debug" value="$(arg yolo_debug)"/>
+      <arg name="yolo_process_hz" value="$(arg yolo_process_hz)"/>
+      <arg name="yolo_device" value="$(arg yolo_device)"/>
+      <arg name="yolo_launch_delay" value="$(arg yolo_launch_delay)"/>
+      <arg name="yolo_publish_result_image" value="$(arg yolo_publish_result_image)"/>
+      <arg name="depth_mode" value="$(arg zed_depth_mode)"/>
+      <arg name="enable_positional_tracking" value="$(arg zed_enable_positional_tracking)"/>
+      <arg if="$(arg use_yolo)" name="publish_depth" value="true"/>
+      <arg unless="$(arg use_yolo)" name="publish_depth" value="$(arg zed_publish_depth)"/>
+      <arg name="camera_fps" value="$(arg zed_camera_fps)"/>
+      <arg name="zed_launch_delay" value="$(arg zed_launch_delay)"/>
+      <arg name="zed_respawn" value="$(arg zed_respawn)"/>
+      <arg name="zed_respawn_delay" value="$(arg zed_respawn_delay)"/>
+      <arg name="publish_vio_odom" value="$(arg publish_vio_odom)"/>
+      <arg name="publish_vio_tf" value="$(arg publish_vio_tf)"/>
+      <arg name="publish_imu" value="$(arg publish_imu)"/>
+      <arg name="vio_odom_topic" value="$(arg vio_odom_topic)"/>
+      <arg name="imu_topic" value="$(arg imu_topic)"/>
+      <arg name="odom_frame_id" value="$(arg odom_frame)"/>
+      <arg name="base_frame_id" value="$(arg base_frame)"/>
+      <arg name="vio_two_d_mode" value="$(arg vio_two_d_mode)"/>
+      <arg name="enable_area_memory" value="$(arg enable_area_memory)"/>
+      <arg name="enable_imu_fusion" value="$(arg enable_imu_fusion)"/>
+      <arg name="cam_pos_x" value="$(arg zed_cam_pos_x)"/>
+      <arg name="cam_pos_y" value="$(arg zed_cam_pos_y)"/>
+      <arg name="cam_pos_z" value="$(arg zed_cam_pos_z)"/>
+      <arg name="cam_roll" value="$(arg zed_cam_roll)"/>
+      <arg name="cam_pitch" value="$(arg zed_cam_pitch)"/>
+      <arg name="cam_yaw" value="$(arg zed_cam_yaw)"/>
+      <arg name="vio_publish_hz" value="$(arg vio_publish_hz)"/>
+    </include>
+  </group>
+
+  <group if="$(arg open_rviz)">
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find x_omni4wd_bringup)/rviz/bringup.rviz" output="screen" required="false"/>
+  </group>
+
+  <group if="$(arg use_rqt_omni_robot_steering)">
+    <node pkg="rqt_omni_robot_steering" type="rqt_omni_robot_steering" name="rqt_omni_robot_steering" output="screen"/>
+  </group>
+</launch>

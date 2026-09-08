@@ -1,0 +1,27 @@
+# Cấu hình RF2O Laser Odometry cho x_omni4wd
+# Khớp với lidar RPLidar A2 (A2M8): frame_id = lidar_link, topic /scan, 10 Hz, 800 samples, 360°, 0.15–12 m
+# (x_omni4wd_description: Gazebo gpu_ray; costmap dùng sensor_frame: lidar_link)
+#
+# Dùng cho CẢ simulation VÀ robot thật:
+#   - Robot thật: bringup với use_lidar:=true (rplidar_ros + node RF2O). Đảm bảo driver publish
+#     /scan với frame_id trùng base (vd lidar_link), TF base_footprint->lidar_link có từ URDF/state_publisher.
+#   - Nếu lidar thật khác A2M8: chỉnh laser_scan_topic, freq, laser_fps cho đúng tần số và topic.
+#
+# Quan trọng cho odom chính xác:
+#   - freq: tần số chạy vòng process() (Hz). Nên = tần số scan (10) để xử lý mỗi frame một lần.
+#   - laser_fps: tần số scan thực (Hz), truyền vào thuật toán RF2O. Phải khớp lidar (10 Hz).
+# Khi thay đổi cấu hình lidar (topic, frame, tần số), cập nhật file này và đảm bảo
+# TF có base_footprint -> lidar_link (từ robot_state_publisher/URDF).
+# Load file này trong launch: rosparam load vào namespace của node rf2o_laser_odometry.
+
+laser_scan_topic: "/scan"
+odom_topic: "/odom"
+publish_tf: true
+base_frame_id: "base_footprint"
+odom_frame_id: "odom"
+init_pose_from_topic: ""
+
+# Tần số xử lý: 10 Hz khớp với lidar A2M8 (10 Hz), mỗi scan xử lý một lần
+freq: 10.0
+# Tần số scan (Hz) dùng trong thuật toán RF2O — phải đúng với lidar để scale vận tốc/odom đúng
+laser_fps: 10.0

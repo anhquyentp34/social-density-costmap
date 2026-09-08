@@ -1,0 +1,22 @@
+# Kịch bản KHÓ: nhiều waypoints, nhiều rẽ và đổi hướng, có thể qua khu vực hẹp/đông.
+waypoints:
+  - name: GOAL_1
+    x: -2.0
+    y: 7.0
+    yaw: -1.57
+  - name: GOAL_2
+    x: -3.0
+    y: -6.5
+    yaw: 0.0
+  - name: GOAL_3
+    x: 8.0
+    y: -1.0
+    yaw: 1.57
+  - name: GOAL_4
+    x: 3.0
+    y: 2.0
+    yaw: -1.57
+  - name: GOAL_5
+    x: -10.0
+    y: -7.0
+    yaw: 1.57

@@ -1,0 +1,7 @@
+# Track A POS — map (bản sao độc lập từ D exp456 v3; chỉnh riêng nếu cần).
+image: trackA_pos_map_exp456_v3.pgm
+resolution: 0.050000
+origin: [-51.200024, -51.200024, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196

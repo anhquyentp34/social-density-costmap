@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!--
+  Alias: Body Tracking robot (giữ pipeline /bodies cho social costmap).
+  VIO tắt mặc định — bật bằng publish_vio_odom:=true hoặc dùng zed_vio.launch.
+-->
+<launch>
+  <arg name="publish_vio_odom" default="false"/>
+  <arg name="publish_vio_tf" default="false"/>
+  <arg name="publish_imu" default="false"/>
+  <arg name="use_yolo" default="true"/>
+  <arg name="enable_visualizer" default="true"/>
+
+  <include file="$(find x_omni4wd_bringup)/launch/zed2i_body_tracking_robot.launch">
+    <arg name="publish_vio_odom" value="$(arg publish_vio_odom)"/>
+    <arg name="publish_vio_tf" value="$(arg publish_vio_tf)"/>
+    <arg name="publish_imu" value="$(arg publish_imu)"/>
+    <arg name="use_yolo" value="$(arg use_yolo)"/>
+    <arg name="enable_visualizer" value="$(arg enable_visualizer)"/>
+  </include>
+</launch>

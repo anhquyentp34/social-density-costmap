@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Launch file để chạy YOLO với ZED2i camera ĐÃ CHẠY SẴN
+  Sử dụng khi camera đã được khởi động từ terminal khác
+  Không include camera, chỉ chạy YOLO node
+-->
+<launch>
+  <!-- YOLO Tracker Node (2D Detection) -->
+  <arg name="debug" default="false"/>
+  <arg name="use_rviz" default="false"/>  <!-- true = mở RViz, false = mở image_view (nếu debug=true) -->
+  <arg name="yolo_model" default="yolov8n.pt"/>
+  <arg name="conf_thres" default="0.25"/>
+  <arg name="iou_thres" default="0.45"/>
+  <arg name="max_det" default="300"/>
+  <arg name="classes" default=""/>  <!-- [] = tất cả, [0,1] = person, bicycle -->
+  <arg name="tracker" default="bytetrack.yaml"/>
+  <arg name="device" default=""/>  <!-- "" = auto, "cpu", "0" = cuda:0 -->
+  <arg name="result_conf" default="true"/>
+  <arg name="result_line_width" default="2"/>
+  <arg name="result_font_size" default="1"/>
+  <arg name="result_font" default="Arial.ttf"/>
+  <arg name="result_labels" default="true"/>
+  <arg name="result_boxes" default="true"/>
+  
+  <!-- Input image topic (mặc định từ ZED2i) -->
+  <arg name="input_topic" default="/zed2i/zed_node/rgb/image_rect_color"/>
+
+  <node name="yolo_tracker_node" pkg="ultralytics_ros" type="tracker_node.py" output="screen">
+    <param name="yolo_model" value="$(arg yolo_model)"/>
+    <!-- Sử dụng ảnh RGB từ camera đã chạy -->
+    <param name="input_topic" value="$(arg input_topic)"/>
+    <param name="result_topic" value="/yolo_result"/>
+    <param name="result_image_topic" value="/yolo_result_image"/>
+    <param name="conf_thres" value="$(arg conf_thres)"/>
+    <param name="iou_thres" value="$(arg iou_thres)"/>
+    <param name="max_det" value="$(arg max_det)"/>
+    <param name="tracker" value="$(arg tracker)"/>
+    <param name="result_conf" value="$(arg result_conf)"/>
+    <param name="result_line_width" value="$(arg result_line_width)"/>
+    <param name="result_font_size" value="$(arg result_font_size)"/>
+    <param name="result_font" value="$(arg result_font)"/>
+    <param name="result_labels" value="$(arg result_labels)"/>
+    <param name="result_boxes" value="$(arg result_boxes)"/>
+    <rosparam param="classes" subst_value="true">$(arg classes)</rosparam>
+    <rosparam param="device" subst_value="true">$(arg device)</rosparam>
+  </node>
+
+  <!-- RViz for visualization (nếu use_rviz=true) -->
+  <arg name="rviz_config" default="$(find ultralytics_ros)/rviz/yolo_2d.rviz" />
+  <node if="$(arg use_rviz)" pkg="rviz" type="rviz" name="rviz" 
+        args="-d $(arg rviz_config)" output="screen"/>
+
+  <!-- Image Viewer (nếu debug=true và use_rviz=false) -->
+  <!-- Dùng group để xử lý logic phức tạp -->
+  <group if="$(arg debug)">
+    <group unless="$(arg use_rviz)">
+      <node name="yolo_image_view" pkg="image_view" type="image_view" output="screen">
+        <remap from="image" to="/yolo_result_image"/>
+      </node>
+    </group>
+  </group>
+</launch>
+

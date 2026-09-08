@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>x_omni4wd_slam</name>
+  <version>0.1.0</version>
+  <description>
+    SLAM launch/config and odometry fusion for x_omni4wd.
+    Laser odometry algorithms: rf2o_laser_odometry and srf_laser_odometry.
+    This package keeps wheel odometry scripts, EKF/selectable-odom launch files,
+    Hector/Cartographer configs, and robot-facing RF2O/SRF YAML.
+  </description>
+
+  <maintainer email="quyenanhpt@todo.todo">quyenanhpt</maintainer>
+  <license>GPL v3</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>tf2_ros</build_depend>
+
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>rf2o_laser_odometry</exec_depend>
+  <exec_depend>srf_laser_odometry</exec_depend>
+  <exec_depend>hector_mapping</exec_depend>
+
+  <export>
+  </export>
+</package>

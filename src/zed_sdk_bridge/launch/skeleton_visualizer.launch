@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Skeleton Visualizer Node -->
+    <node pkg="zed_sdk_bridge" type="skeleton_visualizer" name="skeleton_visualizer" output="screen">
+        <!-- Subscribe topics -->
+        <remap from="bodies" to="/bodies" />
+        <remap from="image_raw" to="/image_raw" />
+        
+        <!-- Publish topics -->
+        <remap from="image_skeleton" to="/image_skeleton" />
+        <remap from="skeleton_markers" to="/skeleton_markers" />
+        
+        <!-- Parameters -->
+        <!-- Hiển thị skeleton trên ảnh -->
+        <param name="show_on_image" value="true" />
+        
+        <!-- Publish markers cho RViz -->
+        <param name="publish_markers" value="true" />
+        
+        <!-- Kích thước joints (pixels cho ảnh, meters cho markers) -->
+        <param name="joint_radius" value="3.0" />
+        
+        <!-- Độ dày đường nối (pixels cho ảnh, meters cho markers) -->
+        <param name="link_width" value="2.0" />
+        
+        <!-- Camera frame ID -->
+        <param name="camera_frame_id" value="zed2i_camera_center" />
+    </node>
+    
+    <!-- RViz (optional) -->
+    <!-- Uncomment để launch RViz với skeleton markers -->
+    <!--
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find zed_sdk_bridge)/rviz/skeleton.rviz" />
+    -->
+</launch>
+

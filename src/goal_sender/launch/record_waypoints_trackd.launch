@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!--
+  Ghi waypoints Track D (exp4/5/6 dùng chung waypoints_trackD_real.yaml).
+  Yêu cầu: ROS master + /amcl_pose (chạy stack nav hoặc exp POS với use_goal_sender:=false).
+
+  rosrun goal_sender record_waypoints_trackd.py
+  hoặc: roslaunch goal_sender record_waypoints_trackd.launch
+-->
+<launch>
+  <arg name="output_file"
+       default="$(find goal_sender)/config/D-density-costmap/waypoints_trackD_real.yaml"/>
+  <arg name="amcl_topic" default="/amcl_pose"/>
+
+  <node pkg="goal_sender" type="record_waypoints_trackd.py" name="record_waypoints_trackd"
+        output="screen" required="false">
+    <param name="output_file" value="$(arg output_file)"/>
+    <param name="amcl_topic" value="$(arg amcl_topic)"/>
+  </node>
+</launch>

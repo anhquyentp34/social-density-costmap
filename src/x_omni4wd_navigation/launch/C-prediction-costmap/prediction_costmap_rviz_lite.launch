@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<launch>
+  <!--
+    Lite RViz (KHÔNG Gazebo): TF tĩnh + smoke /social_state + prediction → cost tube.
+    Cùng toán full nếu cùng prediction_model.
+
+    prediction_model:
+      ensemble_cv (mặc định) | imm | kalman | diffusion_single | diffusion_joint
+  -->
+  <arg name="map_file" default="$(find x_omni4wd_navigation)/maps/costmapEx.yaml"/>
+  <arg name="rvizconfig" default="$(find x_omni4wd_navigation)/rviz/x_omni4wd_simulation.rviz"/>
+  <arg name="open_rviz" default="true"/>
+  <arg name="prediction_model" default="ensemble_cv"/>
+  <arg name="use_cmd_vel5_social" default="false"
+       doc="true: vị trí cố định + /cmd_vel5 (dual steering); false: smoke pub"/>
+  <arg name="ped_fixed_x" default="0.8"/>
+  <arg name="ped_fixed_y" default="0.0"/>
+  <arg name="open_dual_steering" default="$(arg use_cmd_vel5_social)"/>
+
+  <param name="/use_sim_time" value="false"/>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="map_odom"
+        args="0 0 0 0 0 0 1 map odom"/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="odom_base"
+        args="0 0 0 0 0 0 1 odom base_footprint"/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_tf"
+        args="0 0 0 0 0 0 1 base_footprint base_link"/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="lidar_tf"
+        args="0 0 0.2 0 0 0 1 base_link lidar_link"/>
+
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <node unless="$(arg use_cmd_vel5_social)"
+        pkg="pedestrian_prediction" type="pedestrian_prediction_smoke_pub.py"
+        name="pedestrian_prediction_smoke_pub" output="screen">
+    <param name="topic" value="/social_state"/>
+    <param name="rate" value="10.0"/>
+    <param name="stay_near_origin" value="true"/>
+  </node>
+
+  <include if="$(arg use_cmd_vel5_social)"
+           file="$(find x_omni4wd_navigation)/launch/C-prediction-costmap/prediction_demo_social_input.launch">
+    <arg name="fixed_x" value="$(arg ped_fixed_x)"/>
+    <arg name="fixed_y" value="$(arg ped_fixed_y)"/>
+  </include>
+
+  <include file="$(find x_omni4wd_navigation)/launch/prediction_bridge.launch">
+    <arg name="prediction_model" value="$(arg prediction_model)"/>
+    <arg name="enable_viz" value="true"/>
+    <arg name="use_social_velocity" value="true"/>
+    <arg name="diffusion_device" value="cpu"/>
+  </include>
+
+  <node pkg="rostopic" type="rostopic" name="fake_scan" output="screen"
+        args="pub -r 10 /scan sensor_msgs/LaserScan '{header: {frame_id: lidar_link}, angle_min: -1.57, angle_max: 1.57, angle_increment: 0.05, range_min: 0.1, range_max: 10.0, ranges: [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]}'"/>
+
+  <node pkg="rostopic" type="rostopic" name="fake_odom" output="screen"
+        args="pub -r 20 /odom nav_msgs/Odometry '{header: {frame_id: odom}, child_frame_id: base_footprint, pose: {pose: {orientation: {w: 1.0}}}}'"/>
+
+  <node pkg="move_base" type="move_base" name="move_base" output="screen">
+    <rosparam file="$(find x_omni4wd_navigation)/config/C-prediction-costmap/prediction_costmap_lite.yaml" command="load"/>
+    <rosparam file="$(find x_omni4wd_navigation)/config/ICR2026/move_base_params.yaml" command="load"/>
+    <rosparam file="$(find x_omni4wd_navigation)/config/teb_local_planner_params_omni.yaml" command="load"/>
+    <param name="base_global_planner" value="global_planner/GlobalPlanner"/>
+    <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS"/>
+    <param name="global_costmap/global_frame" value="map"/>
+    <param name="global_costmap/robot_base_frame" value="base_footprint"/>
+    <param name="local_costmap/global_frame" value="odom"/>
+    <param name="local_costmap/robot_base_frame" value="base_footprint"/>
+  </node>
+
+  <include if="$(arg open_dual_steering)"
+           file="$(find x_omni4wd_navigation)/launch/C-prediction-costmap/prediction_dual_steering.launch"/>
+
+  <node if="$(arg open_rviz)" pkg="rviz" type="rviz" name="rviz" required="false"
+        args="-d $(arg rvizconfig)"/>
+</launch>

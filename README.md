@@ -1,74 +1,108 @@
 # Social Density Costmap
 
-ROS packages for **density-aware social costmap navigation**: proxemic / group / object / emotion layers with a **sequential density-weight relaxation & restoration** controller.
+Full **ROS Noetic** workspace slice to reproduce real-robot social-density costmap experiments (proxemic / social layers / density gate, live and scenario-latch modes).
 
-This repository is a research release accompanying our paper on social-density costmap navigation.
+After build, run the same entry scripts as on the lab machine:
 
-## Features
-
-- Social costmap layers (proxemic, human group, human–object, emotion)
-- Density modulation: `scale = exp(-w · ρ)`
-- Online controller that **relaxes** social weights when the planner is stuck and **restores** them after the robot makes progress
-- Scenario latch mode for position-based social configuration (no FER)
-- Live perception mode with optional FER emotions
-
-## Requirements
-
-- Ubuntu 20.04 + ROS Noetic
-- `navigation`, `teb_local_planner`, `costmap_2d`, `dynamic_reconfigure`
-- Optional: ZED SDK / body tracking for real-robot experiments
-
-## Workspace layout
-
+```bash
+./tracks/D-density-costmap/run_real_exp1_proxemic_only.sh
+./tracks/D-density-costmap/run_real_exp2_social_layers.sh
+./tracks/D-density-costmap/run_real_exp3_density_gate.sh
+./tracks/D-density-costmap/run_real_exp4_proxemic_only_pos.sh
+./tracks/D-density-costmap/run_real_exp5_social_layers_pos.sh
+./tracks/D-density-costmap/run_real_exp6_density_gate_pos.sh
 ```
-src/
-  social_msgs/
-  social_navigation_layers/   # layers + path_density_weight_controller
-  social_density_fusion/      # fusion, density publish, scenario latch
-  x_omni4wd_navigation/       # experiment configs / launch / rviz / map
-  goal_sender/
-  fer_emotion/                # optional (live emotion experiments)
-tracks/social_density_costmap/
-docs/
+
+## What is included
+
+| Area | Packages / paths |
+|------|------------------|
+| Robot bringup | `x_omni4wd_bringup`, `x_omni4wd_description`, `rplidar_ros` |
+| Odom / filters | `x_omni4wd_slam`, `srf_laser_odometry` |
+| Navigation | `x_omni4wd_navigation`, `teb_local_planner` |
+| Perception | `zed_sdk_bridge`, `fer_emotion` (exp2–3), `ultralytics_ros` (exp1–3) |
+| Social stack | `social_msgs`, `social_density_fusion`, `social_navigation_layers`, `social_navigation_monitor` |
+| Viz / goals | `animated_marker_*`, `goal_sender`, standing mesh |
+| Scripts | `tracks/D-density-costmap/`, `tracks/lib/`, `scripts/` |
+
+## Requirements (other machine)
+
+### System
+- Ubuntu **20.04** + **ROS Noetic**
+- NVIDIA GPU + drivers (ZED / YOLO / FER)
+- **ZED SDK 4.x** installed under `/usr/local/zed` (not shipped in this repo)
+- Display for RViz (`DISPLAY`)
+
+### Apt (typical)
+```bash
+sudo apt update
+sudo apt install -y \
+  ros-noetic-desktop-full \
+  ros-noetic-navigation \
+  ros-noetic-robot-localization \
+  ros-noetic-laser-filters \
+  ros-noetic-mrpt2 \
+  ros-noetic-people-msgs \
+  ros-noetic-costmap-converter \
+  ros-noetic-libg2o \
+  python3-serial ffmpeg
+```
+
+### Python (exp1–3 YOLO / FER)
+```bash
+pip3 install --user ultralytics onnx opencv-python-headless numpy
+# FER models: see fer_emotion/scripts/download_fer_model.sh if missing
 ```
 
 ## Build
 
 ```bash
-mkdir -p ~/catkin_ws/src
-# copy or clone this repo into ~/catkin_ws/src (or clone at workspace root)
-cd ~/catkin_ws
-catkin_make
+git clone https://github.com/anhquyentp34/social-density-costmap.git
+cd social-density-costmap
+source /opt/ros/noetic/setup.bash
+catkin_make -DCMAKE_BUILD_TYPE=Release
 source devel/setup.bash
 ```
 
-## Density gate (core algorithm)
+Optional: `export WORKSPACE_PATH=$PWD` (scripts auto-detect workspace if `src/` + `tracks/` exist).
 
-When `density.button_state` is enabled and `/density_info` is fresh:
+## Run experiments
 
-1. **Relax** (one layer, one step per trigger):  
-   `emotion → human_object → human_group → proxemic`
-2. **Restore** after travel ≥ 2.0 m (with hold timers after relax): decrease one step toward base (`w = 0` after controller init)
-
-Higher `*_density_weight` increases attenuation `exp(-w·ρ)` and softens social cost so the robot can pass dense regions when stuck; restoration hardens constraints again after progress.
-
-See `docs/` and `social_navigation_layers/src/path_density_weight_controller.py`.
-
-## Experiments (scripts)
+Connect robot hardware (Arduino, RPLidar, ZED) as on the lab setup, then:
 
 ```bash
-cd tracks/social_density_costmap
-./run_real_exp3_density_gate.sh          # live + density gate
-./run_real_exp6_density_gate_pos.sh      # scenario latch + density gate
-./run_real_exp5_social_layers_pos.sh     # social layers, gate OFF
-./run_real_exp4_proxemic_only_pos.sh     # proxemic only
+cd /path/to/social-density-costmap
+source devel/setup.bash
+./tracks/D-density-costmap/run_real_exp1_proxemic_only.sh
+# …
+./tracks/D-density-costmap/run_real_exp6_density_gate_pos.sh
 ```
 
-Full robot bring-up (drivers, ZED, odometry) is **not** fully bundled here; use these packages inside a complete Noetic robot workspace.
+Optional duration (minutes): `./tracks/D-density-costmap/run_real_exp3_density_gate.sh 15`
+
+Outputs: `bags/`, `videos/`, `csv/`, `runs/` (gitignored).
+
+| Exp | Mode | Notes |
+|-----|------|--------|
+| 1 | Live | Proxemic only + YOLO |
+| 2 | Live | Social layers + FER + YOLO |
+| 3 | Live | + density gate |
+| 4 | Latch | Proxemic only (no FER) |
+| 5 | Latch | Social layers, gate OFF |
+| 6 | Latch | Social layers + density gate |
+
+## Density gate (exp 3 & 6)
+
+Controller: `social_navigation_layers/.../path_density_weight_controller.py`  
+Relaxes `*_density_weight` when stuck; restores after travel ≥ 2 m (see paper / docs).
+
+## Hardware notes
+
+- Default ports: `/dev/robot_arduino`, `/dev/robot_lidar` (udev rules may be needed)
+- Default odom: `srf_zed_imu`
+- Without ZED SDK / camera, bringup will fail — this release targets the **real robot** stack
 
 ## Citation
-
-If you use this code, please cite our paper (update bibtex upon publication):
 
 ```bibtex
 @inproceedings{YourKey2026,
@@ -81,4 +115,5 @@ If you use this code, please cite our paper (update bibtex upon publication):
 
 ## License
 
-MIT (see `LICENSE`). Third-party ROS packages retain their own licenses.
+MIT for our packages. Third-party packages keep their original licenses (TEB, RPLidar, Ultralytics, …). ZED SDK is subject to Stereolabs terms and is **not** redistributed here.
+EOF

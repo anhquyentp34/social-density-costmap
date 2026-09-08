@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Laser Filter để xử lý ghost trail với gpu_ray sensor -->
+  <arg name="laser_filter_config"
+       default="$(find x_omni4wd_navigation)/config/ICR2026/laser_filter_params.yaml" />
+  
+  <!-- Node laser_filter để lọc dữ liệu laser scan -->
+  <node pkg="laser_filters" type="scan_to_scan_filter_chain" name="laser_filter">
+    <rosparam command="load" file="$(arg laser_filter_config)" />
+    <!-- Lọc trực tiếp topic /scan -->
+    <remap from="scan" to="scan_raw" />
+    <remap from="scan_filtered" to="scan" />
+  </node>
+
+  <!-- Node để monitor và debug laser data (tùy chọn) -->
+  <!-- <node pkg="rqt_plot" type="rqt_plot" name="laser_plot" 
+        args="/scan/ranges" output="screen" /> -->
+  
+  <!-- Node để kiểm tra thông tin laser (tùy chọn) -->
+  <!-- <node pkg="rostopic" type="rostopic" name="laser_info" 
+        args="echo /scan" output="screen" /> -->
+</launch> 

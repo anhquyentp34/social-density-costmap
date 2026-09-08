@@ -1,0 +1,45 @@
+# Cấu hình wheel odometry cho x_omni4wd (thay RF2O)
+# Khớp cmd_vel_to_omni_wheels.py / MSD_H20_OMNI_Bridge.ino (Jacobian chuẩn REP-103).
+#
+# Simulation (Gazebo + ros_control):
+#   joint_states_topic: /x_omni4wd/joint_states  (có velocity từ joint_state_controller)
+#
+# Robot thật:
+#   Cần nguồn joint_states có velocity (encoder MSD qua Arduino, hoặc ros_control).
+#   Nếu encoder báo tốc độ trục motor: đặt gear_ratio = 19.2 (khớp firmware).
+#
+# Load trong launch: rosparam vào namespace node wheel_odometry.
+
+odom_topic: "/odom"
+publish_tf: true
+base_frame_id: "base_footprint"
+odom_frame_id: "odom"
+
+joint_states_topic: "/joint_states"
+
+# Tên khớp bánh (khớp URDF + controllers.yaml)
+joint_fl: front_left_wheel_link_joint
+joint_rl: rear_left_wheel_link_joint
+joint_rr: rear_right_wheel_link_joint
+joint_fr: front_right_wheel_link_joint
+
+# Động học X-drive
+wheel_radius: 0.0635
+R: 0.2505
+gear_ratio: 1.0
+
+# Dấu ω_bánh (nhân vào joint_states.velocity trước khi giải FK).
+# URDF x_omni4wd_description.urdf — 4 khớp bánh chủ (đã chuẩn hóa, khớp Jacobian / MSD):
+#   FL  front_left_wheel_link_joint   mount yaw +45°   axis +X
+#   RL  rear_left_wheel_link_joint    mount yaw +135°  axis +X
+#   RR  rear_right_wheel_link_joint   mount yaw -135°  axis +X
+#   FR  front_right_wheel_link_joint  mount yaw -45°   axis +X
+# Góc lắp nằm trong <origin rpy="...">; ω dương = quay theo +X khớp joint frame.
+# cmd_vel_to_omni_wheels.py: không đảo dấu — Gazebo/ros_control cùng quy ước → giữ 1.0.
+# Chỉ đổi ±1 trên robot thật nếu encoder MSD (sau gear) báo ngược URDF từng bánh.
+sign_fl: 1.0
+sign_rl: 1.0
+sign_rr: 1.0
+sign_fr: 1.0
+
+rate: 50.0

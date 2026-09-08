@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Proxemic PointCloud Node -->
+    <node pkg="zed_sdk_bridge" type="proxemic_pointcloud_node" name="proxemic_pointcloud_node" output="screen">
+        <!-- Subscribe topic -->
+        <remap from="bodies" to="/bodies" />
+        
+        <!-- Publish topic -->
+        <remap from="proxemic_cloud" to="/proxemic_cloud" />
+        
+        <!-- Parameters -->
+        <!-- Sigma cho Gaussian của body (m) -->
+        <param name="sigma_body" value="0.5" />
+        
+        <!-- Sigma cho Gaussian của cánh tay (m) -->
+        <param name="sigma_arm" value="0.3" />
+        
+        <!-- Độ phân giải voxel (m) - nhỏ hơn = nhiều điểm hơn -->
+        <param name="voxel_resolution" value="0.05" />
+        
+        <!-- Kích thước volume xung quanh body (m) -->
+        <param name="volume_size" value="1.0" />
+        
+        <!-- Ngưỡng intensity để bỏ bớt điểm (0.0-1.0) -->
+        <param name="intensity_threshold" value="0.1" />
+        
+        <!-- Bật proxemic cho cánh tay -->
+        <param name="enable_arm_proxemic" value="true" />
+        
+        <!-- Frame ID (để trống sẽ dùng frame từ bodies message) -->
+        <param name="frame_id" value="" />
+    </node>
+</launch>
+

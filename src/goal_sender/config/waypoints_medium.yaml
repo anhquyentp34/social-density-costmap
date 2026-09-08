@@ -1,0 +1,27 @@
+# Kịch bản TRUNG BÌNH: chu trình 6 waypoints (như goal_sender_node.py gốc).
+# Có đoạn xuyên không gian, vài góc rẽ, quay đầu.
+waypoints:
+  - name: GOAL_1
+    x: -2.0
+    y: 7.0
+    yaw: -1.57
+  - name: GOAL_2
+    x: -4.5
+    y: -2.0
+    yaw: 0.0
+  - name: GOAL_3
+    x: 10.0
+    y: -1.0
+    yaw: 3.14
+  - name: GOAL_4
+    x: 3.0
+    y: 7.0
+    yaw: -1.57
+  - name: GOAL_5
+    x: 3.0
+    y: 2.0
+    yaw: 1.57
+  - name: GOAL_6
+    x: -10.0
+    y: -7.0
+    yaw: 1.57

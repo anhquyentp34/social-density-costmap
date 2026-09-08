@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!--
+  Launch file để hiển thị Skeleton 3D trong RViz với Static Transform
+  Sử dụng khi camera được gắn ở vị trí cố định và cần transform skeleton về frame khác
+  
+  Sử dụng:
+    roslaunch zed_sdk_bridge skeleton_3d_rviz_with_tf.launch
+    
+  Tùy chọn:
+    camera_x, camera_y, camera_z: Vị trí camera (meters)
+    camera_roll, camera_pitch, camera_yaw: Hướng camera (radians)
+    base_frame: Frame đích (mặc định: base_link)
+-->
+<launch>
+    <!-- Arguments -->
+    <arg name="body_format" default="18" doc="Body format: 18 or 34 keypoints" />
+    <arg name="detection_model" default="HUMAN_BODY_FAST" doc="Detection model" />
+    <arg name="use_rviz" default="true" doc="Launch RViz" />
+    <arg name="show_image" default="false" doc="Show 2D image" />
+    
+    <!-- Transform parameters -->
+    <arg name="base_frame" default="base_link" doc="Base frame for transform" />
+    <arg name="camera_frame" default="zed2i_camera_center" doc="Camera frame" />
+    
+    <!-- Vị trí camera so với base_frame (meters) -->
+    <arg name="camera_x" default="0.0" doc="Camera X position (meters)" />
+    <arg name="camera_y" default="0.0" doc="Camera Y position (meters)" />
+    <arg name="camera_z" default="1.5" doc="Camera Z position (height in meters)" />
+    
+    <!-- Hướng camera (radians) -->
+    <arg name="camera_roll" default="0.0" doc="Camera roll (radians)" />
+    <arg name="camera_pitch" default="0.0" doc="Camera pitch - nhìn xuống là dương (radians)" />
+    <arg name="camera_yaw" default="0.0" doc="Camera yaw (radians)" />
+    
+    <!-- Static Transform từ base_frame đến camera_frame -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="camera_to_base_tf" 
+          args="$(arg camera_x) $(arg camera_y) $(arg camera_z) 
+                $(arg camera_roll) $(arg camera_pitch) $(arg camera_yaw) 
+                $(arg base_frame) $(arg camera_frame)" />
+    
+    <!-- Include launch file gốc -->
+    <include file="$(find zed_sdk_bridge)/launch/skeleton_3d_rviz.launch">
+        <arg name="body_format" value="$(arg body_format)" />
+        <arg name="detection_model" value="$(arg detection_model)" />
+        <arg name="use_rviz" value="$(arg use_rviz)" />
+        <arg name="show_image" value="$(arg show_image)" />
+    </include>
+</launch>
+

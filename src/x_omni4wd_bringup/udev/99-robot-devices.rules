@@ -1,0 +1,31 @@
+# UDEV rules cho robot x_omni4wd
+# Symlink: /dev/robot_arduino, /dev/robot_lidar
+#
+# Cài đặt:
+#   sudo cp 99-robot-devices.rules /etc/udev/rules.d/
+#   sudo udevadm control --reload-rules && sudo udevadm trigger
+#
+# Kiểm tra: ls -l /dev/robot_*
+
+# Arduino (FTDI)
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="A929P73F", \
+  MODE="0666", GROUP="dialout", SYMLINK+="robot_arduino"
+
+# RPLIDAR (CP210x)
+SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{serial}=="0001", \
+  MODE="0666", GROUP="dialout", SYMLINK+="robot_lidar"
+
+# ZED 2i — video + HID (SDK cần cả hai)
+SUBSYSTEM=="video4linux", ATTRS{idVendor}=="2b03", ATTRS{idProduct}=="f880", \
+  MODE="0666", GROUP="video", SYMLINK+="robot_zed2i_video"
+
+SUBSYSTEM=="usb", ATTRS{idVendor}=="2b03", ATTRS{idProduct}=="f881", \
+  SYMLINK+="robot_zed2i_usb", MODE="0666", GROUP="video"
+
+# Tự bind usbhid cho interface HID sau USB reset
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="2b03", ATTRS{idProduct}=="f881", \
+  RUN+="/sbin/modprobe usbhid", \
+  RUN+="/bin/sh -c 'sleep 1; echo %k:1.0 > /sys/bus/usb/drivers/usbhid/bind 2>/dev/null || true'"
+
+SUBSYSTEM=="usb", ATTRS{idVendor}=="2b03", MODE="0666", GROUP="video"
+SUBSYSTEM=="video4linux", ATTRS{idVendor}=="2b03", MODE="0666", GROUP="video"

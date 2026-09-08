@@ -1,0 +1,20 @@
+# Sample / overlay params — PredictionAwareCostTubeLayer (Bài C)
+#
+# Layer đã được khai báo trong costmap_*_params_x_omni4wd.yaml (ICR2026 + default).
+# Bật bằng launch arg use_prediction_cost_layer:=true (đặt enabled trên param server).
+
+prediction_aware_cost_tube_layer:
+  enabled: false
+  prediction_topic: /pedestrian/predicted_trajectories
+  max_cost: 252.0
+  temporal_decay: 0.3
+  use_temporal_decay: true
+  sigma_social_x: 0.35
+  sigma_social_y: 0.35
+  gaussian_cutoff_sigma: 3.0
+  covariance_scale: 1.0
+  epsilon_regularization: 0.000001
+  min_cost_threshold: 0.5
+  use_message_amplitude: true
+  use_density_amplitude_scaling: false
+  density_amplitude_gain: 0.0

@@ -1,0 +1,25 @@
+# Track D — Robot thật — real_exp1: Proxemic only (baseline)
+# density.button_state: false → /density_info KHÔNG publish → path_density_weight_controller degrade
+# Người nhận diện từ ZED2i /bodies (real-time, không cần khai báo tên)
+# Nhóm / tương tác: tắt hết để cô lập proxemic layer
+
+density:
+  button_state: false
+
+detection:
+  enable_group_detection: false
+  enable_interaction_detection: false
+  group_max_member_distance: 3.0
+  group_facing_angle_deg: 60.0
+  interaction_max_distance: 2.5
+  interaction_facing_angle_deg: 15.0
+
+people: []
+
+# Thêm vật thể tĩnh trên map nếu có (ví dụ bảng, ghế, tranh ảnh):
+# objects:
+#   - { name: chair_A, x: 1.5, y: -20.0, z: 0.0, interaction_type: sitting }
+objects: []
+
+groups: []
+interactions: []

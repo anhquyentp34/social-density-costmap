@@ -1,0 +1,25 @@
+# Track D — Robot thật — real_exp2: 4 lớp social, KHÔNG density gate
+# density.button_state: false → /density_info KHÔNG publish → controller degrade
+# Nhóm / tương tác: BẬT để test social layers (group/object/emotion layer active)
+# So sánh với real_exp1: tác động thuần của social layers (không có density scaling)
+
+density:
+  button_state: false
+
+detection:
+  enable_group_detection: true
+  enable_interaction_detection: true
+  group_max_member_distance: 3.0
+  group_facing_angle_deg: 60.0
+  interaction_max_distance: 2.5
+  interaction_facing_angle_deg: 15.0
+
+people: []
+
+# Thêm vật thể tĩnh trên map Lab nếu có:
+# objects:
+#   - { name: display_board, x: 0.5, y: -18.0, z: 0.0, interaction_type: seeing }
+objects: []
+
+groups: []
+interactions: []

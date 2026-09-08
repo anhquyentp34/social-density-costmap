@@ -1,0 +1,40 @@
+<launch>
+  <!--
+    fer_emotion — FER+ từ ZED RGB + skeleton (/image_raw + /bodies).
+    Publish: /person_emotions (social_msgs/SocialPeople) → social_density_fusion.
+  -->
+  <arg name="image_topic" default="/image_raw"/>
+  <arg name="bodies_topic" default="/bodies"/>
+  <arg name="output_topic" default="/person_emotions"/>
+  <arg name="debug_image_topic" default="/image_emotion"/>
+  <arg name="model_path" default="$(find fer_emotion)/models/emotion-ferplus-8.onnx"/>
+  <arg name="min_body_confidence" default="40.0"/>
+  <arg name="min_fer_confidence" default="0.35"/>
+  <arg name="smooth_window" default="8"/>
+  <arg name="group_margin" default="0.12"/>
+  <arg name="focus_emotion" default="Angry"/>
+  <arg name="angry_min_score" default="0.12"/>
+  <arg name="angry_margin" default="0.04"/>
+  <arg name="angry_neutral_slack" default="0.08"/>
+  <arg name="angry_raw_spike" default="0.04"/>
+
+  <node pkg="fer_emotion" type="emotion_detection_node.py"
+        name="emotion_detection_node" output="screen">
+    <param name="image_topic" value="$(arg image_topic)"/>
+    <param name="bodies_topic" value="$(arg bodies_topic)"/>
+    <param name="output_topic" value="$(arg output_topic)"/>
+    <param name="debug_image_topic" value="$(arg debug_image_topic)"/>
+    <param name="model_path" value="$(arg model_path)"/>
+    <param name="min_body_confidence" value="$(arg min_body_confidence)"/>
+    <param name="min_fer_confidence" value="$(arg min_fer_confidence)"/>
+    <param name="smooth_window" value="$(arg smooth_window)"/>
+    <param name="group_margin" value="$(arg group_margin)"/>
+    <param name="focus_emotion" value="$(arg focus_emotion)"/>
+    <param name="angry_min_score" value="$(arg angry_min_score)"/>
+    <param name="angry_margin" value="$(arg angry_margin)"/>
+    <param name="angry_neutral_slack" value="$(arg angry_neutral_slack)"/>
+    <param name="angry_raw_spike" value="$(arg angry_raw_spike)"/>
+    <param name="sync_slop" value="0.35"/>
+    <param name="publish_debug" value="true"/>
+  </node>
+</launch>

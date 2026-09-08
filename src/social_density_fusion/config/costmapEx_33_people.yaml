@@ -1,0 +1,74 @@
+# Cấu hình theo social_msgs:
+# - people tương ứng SocialPeople.people[] / SocialPerson
+# - groups tương ứng SocialGroups.groups[] / SocialGroup
+# - interactions tương ứng SocialInteractions.interactions[] / SocialInteraction
+# - density: điều khiển logic xuất bản mật độ
+
+density:
+  # true = nút "Xuất bản mật độ" được nhấn
+  # false = nút "Xuất bản mật độ" được nhả
+  button_state: true
+people:
+  - { name: actor5, emotion: Angry }
+  # - { name: actor10, emotion: Angry }
+  # - { name: actor11, emotion: Angry }
+  - { name: actor13, emotion: Angry }
+  - { name: actor14, emotion: Angry }
+  # - { name: actor15, emotion: Angry }
+  # - { name: actor16, emotion: Happy }
+  - { name: actor17, emotion: Angry }
+  # - { name: actor18, emotion: Angry }
+  - { name: actor19, emotion: Angry }
+  # - { name: actor20, emotion: Angry }
+  - { name: actor21, emotion: Angry }
+  - { name: actor22, emotion: Angry }
+  - { name: actor23, emotion: Angry }
+  # - { name: actor24, emotion: Happy }
+  # - { name: actor25, emotion: Happy }
+  # - { name: actor26, emotion: Happy }
+  # - { name: actor27, emotion: Happy }
+  # - { name: actor28, emotion: Happy }
+  # - { name: actor29, emotion: Happy }
+
+groups:
+  - group_name: Group_1
+    members: [ actor1, actor2, actor3 ]
+  - group_name: Group_2
+    members: [ actor6, actor7 ]
+  - group_name: Group_3
+    members: [ actor10, actor11, actor12 ]
+  # - group_name: Group_4
+  #   members: [ actor17, actor19 ]
+  # - group_name: Group_5
+  #   members: [ actor18, actor24, actor28 ]
+  # - group_name: Group_6
+  #   members: [ actor21, actor22, actor23 ]
+
+interactions:
+  - object_name: picture4
+    participants: [ actor4 ]
+    interaction_type: seeing
+  # - object_name: picture5
+  #   participants: [ actor14 ]
+  #   interaction_type: seeing
+  - object_name: picture6
+    participants: [ actor13 ]
+    interaction_type: seeing
+  - object_name: picture10
+    participants: [ actor8 ]
+    interaction_type: seeing
+  - object_name: picture11
+    participants: [ actor9 ]
+    interaction_type: seeing
+  # - object_name: picture12
+  #   participants: [ actor15 ]
+  #   interaction_type: seeing
+  # - object_name: picture19
+  #   participants: [ actor25 ]
+  #   interaction_type: seeing
+  # - object_name: picture20
+  #   participants: [ actor26 ]
+  #   interaction_type: seeing
+  # - object_name: picture21
+  #   participants: [ actor27 ]
+  #   interaction_type: seeing

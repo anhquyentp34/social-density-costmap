@@ -1,0 +1,43 @@
+# Track A POS — bản sao độc lập (không dùng chung file Track D).
+# Auto-synced from canonical by export_annotation_to_canonical.
+# exp4 proxemic-only: people only (no zones/objects/groups).
+density:
+  button_state: false
+detection:
+  enable_group_detection: false
+  enable_interaction_detection: false
+  group_max_member_distance: 2.5
+  group_facing_angle_deg: 60.0
+  interaction_max_distance: 1.75
+  interaction_facing_angle_deg: 15.0
+people:
+- name: actor1
+  emotion: Neutral
+- name: actor2
+  emotion: Neutral
+- name: actor3
+  emotion: Neutral
+- name: actor4
+  emotion: Angry
+- name: actor5
+  emotion: Angry
+- name: actor6
+  emotion: Angry
+- name: actor7
+  emotion: Neutral
+- name: actor8
+  emotion: Neutral
+- name: actor9
+  emotion: Neutral
+- name: actor10
+  emotion: Neutral
+- name: actor11
+  emotion: Neutral
+- name: actor12
+  emotion: Neutral
+- name: actor13
+  emotion: Neutral
+emotion_zones: []
+objects: []
+groups: []
+interactions: []

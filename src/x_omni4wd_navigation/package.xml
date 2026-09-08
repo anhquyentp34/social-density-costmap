@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>x_omni4wd_navigation</name>
+  <version>1.0.0</version>
+  <description>Navigation stack for x_omni4wd (AMCL, move_base, map willo)</description>
+
+  <maintainer email="ros@example.com">x_omni4wd</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>amcl</build_depend>
+  <build_depend>map_server</build_depend>
+  <build_depend>move_base</build_depend>
+  <build_export_depend>amcl</build_export_depend>
+  <build_export_depend>map_server</build_export_depend>
+  <build_export_depend>move_base</build_export_depend>
+  <exec_depend>amcl</exec_depend>
+  <exec_depend>costmap_2d</exec_depend>
+  <exec_depend>global_planner</exec_depend>
+  <exec_depend>laser_filters</exec_depend>
+  <exec_depend>map_server</exec_depend>
+  <exec_depend>move_base</exec_depend>
+  <exec_depend>rviz</exec_depend>
+  <exec_depend>teb_local_planner</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>dwa_local_planner</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>x_omni4wd_bringup</exec_depend>
+  <exec_depend>zed_sdk_bridge</exec_depend>
+  <exec_depend>rf2o_laser_odometry</exec_depend>
+  <exec_depend>srf_laser_odometry</exec_depend>
+
+  <export>
+  </export>
+</package>

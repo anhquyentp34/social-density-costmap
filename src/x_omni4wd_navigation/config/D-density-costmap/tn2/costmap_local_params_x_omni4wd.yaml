@@ -1,0 +1,98 @@
+# Track D — D-density-costmap tn2 (cùng map ICARCV, chỉ khác cấu hình)
+local_costmap:
+  global_frame: odom
+  robot_base_frame: base_footprint
+  transform_tolerance: 0.75
+  update_frequency: 10.0 # 10 Hz: cân bằng độ mượt và CPU (15 Hz nặng hơn)
+  publish_frequency: 5.0 # 5 Hz đủ cho RViz/planner
+  width: 10.0
+  height: 10.0
+  resolution: 0.05
+  footprint_padding: 0.005
+  # static_map: false
+  # always_send_full_costmap: true
+  rolling_window: true
+  # shutdown_costmaps: false
+
+  plugins:
+    - { name: obstacles_layer, type: "costmap_2d::ObstacleLayer" }
+    - { name: inflation_layer, type: "costmap_2d::InflationLayer" }
+    - { name: proxemic, type: "social_navigation_layers::ProxemicLayer" }
+    # - { name: passing, type: "social_navigation_layers::PassingLayer" }
+    - {
+        name: human_group_layer,
+        type: "social_navigation_layers::HumanGroupLayer",
+      }
+    - {
+        name: human_object_layer,
+        type: "social_navigation_layers::HumanObjectLayer",
+      }
+    - { name: emotion_layer, type: "social_navigation_layers::EmotionLayer" }
+
+  obstacles_layer:
+    observation_sources: base_scan
+    base_scan:
+      data_type: LaserScan
+      sensor_frame: lidar_link
+      topic: /scan
+      clearing: true
+      marking: true
+      inf_is_valid: true # Quan trọng: xử lý đúng giá trị vô cực
+      observation_persistence: 0.0 # Không lưu giữ quan sát cũ
+      expected_update_rate: 0.5 # Chấp nhận scan mỗi 0.5s (2Hz), tránh "sensor out of date" khi CPU nặng
+      obstacle_range: 10.0 # Tầm phát hiện chướng ngại
+      raytrace_range: 12.0 # Khớp max range lidar A2M8
+    track_unknown_space: false # Không theo dõi vùng unknown để tránh ghost
+    footprint_clearing_enabled: true
+    combination_method: 1
+    mark_threshold: 0
+    clear_threshold: 1
+
+  inflation_layer:
+    enabled: true
+    # Đồng bộ với global_costmap — TEB đọc local map; lệch inflation là robot “cắt” vùng vàng local.
+    cost_scaling_factor: 2.5
+    inflation_radius: 0.42
+
+  proxemic:
+    enabled: true
+    cutoff: 10.0
+    amplitude: 77.0
+    covariance: 0.25
+    factor: 5.0
+    min_radius: 0.6
+    proxemic_density_weight: 22.0
+    keep_time: 0.75
+
+  passing:
+    enabled: true
+    cutoff: 10.0
+    amplitude: 77.0
+    covariance: 0.25
+    factor: 5.0
+    min_radius: 0.6
+    density_weight: 22.0
+    keep_time: 0.75
+
+  emotion_layer:
+    enabled: true
+    cutoff: 10.0
+    amplitude: 77.0
+    covariance: 0.25
+    emotion_density_weight: 10.0
+
+  human_object_layer:
+    enabled: true
+    cutoff: 10.0
+    amplitude: 77.0
+    covar: 0.25
+    factor: 1.0
+    human_object_density_weight: 22.0
+
+  human_group_layer:
+    enabled: true
+    cutoff: 10.0
+    amplitude: 77.0
+    covar: 0.25
+    factor: 1.0
+    human_group_density_weight: 50

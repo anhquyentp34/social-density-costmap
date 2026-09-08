@@ -1,0 +1,50 @@
+# Track D — Robot thật — Waypoints cho goal_sender
+# Lộ trình: START → GOAL_1 → GOAL_2 → GOAL_3 → GOAL_4 (không GOAL_5)
+# Cập nhật lần cuối: 28-08-2026
+
+num_cycles: 1
+movement_mode: "cycle"
+
+waypoints:
+  - name: "START"
+    # Đo từ /amcl_pose (26-08-2026 11:09)
+    x: 1.1070
+    y: -10.9695
+    yaw: 0.08455662
+    color: [0.0, 1.0, 0.0]
+
+  - name: "GOAL_1"
+    # Đo từ /amcl_pose (26-08-2026 11:09)
+    x: 12.5098
+    y: -7.9955
+    yaw: 1.60075863
+    color: [1.0, 0.5, 0.0]
+
+  - name: "GOAL_2"
+    # Đo từ /amcl_pose (26-08-2026 11:09)
+    x: 12.2944
+    y: 6.9498
+    yaw: 1.57660734
+    color: [1.0, 0.5, 0.0]
+
+  - name: "GOAL_3"
+    # Đo từ /amcl_pose (26-08-2026 11:09)
+    x: 7.0107
+    y: 13.2042
+    yaw: -3.12231855
+    color: [1.0, 0.5, 0.0]
+
+  - name: "GOAL_4"
+    # Đo từ /amcl_pose (26-08-2026 11:09)
+    x: -0.5594
+    y: 15.2053
+    yaw: 1.61817370
+    color: [1.0, 0.5, 0.0]
+
+  # - name: "GOAL_5"
+  #   # Giữ nguyên (chưa đo lại)
+  #   x: 11.0079
+  #   y: 13.3499
+  #   yaw: 0.00298800
+  #   color: [1.0, 0.5, 0.0]
+

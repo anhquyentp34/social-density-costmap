@@ -1,0 +1,95 @@
+# Diagnostics configuration for social navigation system
+
+diagnostic_aggregator:
+  analyzers:
+    velocity_position_combiner:
+      type: diagnostic_aggregator/GenericAnalyzer
+      path: VelocityPositionCombiner
+      timeout: 5.0
+      find_and_remove_prefix: velocity_position_combiner
+      
+    navigation_system:
+      type: diagnostic_aggregator/GenericAnalyzer
+      path: NavigationSystem
+      timeout: 5.0
+      find_and_remove_prefix: move_base
+      
+    costmap_system:
+      type: diagnostic_aggregator/GenericAnalyzer
+      path: CostmapSystem
+      timeout: 5.0
+      find_and_remove_prefix: costmap
+      
+    social_state:
+      type: diagnostic_aggregator/GenericAnalyzer
+      path: SocialState
+      timeout: 5.0
+      find_and_remove_prefix: social_state
+      
+    gazebo_actors:
+      type: diagnostic_aggregator/GenericAnalyzer
+      path: GazeboActors
+      timeout: 5.0
+      find_and_remove_prefix: gazebo
+      
+    rqt_robot_steering:
+      type: diagnostic_aggregator/GenericAnalyzer
+      path: RQTRobotSteering
+      timeout: 5.0
+      find_and_remove_prefix: rqt_robot_steering
+
+# Diagnostic thresholds
+diagnostic_thresholds:
+  velocity_position_combiner:
+    update_rate_min: 50.0  # Hz
+    update_rate_max: 100.0  # Hz
+    processing_time_max: 0.05  # seconds
+    
+  navigation_system:
+    update_rate_min: 1.0  # Hz
+    update_rate_max: 20.0  # Hz
+    planning_time_max: 1.0  # seconds
+    
+  costmap_system:
+    update_rate_min: 1.0  # Hz
+    update_rate_max: 15.0  # Hz
+    processing_time_max: 0.1  # seconds
+    
+  social_state:
+    update_rate_min: 10.0  # Hz
+    update_rate_max: 100.0  # Hz
+    message_size_max: 10000  # bytes
+    
+  gazebo_actors:
+    update_rate_min: 1.0  # Hz
+    update_rate_max: 30.0  # Hz
+    actor_count_min: 1
+    actor_count_max: 10
+    
+  rqt_robot_steering:
+    update_rate_min: 1.0  # Hz
+    update_rate_max: 20.0  # Hz
+    velocity_command_max: 5.0  # m/s
+
+# Performance monitoring
+performance_monitoring:
+  enable_cpu_monitoring: true
+  enable_memory_monitoring: true
+  enable_network_monitoring: true
+  enable_topic_monitoring: true
+  
+  cpu_thresholds:
+    max_cpu_usage: 80.0  # percent
+    max_cpu_temperature: 85.0  # celsius
+    
+  memory_thresholds:
+    max_memory_usage: 80.0  # percent
+    max_swap_usage: 50.0  # percent
+    
+  network_thresholds:
+    max_bandwidth_usage: 80.0  # percent
+    max_latency: 100.0  # milliseconds
+    
+  topic_thresholds:
+    max_topic_delay: 1.0  # seconds
+    min_topic_frequency: 1.0  # Hz 

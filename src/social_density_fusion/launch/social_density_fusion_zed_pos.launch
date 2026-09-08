@@ -1,0 +1,62 @@
+<launch>
+  <!-- Track D exp4/5/6 — fusion POS (emotion_zones + objects tĩnh, không FER) -->
+  <arg name="scenario_config"
+       default="$(find social_density_fusion)/config/D-density-costmap/real/social_config_real_exp5_social_layers_pos.yaml"/>
+  <arg name="scenario_actor_layout"
+       default="$(find social_density_fusion)/config/D-density-costmap/real/social_actor_layout_from_sim.yaml"/>
+  <arg name="scan_topic" default="/scan"/>
+  <arg name="tf_lookup_timeout" default="0.15"/>
+  <arg name="max_tf_cache_age" default="0.30"/>
+  <arg name="fusion_rate" default="20.0"/>
+  <arg name="publish_rate" default="30.0"/>
+  <arg name="use_live_emotions" default="false"/>
+  <arg name="publish_facing_markers" default="false"/>
+  <arg name="publish_velocity_debug" default="false"/>
+  <!-- near_pose: detect đến đâu hiện tới đó; any_detection: thấy người → BẬT toàn bộ -->
+  <arg name="use_scenario_social_latch" default="true"/>
+  <arg name="scenario_latch_mode" default="near_pose"/>
+  <arg name="scenario_trigger_radius" default="1.75"/>
+  <arg name="scenario_group_min_visible" default="1"/>
+  <arg name="scenario_latch_hold_sec" default="-1.0"/>
+  <arg name="scenario_latch_all_people" default="false"/>
+  <!-- true: inject actor layout lên /social_state để RViz costmap hiện ngay (chỉnh annotation) -->
+  <arg name="preview_scenario_actors" default="false"/>
+  <!-- true: đã có actorK → bỏ person_N (ưu tiên pose latch YAML) -->
+  <arg name="suppress_live_when_scenario" default="true"/>
+  <arg name="auto_reload_config" default="false"/>
+
+  <node pkg="social_density_fusion"
+        type="lidar_map_polygon_node.py"
+        name="lidar_map_polygon_node"
+        output="screen">
+    <param name="scan_topic" value="$(arg scan_topic)"/>
+    <param name="tf_lookup_timeout" value="$(arg tf_lookup_timeout)"/>
+    <param name="max_tf_cache_age" value="$(arg max_tf_cache_age)"/>
+  </node>
+
+  <node pkg="social_density_fusion"
+        type="social_density_fusion_node_zed_pos.py"
+        name="social_density_fusion_node_pos"
+        output="screen">
+    <param name="config_path" value="$(arg scenario_config)"/>
+    <param name="scenario_actor_layout_path" value="$(arg scenario_actor_layout)"/>
+    <param name="use_scenario_social_latch" value="$(arg use_scenario_social_latch)"/>
+    <param name="scenario_latch_mode" value="$(arg scenario_latch_mode)"/>
+    <param name="scenario_trigger_radius" value="$(arg scenario_trigger_radius)"/>
+    <param name="scenario_group_min_visible" value="$(arg scenario_group_min_visible)"/>
+    <param name="scenario_latch_hold_sec" value="$(arg scenario_latch_hold_sec)"/>
+    <param name="scenario_latch_all_people" value="$(arg scenario_latch_all_people)"/>
+    <param name="preview_scenario_actors" value="$(arg preview_scenario_actors)"/>
+    <param name="suppress_live_when_scenario" value="$(arg suppress_live_when_scenario)"/>
+    <!-- Annotation preview: luôn theo dõi file layout để group costmap theo marker -->
+    <param name="auto_reload_config" value="$(eval arg('auto_reload_config') or arg('preview_scenario_actors'))"/>
+    <param name="config_reload_interval_sec" value="0.5"/>
+    <param name="fusion_rate" value="$(arg fusion_rate)"/>
+    <param name="publish_rate" value="$(arg publish_rate)"/>
+    <param name="publish_velocity_debug" value="$(arg publish_velocity_debug)"/>
+    <param name="enable_density_track_memory" value="true"/>
+    <param name="density_memory_hold_sec" value="60.0"/>
+    <param name="density_memory_coast" value="true"/>
+    <rosparam command="load" file="$(arg scenario_config)"/>
+  </node>
+</launch>

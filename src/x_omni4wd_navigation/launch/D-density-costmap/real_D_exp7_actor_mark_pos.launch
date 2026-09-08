@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+  Track D — NGOÀI LỀ / KHÔNG phải thí nghiệm paper 1–6.
+  Exp.7 (POS): khảo sát đánh dấu vị trí actor — tái dùng stack exp4 (tn4) nhưng
+  waypoints + spin_on_arrival riêng. Không sửa costmap/waypoints mặc định exp1–6.
+-->
+<launch>
+  <include file="$(find x_omni4wd_navigation)/launch/D-density-costmap/x_omni4wd_navigation_real_track_d_pos.launch">
+    <arg name="exp_variant" value="real_tn4"/>
+    <arg name="social_config"
+         value="$(find social_density_fusion)/config/D-density-costmap/real/social_config_real_exp4_proxemic_only_pos.yaml"/>
+    <arg name="use_scenario_social_latch" value="true"/>
+    <arg name="scenario_latch_mode" value="near_pose"/>
+    <arg name="scenario_latch_hold_sec" value="-1.0"/>
+    <arg name="scenario_latch_all_people" value="false"/>
+    <arg name="rviz_config"
+         value="$(find x_omni4wd_navigation)/rviz/D-density-costmap/track_d_real_pos.rviz"/>
+    <!-- Chỉ exp7: file waypoints riêng + quay báo hiệu -->
+    <arg name="goal_sender_waypoints_file"
+         value="$(find goal_sender)/config/D-density-costmap/waypoints_trackD_real_exp7_actors.yaml"/>
+    <arg name="goal_sender_num_cycles" value="1"/>
+    <arg name="goal_sender_spin_on_arrival" value="true"/>
+    <arg name="goal_sender_spin_angular_vel" value="0.7"/>
+    <arg name="goal_sender_spin_revolutions" value="1.0"/>
+    <arg name="goal_sender_goal_reach_xy_tol" value="0.50"/>
+    <arg name="goal_sender_extra_delay" value="5.0"/>
+  </include>
+</launch>

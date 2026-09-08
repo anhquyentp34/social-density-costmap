@@ -1,0 +1,168 @@
+<launch>
+  <!--
+    Annotation Track D — dựng kịch bản trên map chung exp1–6 (trackD_real_map_exp456_v3).
+
+      mode:=real    (mặc định) stack robot thật như run_real_exp3 + editor InteractiveMarkers
+      mode:=map     chỉ map + RViz + editor (nhẹ)
+      mode:=editor  chỉ editor
+      mode:=nav     POS + preview costmap + editor
+
+    RViz: chọn tool Interact → kéo marker (display "Map annotation edit").
+    Export: menu marker "Export canonical + MATLAB"
+      hoặc rosservice call /social_map_annotation_editor/export_canonical std_srvs/Trigger
+
+    Cần DISPLAY (desktop). Terminal Cursor thường thiếu:
+      export DISPLAY=:1
+  -->
+  <arg name="mode" default="nav"/>
+
+  <arg name="map_file"
+       default="$(find x_omni4wd_navigation)/maps/D-density-costmap/trackD_real_map_exp456_v3.yaml"/>
+  <!-- mode:=map/editor: chỉ marker; mode:=nav/real: dùng rviz có costmap -->
+  <arg name="rviz_config"
+       default="$(find x_omni4wd_navigation)/rviz/D-density-costmap/track_d_annotation.rviz"/>
+  <arg name="rviz_config_nav"
+       default="$(find x_omni4wd_navigation)/rviz/D-density-costmap/track_d_annotation_nav.rviz"/>
+  <arg name="rviz_config_real"
+       default="$(find x_omni4wd_navigation)/rviz/D-density-costmap/track_d_real.rviz"/>
+
+  <!-- Layout YAML editor đọc/ghi (có actors) -->
+  <arg name="config_path"
+       default="$(find social_density_fusion)/config/D-density-costmap/real/social_actor_layout_from_sim.yaml"/>
+  <arg name="exp5_path"
+       default="$(find social_density_fusion)/config/D-density-costmap/real/social_config_real_exp5_social_layers_pos.yaml"/>
+  <arg name="exp6_path"
+       default="$(find social_density_fusion)/config/D-density-costmap/real/social_config_real_exp6_density_gate_pos.yaml"/>
+  <arg name="canonical_path"
+       default="$(find social_density_fusion)/config/D-density-costmap/real/social_scenario_canonical_trackD_real.yaml"/>
+  <arg name="matlab_yaml_path"
+       default="$(find social_density_fusion)/config/D-density-costmap/real/social_scenario_matlab_trackD_real.yaml"/>
+  <arg name="matlab_pack_dir" default=""/>
+  <arg name="sync_layout_on_export" default="true"/>
+  <arg name="sync_exp_on_export" default="true"/>
+  <arg name="auto_save" default="true"/>
+  <arg name="auto_export_canonical" default="true"/>
+  <arg name="auto_export_min_interval" default="2.0"/>
+  <arg name="auto_persist_timer_sec" default="5.0"/>
+
+  <!-- mode:=real — giống real_D_exp3_density_gate -->
+  <arg name="exp_variant" default="real_tn3"/>
+  <arg name="social_config"
+       default="$(find social_density_fusion)/config/D-density-costmap/real/social_config_real_exp3_density_gate.yaml"/>
+  <arg name="use_emotion_detection" default="true"/>
+  <arg name="odom_mode" default="srf_zed_imu"/>
+  <arg name="use_yolo" default="true"/>
+  <arg name="yolo_model" default="yolo26n.pt"/>
+  <arg name="use_goal_sender" default="false"/>
+  <arg name="open_sii_sgi_dashboard" default="true"/>
+  <arg name="open_rviz" default="true"/>
+  <!-- Actors mesh + costmap theo kịch bản (không phụ thuộc ZED rỗng) -->
+  <arg name="person_viz_social_state_topic" default="/social_state_gt"/>
+  <!-- Fusion live tách riêng; costmap lấy GT qua relay -->
+  <arg name="social_state_topic" default="/social_state_live"/>
+  <arg name="relay_scenario_gt_to_social_state" default="true"/>
+  <!-- mode:=nav: reload fusion POS để costmap theo marker; mode:=real/map: tắt -->
+  <arg name="fusion_reload_service" default="/social_density_fusion_node_pos/reload_config"/>
+  <arg name="reload_fusion_on_save" default="true"/>
+  <arg name="auto_save_min_interval" default="0.35"/>
+
+  <!-- mode:=nav (POS) -->
+  <arg name="pos_exp_variant" default="real_tn5"/>
+  <arg name="pos_social_config" default="$(arg exp5_path)"/>
+
+  <!-- ===== mode:=real — full stack như run_real_exp3 + annotation ===== -->
+  <group if="$(eval arg('mode') == 'real')">
+    <include file="$(find x_omni4wd_navigation)/launch/D-density-costmap/x_omni4wd_navigation_real_track_d.launch">
+      <arg name="exp_variant" value="$(arg exp_variant)"/>
+      <arg name="social_config" value="$(arg social_config)"/>
+      <arg name="map_file" value="$(arg map_file)"/>
+      <arg name="use_emotion_detection" value="$(arg use_emotion_detection)"/>
+      <arg name="odom_mode" value="$(arg odom_mode)"/>
+      <arg name="use_yolo" value="$(arg use_yolo)"/>
+      <arg name="yolo_model" value="$(arg yolo_model)"/>
+      <arg name="use_goal_sender" value="$(arg use_goal_sender)"/>
+      <arg name="open_sii_sgi_dashboard" value="$(arg open_sii_sgi_dashboard)"/>
+      <arg name="open_rviz" value="$(arg open_rviz)"/>
+      <arg name="rviz_config" value="$(arg rviz_config_real)"/>
+      <!-- GT đọc layout đang chỉnh (có actors) để costmap/SII cập nhật sau auto_save -->
+      <arg name="scenario_gt_path" value="$(arg config_path)"/>
+      <arg name="person_viz_social_state_topic" value="$(arg person_viz_social_state_topic)"/>
+      <arg name="social_state_topic" value="$(arg social_state_topic)"/>
+      <arg name="relay_scenario_gt_to_social_state" value="$(arg relay_scenario_gt_to_social_state)"/>
+      <arg name="use_path_density_weight_controller" value="true"/>
+    </include>
+  </group>
+
+  <!-- ===== mode:=map — map + RViz + editor ===== -->
+  <group if="$(eval arg('mode') == 'map')">
+    <node pkg="map_server" type="map_server" name="map_server" args="$(arg map_file)" output="screen">
+      <param name="frame_id" value="map"/>
+    </node>
+    <node if="$(arg open_rviz)" pkg="rviz" type="rviz" name="rviz_annotation"
+          args="-d $(arg rviz_config)" output="screen" required="false"/>
+    <!-- Actors từ canonical để nhìn giống thí nghiệm khi chỉnh layout -->
+    <node pkg="social_density_fusion" type="scenario_gt_social_state_publisher.py"
+          name="scenario_gt_social_state_publisher" output="screen">
+      <param name="scenario_path" value="$(arg canonical_path)"/>
+      <param name="rate" value="10.0"/>
+      <param name="exclude_pedestrians" value="true"/>
+    </node>
+    <node name="person_visualization_from_social_state"
+          pkg="animated_marker_tutorial"
+          type="person_visualization_from_social_state.py"
+          output="screen">
+      <param name="social_state_topic" value="/social_state_gt"/>
+      <param name="output_topic" value="/actor_visualization"/>
+      <param name="frame_id" value="map"/>
+      <param name="pin_to_ground" value="true"/>
+      <param name="ground_z" value="-0.10"/>
+      <param name="target_person_height" value="1.75"/>
+      <param name="color_by_emotion" value="true"/>
+      <param name="show_emotion_in_text" value="true"/>
+    </node>
+  </group>
+
+  <!-- ===== mode:=nav — POS + preview actors lên costmap ===== -->
+  <group if="$(eval arg('mode') == 'nav')">
+    <include file="$(find x_omni4wd_navigation)/launch/D-density-costmap/x_omni4wd_navigation_real_track_d_pos.launch">
+      <arg name="exp_variant" value="$(arg pos_exp_variant)"/>
+      <arg name="social_config" value="$(arg pos_social_config)"/>
+      <arg name="map_file" value="$(arg map_file)"/>
+      <arg name="use_goal_sender" value="$(arg use_goal_sender)"/>
+      <arg name="open_sii_sgi_dashboard" value="$(arg open_sii_sgi_dashboard)"/>
+      <arg name="open_rviz" value="$(arg open_rviz)"/>
+      <arg name="rviz_config" value="$(arg rviz_config_nav)"/>
+      <arg name="preview_scenario_actors" value="true"/>
+      <arg name="use_path_density_weight_controller" value="false"/>
+    </include>
+  </group>
+
+  <!-- ===== Editor (mọi mode) — marker kéo thả ===== -->
+  <node pkg="social_density_fusion" type="social_map_annotation_editor.py"
+        name="social_map_annotation_editor" output="screen">
+    <param name="config_path" value="$(arg config_path)"/>
+    <param name="canonical_path" value="$(arg canonical_path)"/>
+    <param name="matlab_yaml_path" value="$(arg matlab_yaml_path)"/>
+    <param name="actor_layout_path" value="$(arg config_path)"/>
+    <param name="exp5_path" value="$(arg exp5_path)"/>
+    <param name="exp6_path" value="$(arg exp6_path)"/>
+    <param name="matlab_pack_dir" value="$(arg matlab_pack_dir)"/>
+    <param name="sync_layout_on_export" value="$(arg sync_layout_on_export)"/>
+    <param name="sync_exp_on_export" value="$(arg sync_exp_on_export)"/>
+    <param name="export_exp_variant" value="$(arg exp_variant)"/>
+    <param name="fusion_reload_service" value="$(arg fusion_reload_service)"/>
+    <param name="reload_fusion_on_save" value="$(arg reload_fusion_on_save)"/>
+    <param name="gt_reload_service" value="/scenario_gt_social_state_publisher/reload"/>
+    <param name="frame_id" value="map"/>
+    <param name="auto_save" value="$(arg auto_save)"/>
+    <param name="auto_save_min_interval" value="$(arg auto_save_min_interval)"/>
+    <param name="auto_export_canonical" value="$(arg auto_export_canonical)"/>
+    <param name="auto_export_min_interval" value="$(arg auto_export_min_interval)"/>
+    <param name="auto_persist_timer_sec" value="$(arg auto_persist_timer_sec)"/>
+    <rosparam subst_value="true">
+      also_update_paths:
+        - $(arg exp5_path)
+        - $(arg exp6_path)
+    </rosparam>
+  </node>
+</launch>

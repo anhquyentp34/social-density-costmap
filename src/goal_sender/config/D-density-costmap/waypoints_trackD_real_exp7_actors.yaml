@@ -1,0 +1,57 @@
+# Track D — NGOÀI LỀ (exp7 đánh dấu actor) — KHÔNG dùng cho thí nghiệm paper 1–6
+# Actors: 2, 3, 4, 5, 6, 8, 11, 12 (social_actor_layout_from_sim.yaml)
+# File mặc định exp1–6: waypoints_trackD_real.yaml (không đụng file này).
+# Khi tới mỗi điểm: quay 1 vòng (chỉ bật spin_on_arrival ở runner/launch exp7).
+# Lộ trình: ACTOR_2 → … → ACTOR_12
+
+num_cycles: 1
+movement_mode: "once"
+
+waypoints:
+  - name: "ACTOR_2"
+    x: 13.29
+    y: -6.18
+    yaw: 1.48   # → ACTOR_3
+    color: [1.0, 0.4, 0.0]
+
+  - name: "ACTOR_3"
+    x: 12.85
+    y: -0.80
+    yaw: 1.73   # → ACTOR_4
+    color: [1.0, 0.4, 0.0]
+
+  - name: "ACTOR_4"
+    x: 12.12
+    y: 3.83
+    yaw: 1.47   # → ACTOR_5
+    color: [1.0, 0.4, 0.0]
+
+  - name: "ACTOR_5"
+    x: 12.69
+    y: 9.49
+    yaw: 2.13   # → ACTOR_6
+    color: [1.0, 0.4, 0.0]
+
+  - name: "ACTOR_6"
+    x: 10.24
+    y: 13.48
+    yaw: -3.08  # → ACTOR_8
+    color: [1.0, 0.4, 0.0]
+
+  - name: "ACTOR_8"
+    x: 5.23
+    y: 13.78
+    yaw: -2.52  # → ACTOR_11
+    color: [1.0, 0.4, 0.0]
+
+  - name: "ACTOR_11"
+    x: 2.94
+    y: 12.11
+    yaw: 1.71   # → ACTOR_12
+    color: [1.0, 0.4, 0.0]
+
+  - name: "ACTOR_12"
+    x: 2.66
+    y: 14.04
+    yaw: -2.40  # yaw layout actor12
+    color: [0.0, 1.0, 0.0]

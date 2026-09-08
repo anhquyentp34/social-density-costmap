@@ -1,0 +1,29 @@
+# Cấu hình robot thật VCCA2026 — người từ zed_sdk_bridge (/bodies).
+# Phát hiện nhóm / tương tác realtime từ hướng mặt (keypoints) + khoảng cách.
+
+density:
+  button_state: true
+
+detection:
+  enable_group_detection: true
+  enable_interaction_detection: true
+  # Khoảng cách tối đa giữa 2 người trong cùng cụm (m)
+  group_max_member_distance: 2.5
+  # Góc lệch tối đa giữa hướng mặt và hướng về tâm nhóm (độ)
+  group_facing_angle_deg: 60.0
+  # Khoảng cách tối đa người–object để xét tương tác (m)
+  interaction_max_distance: 1.75
+  # Góc lệch tối đa giữa hướng mặt và hướng về object (độ)
+  interaction_facing_angle_deg: 15.0
+
+people: []
+
+# Object tĩnh trên map (frame map). Bắt buộc là list ([]), không để key rỗng → None.
+# Thêm object: đổi thành
+# objects:
+#   - { name: picture_wall_a, x: -1.5, y: -20.0, z: 0.0, interaction_type: seeing }
+objects: []
+
+groups: []
+
+interactions: []

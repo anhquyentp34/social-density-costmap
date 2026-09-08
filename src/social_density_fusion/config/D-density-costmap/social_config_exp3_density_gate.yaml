@@ -1,0 +1,55 @@
+# Track D — D-density-costmap tn3
+# Same people/groups/interactions as costmapEx_15_icarcv.yaml
+# Cấu hình theo social_msgs (bản mở rộng từ costmapEx_33_people.yaml cho 65 actor):
+# - people: SocialPeople.people[] / SocialPerson (actor1 … actor65)
+# - groups: SocialGroups.groups[] / SocialGroup
+# - interactions: SocialInteractions (picture trong ICR2026_env5_65actor.world)
+# - density: điều khiển logic xuất bản mật độ
+#
+# Gợi ý: chỉnh emotion (Angry / Happy / Neutral) và nhóm theo kịch bản thực tế.
+
+density:
+  button_state: true
+
+people:
+  # - { name: actor1, emotion: Neutral }
+  # - { name: actor2, emotion: Neutral }
+  # - { name: actor3, emotion: Neutral }
+  - { name: actor4, emotion: Angry }
+  - { name: actor5, emotion: Angry }
+  - { name: actor6, emotion: Angry }
+  # - { name: actor7, emotion: Angry }
+  # - { name: actor8, emotion: Angry }
+  # - { name: actor9, emotion: Neutral }
+  # - { name: actor10, emotion: Angry }
+  # - { name: actor11, emotion: Angry }
+  # - { name: actor12, emotion: Angry }
+  # - { name: actor13, emotion: Angry }
+  # - { name: actor14, emotion: Angry }
+  
+groups:
+  - group_name: Group_1
+    members: [actor1, actor2]
+  - group_name: Group_2
+    members: [actor6, actor7]
+  - group_name: Group_3
+    members: [actor9, actor10, actor11, actor12, actor13]
+
+interactions:
+  - object_name: picture3
+    participants: [actor3]
+  #   interaction_type: seeing
+  # - object_name: picture5
+  #   participants: [actor5, actor16, actor27, actor38, actor49]
+  #   interaction_type: seeing
+  - object_name: picture5
+    participants: [actor5]
+    interaction_type: seeing
+  # - object_name: picture10
+  #   participants: [actor8, actor19, actor30, actor41, actor52]
+  #   interaction_type: seeing
+  - object_name: picture8
+    participants: [actor8]
+    interaction_type: seeing
+  # - object_name: picture60
+  

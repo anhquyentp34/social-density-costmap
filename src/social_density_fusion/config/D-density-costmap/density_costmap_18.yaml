@@ -1,0 +1,142 @@
+# Cấu hình theo social_msgs (cấu hình mật độ theo social_msgs):
+# - people: SocialPeople.people[] / SocialPerson (actor1 … actor65)
+# - groups: SocialGroups.groups[] / SocialGroup
+# - interactions: SocialInteractions (picture trong world thí nghiệm)
+# - density: điều khiển logic xuất bản mật độ
+#
+# Gợi ý: chỉnh emotion (Angry / Happy / Neutral) và nhóm theo kịch bản thực tế.
+
+density:
+  button_state: true
+
+people:
+  # - { name: actor1, emotion: Neutral }
+  # - { name: actor2, emotion: Neutral }
+  # - { name: actor3, emotion: Neutral }
+  # - { name: actor4, emotion: Angry }
+  - { name: actor5, emotion: Angry }
+  - { name: actor6, emotion: Angry }
+  # - { name: actor7, emotion: Angry }
+  # - { name: actor8, emotion: Neutral }
+  # - { name: actor9, emotion: Neutral }
+  - { name: actor10, emotion: Angry }
+  # - { name: actor11, emotion: Angry }
+  # - { name: actor12, emotion: Angry }
+  # - { name: actor13, emotion: Angry }
+  # - { name: actor14, emotion: Angry }
+  # - { name: actor15, emotion: Angry }
+  # - { name: actor16, emotion: Angry }
+  # - { name: actor17, emotion: Angry }
+  # - { name: actor18, emotion: Neutral }
+  # - { name: actor19, emotion: Angry }
+  # - { name: actor20, emotion: Neutral }
+  # - { name: actor21, emotion: Angry }
+  # - { name: actor22, emotion: Angry }
+  # - { name: actor23, emotion: Angry }
+  # - { name: actor24, emotion: Neutral }
+  # - { name: actor25, emotion: Happy }
+  # - { name: actor26, emotion: Happy }
+  # - { name: actor27, emotion: Happy }
+  # - { name: actor28, emotion: Happy }
+  # - { name: actor29, emotion: Happy }
+  # - { name: actor30, emotion: Neutral }
+  # - { name: actor31, emotion: Neutral }
+  # - { name: actor32, emotion: Neutral }
+  # - { name: actor33, emotion: Neutral }
+  # - { name: actor34, emotion: Neutral }
+  # - { name: actor35, emotion: Neutral }
+  # - { name: actor36, emotion: Neutral }
+  # - { name: actor37, emotion: Neutral }
+  # - { name: actor38, emotion: Neutral }
+  # - { name: actor39, emotion: Neutral }
+  # - { name: actor40, emotion: Neutral }
+  # - { name: actor41, emotion: Neutral }
+  # - { name: actor42, emotion: Neutral }
+  # - { name: actor43, emotion: Neutral }
+  # - { name: actor44, emotion: Neutral }
+  # - { name: actor45, emotion: Neutral }
+  # - { name: actor46, emotion: Neutral }
+  # - { name: actor47, emotion: Neutral }
+  # - { name: actor48, emotion: Neutral }
+  # - { name: actor49, emotion: Neutral }
+  # - { name: actor50, emotion: Neutral }
+  # - { name: actor51, emotion: Neutral }
+  # - { name: actor52, emotion: Neutral }
+  # - { name: actor53, emotion: Neutral }
+  # - { name: actor54, emotion: Neutral }
+  # - { name: actor55, emotion: Neutral }
+  # - { name: actor56, emotion: Angry }
+  # - { name: actor57, emotion: Neutral }
+  # - { name: actor58, emotion: Neutral }
+  # - { name: actor59, emotion: Neutral }
+  # - { name: actor60, emotion: Neutral }
+  # - { name: actor61, emotion: Neutral }
+  # - { name: actor62, emotion: Neutral }
+  # - { name: actor63, emotion: Neutral }
+  # - { name: actor64, emotion: Neutral }
+  # - { name: actor65, emotion: Neutral }
+
+groups:
+  - group_name: Group_1
+    members: [actor1, actor2]
+  - group_name: Group_2
+    members: [actor8, actor10]
+  - group_name: Group_3
+    members: [actor12, actor13, actor14, actor15, actor16]
+
+  # - group_name: Group_4
+  #   members: [actor11, actor16]
+  # - group_name: Group_5
+  #   members: [actor22, actor23, actor24]
+  # - group_name: Group_6
+  #   members: [actor61, actor62, actor53, actor54, actor55]
+
+  # - group_name: Group_7
+  #   members: [actor57, actor58, actor59]
+  # - group_name: Group_8
+  #   members: [actor50, actor51, actor52]
+  # - group_name: Group_9
+  #   members: [actor46, actor47, actor48]
+  # - group_name: Group_10
+  #   members: [actor43, actor44, actor45]
+  # - group_name: Group_11
+  #   members: [actor40, actor41, actor42]
+  # - group_name: Group_12
+  #   members: [actor37, actor38, actor39]
+  # - group_name: Group_13
+  #   members: [actor34, actor35, actor36]
+  # - group_name: Group_14
+  #   members: [actor31, actor32, actor33]
+  # - group_name: Group_15
+  #   members: [actor28, actor29, actor30]
+  # - group_name: Group_16
+  #   members: [actor25, actor26, actor27]
+
+interactions:
+  - object_name: picture4
+    participants: [actor4]
+  #   interaction_type: seeing
+  # - object_name: picture5
+  #   participants: [actor5, actor16, actor27, actor38, actor49]
+  #   interaction_type: seeing
+  - object_name: picture6
+    participants: [actor6]
+    interaction_type: seeing
+  # - object_name: picture10
+  #   participants: [actor8, actor19, actor30, actor41, actor52]
+  #   interaction_type: seeing
+  - object_name: picture11
+    participants: [actor11]
+    interaction_type: seeing
+  # - object_name: picture60
+  #   participants: [actor60]
+  #   interaction_type: seeing
+  # - object_name: picture19
+  #   participants: [actor49]
+  #   interaction_type: seeing
+  # - object_name: picture20
+  #   participants: [actor18]
+  #   interaction_type: seeing
+  # - object_name: picture21
+  #   participants: [actor7, actor24, actor35, actor46, actor57]
+  #   interaction_type: seeing

@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Load the emotion layer parameters -->
+  <rosparam command="load" file="$(find social_navigation_layers)/config/emotion_layer_params.yaml" />
+  
+  <!-- Start a static map server -->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find social_navigation_layers)/maps/map.yaml" />
+  
+  <!-- Start a static costmap with the emotion layer -->
+  <node name="costmap_node" pkg="costmap_2d" type="costmap_2d_node" output="screen">
+    <rosparam file="$(find social_navigation_layers)/config/emotion_layer_params.yaml" command="load" ns="costmap" />
+    <rosparam>
+      costmap:
+        global_frame: map
+        robot_base_frame: base_link
+        update_frequency: 5.0
+        publish_frequency: 2.0
+        static_map: true
+        rolling_window: false
+        resolution: 0.05
+        transform_tolerance: 0.5
+        
+        plugins:
+          - {name: static_layer, type: "costmap_2d::StaticLayer"}
+          - {name: emotion_layer, type: "social_navigation_layers::EmotionLayer"}
+          - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
+    </rosparam>
+  </node>
+  
+  <!-- Publish a static transform for testing -->
+  <node pkg="tf" type="static_transform_publisher" name="map_to_base_link" 
+        args="0 0 0 0 0 0 map base_link 100" />
+  
+  <!-- Publish test social state messages -->
+  <node name="social_state_publisher" pkg="rostopic" type="rostopic" 
+        args="pub -r 10 /social_state people_msgs/People '{header: {frame_id: map}, people: [
+          {position: {x: 2.0, y: 2.0, z: 0.0}, 
+           velocity: {x: 0.0, y: 0.0, z: 0.0}, 
+           reliability: 0.9, 
+           name: person1, 
+           tags: [emotion=happy]},
+          {position: {x: -2.0, y: -2.0, z: 0.0}, 
+           velocity: {x: 0.0, y: 0.0, z: 0.0}, 
+           reliability: 0.7, 
+           name: person2, 
+           tags: [emotion=angry]}
+        ]}'" 
+        output="screen" />
+  
+  <!-- Start rviz for visualization -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find social_navigation_layers)/rviz/emotion_layer.rviz" />
+</launch> 

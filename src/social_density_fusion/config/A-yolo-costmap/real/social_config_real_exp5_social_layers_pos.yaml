@@ -1,0 +1,219 @@
+# Track A POS — bản sao độc lập (không dùng chung file Track D).
+# Auto-synced from canonical by export_annotation_to_canonical.
+# objects + emotion_zones + people/groups/interactions + actors.
+objects:
+- name: poster_A
+  x: 14.93
+  y: -0.42
+  z: 0.0
+  interaction_type: seeing
+- name: poster_B
+  x: 9.72
+  y: 9.38
+  z: 0.0
+  interaction_type: seeing
+- name: poster_C
+  x: 5.4
+  y: 10.35
+  z: 0.0
+  interaction_type: seeing
+emotion_zones:
+- name: angry_zone_A
+  emotion: Angry
+  x_min: 11.24
+  y_min: 2.73
+  x_max: 13.24
+  y_max: 4.73
+- name: angry_zone_B
+  emotion: Angry
+  x_min: 11.69
+  y_min: 8.47
+  x_max: 13.69
+  y_max: 10.47
+- name: angry_zone_C
+  emotion: Angry
+  x_min: 8.95
+  y_min: 12.61
+  x_max: 10.95
+  y_max: 14.61
+actors:
+- name: actor1
+  x: 11.56
+  y: -3.76
+  yaw: -0.569
+  emotion: Neutral
+  group: Group_1
+- name: actor2
+  x: 13.29
+  y: -6.18
+  yaw: 2.107
+  emotion: Neutral
+  group: Group_1
+- name: actor3
+  x: 12.85
+  y: -0.8
+  yaw: -0.028
+  emotion: Neutral
+  group: ''
+- name: actor4
+  x: 12.12
+  y: 3.83
+  yaw: -1.6
+  emotion: Angry
+  group: ''
+- name: actor5
+  x: 12.69
+  y: 9.49
+  yaw: 0.0
+  emotion: Angry
+  group: ''
+- name: actor6
+  x: 10.24
+  y: 13.48
+  yaw: -2.214
+  emotion: Angry
+  group: Group_2
+- name: actor7
+  x: 8.15
+  y: 11.55
+  yaw: 0.651
+  emotion: Neutral
+  group: Group_2
+- name: actor8
+  x: 5.23
+  y: 13.78
+  yaw: -1.493
+  emotion: Neutral
+  group: ''
+- name: actor9
+  x: -1.02
+  y: 12.71
+  yaw: 0.3
+  emotion: Neutral
+  group: Group_3
+- name: actor10
+  x: 1.68
+  y: 11.25
+  yaw: 2.124
+  emotion: Neutral
+  group: Group_3
+- name: actor11
+  x: 2.94
+  y: 12.11
+  yaw: 2.319
+  emotion: Neutral
+  group: Group_3
+- name: actor12
+  x: 2.66
+  y: 14.04
+  yaw: -2.4
+  emotion: Neutral
+  group: Group_3
+- name: actor13
+  x: 1.0
+  y: 14.45
+  yaw: -1.67
+  emotion: Neutral
+  group: Group_3
+- name: actor14
+  x: 6.67
+  y: -13.36
+  yaw: 1.741
+  emotion: Neutral
+  group: ''
+  note: walking_spawn
+  role: pedestrian
+  waypoints:
+  - x: 6.06
+    y: -12.08
+  - x: 5.49
+    y: -10.75
+  - x: 4.74
+    y: -9.55
+  - x: 2.06
+    y: -9.7
+  - x: 1.17
+    y: -8.92
+  walk_goal:
+    x: 1.17
+    y: -8.92
+- name: actor15
+  x: 12.77
+  y: -9.55
+  yaw: 3.081
+  emotion: Neutral
+  group: ''
+  note: walking_spawn
+  role: pedestrian
+  waypoints:
+  - x: 10.73
+    y: -9.59
+  - x: 8.11
+    y: -9.73
+  - x: 6.43
+    y: -9.84
+  - x: 2.97
+    y: -10.15
+  - x: 1.21
+    y: -10.07
+  walk_goal:
+    x: 1.21
+    y: -10.07
+density:
+  button_state: false
+people:
+- name: actor1
+  emotion: Neutral
+- name: actor2
+  emotion: Neutral
+- name: actor3
+  emotion: Neutral
+- name: actor4
+  emotion: Angry
+- name: actor5
+  emotion: Angry
+- name: actor6
+  emotion: Angry
+- name: actor7
+  emotion: Neutral
+- name: actor8
+  emotion: Neutral
+- name: actor9
+  emotion: Neutral
+- name: actor10
+  emotion: Neutral
+- name: actor11
+  emotion: Neutral
+- name: actor12
+  emotion: Neutral
+- name: actor13
+  emotion: Neutral
+groups:
+- group_name: Group_1
+  members:
+  - actor1
+  - actor2
+- group_name: Group_2
+  members:
+  - actor6
+  - actor7
+- group_name: Group_3
+  members:
+  - actor9
+  - actor10
+  - actor11
+  - actor12
+  - actor13
+interactions:
+- object_name: poster_A
+  participants:
+  - actor3
+  interaction_type: seeing
+- object_name: poster_B
+  participants:
+  - actor5
+  interaction_type: seeing
+- object_name: poster_C
+  participants:
+  - actor8
+  interaction_type: seeing

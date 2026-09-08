@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!-- Track D — Robot thật — Exp.3: Social layers + FER + density gate -->
+<!-- Tệp riêng real — không dùng chung launch/RViz mô phỏng. -->
+<launch>
+  <include file="$(find x_omni4wd_navigation)/launch/D-density-costmap/x_omni4wd_navigation_real_track_d.launch">
+    <arg name="exp_variant" value="real_tn3"/>
+    <arg name="social_config"
+         value="$(find social_density_fusion)/config/D-density-costmap/real/social_config_real_exp3_density_gate.yaml"/>
+    <arg name="use_emotion_detection" value="true"/>
+    <arg name="odom_mode" value="srf_zed_imu"/>
+    <arg name="use_yolo" value="true"/>
+    <arg name="yolo_model" value="yolo26n.pt"/>
+    <arg name="rviz_config"
+         value="$(find x_omni4wd_navigation)/rviz/D-density-costmap/track_d_real.rviz"/>
+  </include>
+</launch>

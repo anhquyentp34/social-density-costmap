@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!-- Track D — Robot thật — Exp.4 (POS): proxemic only + latch progressive (near_pose) -->
+<!-- Khác exp1: costmap social hiện dần theo detection gần pose kịch bản, rồi giữ mãi. -->
+<launch>
+  <include file="$(find x_omni4wd_navigation)/launch/D-density-costmap/x_omni4wd_navigation_real_track_d_pos.launch">
+    <arg name="exp_variant" value="real_tn4"/>
+    <arg name="social_config"
+         value="$(find social_density_fusion)/config/D-density-costmap/real/social_config_real_exp4_proxemic_only_pos.yaml"/>
+    <arg name="use_scenario_social_latch" value="true"/>
+    <arg name="scenario_latch_mode" value="near_pose"/>
+    <arg name="scenario_latch_hold_sec" value="-1.0"/>
+    <arg name="scenario_latch_all_people" value="false"/>
+    <arg name="rviz_config"
+         value="$(find x_omni4wd_navigation)/rviz/D-density-costmap/track_d_real_pos.rviz"/>
+  </include>
+</launch>

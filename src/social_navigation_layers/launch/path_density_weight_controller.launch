@@ -1,0 +1,60 @@
+<launch>
+  <!--
+    Điều chỉnh online *_density_weight của social costmap layers khi planner kẹt.
+    Cần: social_density_fusion xuất /density_info (density.button_state=true trong YAML).
+  -->
+  <arg name="plan_topic" default="/move_base/GlobalPlanner/plan"/>
+  <arg name="odom_topic" default="/odom"/>
+  <arg name="density_button_state_param" default="/social_density_fusion_node/density/button_state"/>
+
+  <node name="path_density_weight_controller"
+        pkg="social_navigation_layers"
+        type="path_density_weight_controller.py"
+        output="screen">
+    <param name="plan_topic" value="$(arg plan_topic)"/>
+    <param name="force_min_base_weight" value="true"/>
+    <param name="density_button_state_param" value="$(arg density_button_state_param)"/>
+    <param name="degrade_when_density_unavailable" value="true"/>
+    <param name="reset_to_min_on_start" value="true"/>
+    <param name="emotion_server" value="/move_base/global_costmap/emotion_layer"/>
+    <param name="emotion_server_local" value="/move_base/local_costmap/emotion_layer"/>
+    <param name="human_object_server" value="/move_base/global_costmap/human_object_layer"/>
+    <param name="human_object_server_local" value="/move_base/local_costmap/human_object_layer"/>
+    <param name="human_group_server" value="/move_base/global_costmap/human_group_layer"/>
+    <param name="human_group_server_local" value="/move_base/local_costmap/human_group_layer"/>
+    <param name="proxemic_server" value="/move_base/global_costmap/proxemic"/>
+    <param name="proxemic_server_local" value="/move_base/local_costmap/proxemic"/>
+    <param name="control_rate_hz" value="3.0"/>
+    <param name="no_path_trigger_count" value="1"/>
+    <param name="no_path_grace_after_goal_sec" value="1.5"/>
+    <param name="restore_hold_after_relax_sec" value="2.5"/>
+    <param name="restore_min_interval_sec" value="2.0"/>
+    <param name="use_teb_footprint_infeasible" value="true"/>
+    <param name="teb_footprint_infeasible_topic" value="/move_base/TebLocalPlannerROS/footprint_trajectory_infeasible"/>
+    <param name="teb_infeasible_trigger_count" value="2"/>
+    <param name="move_base_status_topic" value="/move_base/status"/>
+    <param name="use_no_progress_relax" value="true"/>
+    <param name="odom_topic" value="$(arg odom_topic)"/>
+    <param name="no_progress_distance_eps" value="0.03"/>
+    <param name="no_progress_duration_sec" value="1.0"/>
+    <param name="no_progress_relax_min_interval_sec" value="1.0"/>
+    <param name="use_progress_restore" value="true"/>
+    <param name="progress_restore_distance_m" value="2.0"/>
+    <param name="progress_restore_min_interval_sec" value="2.0"/>
+    <param name="use_active_goal_timeout_relax" value="false"/>
+    <param name="active_goal_relax_delay_sec" value="12.0"/>
+    <param name="active_goal_relax_min_interval_sec" value="8.0"/>
+    <param name="use_teb_oscillation_relax" value="true"/>
+    <param name="teb_oscillation_log_topic" value="/rosout_agg"/>
+    <param name="teb_oscillation_trigger_count" value="1"/>
+    <param name="teb_oscillation_relax_min_interval_sec" value="2.0"/>
+    <param name="emotion_step" value="4.0"/>
+    <param name="emotion_max_weight" value="28.0"/>
+    <param name="human_object_step" value="4.0"/>
+    <param name="human_object_max_weight" value="20.0"/>
+    <param name="human_group_step" value="20.0"/>
+    <param name="human_group_max_weight" value="40.0"/>
+    <param name="proxemic_step" value="15.0"/>
+    <param name="proxemic_max_weight" value="45.0"/>
+  </node>
+</launch>

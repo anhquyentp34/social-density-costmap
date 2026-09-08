@@ -1,0 +1,10 @@
+emotion_layer:
+  enabled: true
+  cutoff: 10.0
+  amplitude: 100.0
+  covariance: 0.25
+  factor: 5.0
+  keep_time: 0.75
+  happy_factor: 0.5
+  angry_factor: 1.5
+  neutral_factor: 1.0 

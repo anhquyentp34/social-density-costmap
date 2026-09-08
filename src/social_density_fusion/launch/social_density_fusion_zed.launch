@@ -1,0 +1,114 @@
+<launch>
+  <!--
+    Robot thật: mật độ + /social_state từ zed_body_tracking (/bodies).
+    Velocity: ZED CAMERA-relative → bù bằng /odom (EKF) về frame map.
+    Cần: /scan, /amcl_pose, TF map <- camera_link, /bodies, /odom.
+  -->
+  <arg name="scenario_config" default="$(find social_density_fusion)/config/costmapEx_vcca_real.yaml" />
+  <arg name="scan_topic" default="/scan" />
+  <arg name="bodies_topic" default="/bodies" />
+  <arg name="source_frame" default="camera_link" />
+  <arg name="target_frame" default="map" />
+  <arg name="tf_lookup_timeout" default="0.15" />
+  <arg name="max_tf_cache_age" default="0.30" />
+  <arg name="fusion_rate" default="10.0" />
+  <arg name="publish_rate" default="10.0" />
+  <arg name="min_confidence" default="40.0" />
+  <arg name="enable_group_detection" default="true" />
+  <arg name="enable_interaction_detection" default="true" />
+  <arg name="objects_topic" default="/objects" />
+  <arg name="use_live_objects" default="true" />
+  <arg name="use_live_emotions" default="false" />
+  <arg name="person_emotions_topic" default="/person_emotions" />
+
+  <!-- Velocity compensation (spin-tuned map_finite_difference — PASS live 22/08) -->
+  <arg name="body_measurement_reference" default="camera" />
+  <arg name="velocity_compensation_mode" default="map_finite_difference" />
+  <arg name="robot_odom_topic" default="/odom" />
+  <arg name="robot_base_frame" default="base_footprint" />
+  <arg name="odom_timeout" default="0.20" />
+  <arg name="enable_camera_translation_compensation" default="true" />
+  <arg name="enable_camera_rotation_compensation" default="true" />
+  <!-- ZED CAMERA velocity embeds +omega×r; subtract term (sign=-1) for V3 spin-in-place. -->
+  <arg name="rotational_compensation_sign" default="-1.0" />
+  <arg name="velocity_low_pass_alpha" default="0.3" />
+  <arg name="velocity_max_valid" default="4.0" />
+  <arg name="velocity_stationary_threshold" default="0.10" />
+  <arg name="velocity_jump_threshold" default="1.5" />
+  <arg name="velocity_heading_min_speed" default="0.15" />
+  <arg name="enable_fd_yaw_compensation" default="true" />
+  <arg name="fd_yaw_omega_gate" default="0.05" />
+  <arg name="fd_yaw_low_pass_alpha" default="0.12" />
+  <arg name="spin_stationary_threshold" default="0.35" />
+  <arg name="force_zero_while_spinning" default="true" />
+  <arg name="publish_velocity_debug" default="false" />
+  <arg name="publish_facing_markers" default="false" />
+  <arg name="publish_pedestrian_measurements" default="true" />
+  <!-- Nhớ người ngoài FOV chỉ để tính /density_info (không inject social) -->
+  <arg name="enable_density_track_memory" default="true" />
+  <arg name="density_memory_hold_sec" default="60.0" />
+  <arg name="density_memory_coast" default="true" />
+  <!-- Annotation: đặt /social_state_live rồi relay GT → /social_state cho costmap -->
+  <arg name="social_state_topic" default="/social_state" />
+
+  <node
+    pkg="social_density_fusion"
+    type="lidar_map_polygon_node.py"
+    name="lidar_map_polygon_node"
+    output="screen">
+    <param name="scan_topic" value="$(arg scan_topic)" />
+    <param name="tf_lookup_timeout" value="$(arg tf_lookup_timeout)" />
+    <param name="max_tf_cache_age" value="$(arg max_tf_cache_age)" />
+  </node>
+
+  <node
+    pkg="social_density_fusion"
+    type="social_density_fusion_node_zed.py"
+    name="social_density_fusion_node"
+    output="screen">
+    <param name="config_path" value="$(arg scenario_config)" />
+    <param name="auto_reload_config" value="false" />
+    <param name="config_reload_interval_sec" value="1.0" />
+    <param name="fusion_rate" value="$(arg fusion_rate)" />
+    <param name="publish_rate" value="$(arg publish_rate)" />
+    <param name="bodies_topic" value="$(arg bodies_topic)" />
+    <param name="objects_topic" value="$(arg objects_topic)" />
+    <param name="use_live_objects" value="$(arg use_live_objects)" />
+    <param name="source_frame" value="$(arg source_frame)" />
+    <param name="target_frame" value="$(arg target_frame)" />
+    <param name="camera_frame" value="$(arg source_frame)" />
+    <param name="navigation_frame" value="$(arg target_frame)" />
+    <param name="tf_lookup_timeout" value="$(arg tf_lookup_timeout)" />
+    <param name="min_confidence" value="$(arg min_confidence)" />
+    <param name="enable_group_detection" value="$(arg enable_group_detection)" />
+    <param name="enable_interaction_detection" value="$(arg enable_interaction_detection)" />
+    <param name="body_measurement_reference" value="$(arg body_measurement_reference)" />
+    <param name="velocity_compensation_mode" value="$(arg velocity_compensation_mode)" />
+    <param name="robot_odom_topic" value="$(arg robot_odom_topic)" />
+    <param name="robot_base_frame" value="$(arg robot_base_frame)" />
+    <param name="odom_timeout" value="$(arg odom_timeout)" />
+    <param name="enable_camera_translation_compensation" value="$(arg enable_camera_translation_compensation)" />
+    <param name="enable_camera_rotation_compensation" value="$(arg enable_camera_rotation_compensation)" />
+    <param name="rotational_compensation_sign" value="$(arg rotational_compensation_sign)" />
+    <param name="velocity_low_pass_alpha" value="$(arg velocity_low_pass_alpha)" />
+    <param name="velocity_max_valid" value="$(arg velocity_max_valid)" />
+    <param name="velocity_stationary_threshold" value="$(arg velocity_stationary_threshold)" />
+    <param name="velocity_jump_threshold" value="$(arg velocity_jump_threshold)" />
+    <param name="velocity_heading_min_speed" value="$(arg velocity_heading_min_speed)" />
+    <param name="enable_fd_yaw_compensation" value="$(arg enable_fd_yaw_compensation)" />
+    <param name="fd_yaw_omega_gate" value="$(arg fd_yaw_omega_gate)" />
+    <param name="fd_yaw_low_pass_alpha" value="$(arg fd_yaw_low_pass_alpha)" />
+    <param name="spin_stationary_threshold" value="$(arg spin_stationary_threshold)" />
+    <param name="force_zero_while_spinning" value="$(arg force_zero_while_spinning)" />
+    <param name="publish_velocity_debug" value="$(arg publish_velocity_debug)" />
+    <param name="publish_facing_markers" value="$(arg publish_facing_markers)" />
+    <param name="publish_pedestrian_measurements" value="$(arg publish_pedestrian_measurements)" />
+    <param name="enable_density_track_memory" value="$(arg enable_density_track_memory)" />
+    <param name="density_memory_hold_sec" value="$(arg density_memory_hold_sec)" />
+    <param name="density_memory_coast" value="$(arg density_memory_coast)" />
+    <param name="use_live_emotions" value="$(arg use_live_emotions)" />
+    <param name="person_emotions_topic" value="$(arg person_emotions_topic)" />
+    <param name="social_state_topic" value="$(arg social_state_topic)" />
+    <rosparam command="load" file="$(arg scenario_config)" />
+  </node>
+</launch>

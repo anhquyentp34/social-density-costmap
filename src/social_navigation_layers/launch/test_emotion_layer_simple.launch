@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Load the emotion layer parameters -->
+  <rosparam>
+    emotion_layer:
+      enabled: true
+      cutoff: 10.0
+      amplitude: 100.0
+      covariance: 0.5
+      factor: 1.0
+      emotion_factor: 1.5
+      keep_time: 0.75
+  </rosparam>
+  
+  <!-- Start a static map server with a blank map -->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find social_navigation_layers)/maps/map.yaml" />
+  
+  <!-- Publish a static transform for testing -->
+  <node pkg="tf" type="static_transform_publisher" name="map_to_odom" 
+        args="0 0 0 0 0 0 map odom 100" />
+  <node pkg="tf" type="static_transform_publisher" name="odom_to_base_link" 
+        args="0 0 0 0 0 0 odom base_link 100" />
+  
+  <!-- Start a simple costmap node with just the emotion layer -->
+  <node name="emotion_layer_test" pkg="costmap_2d" type="costmap_2d_node" output="screen">
+    <rosparam>
+      global_frame: map
+      robot_base_frame: base_link
+      update_frequency: 5.0
+      publish_frequency: 2.0
+      static_map: false
+      rolling_window: true
+      width: 10.0
+      height: 10.0
+      resolution: 0.05
+      
+      plugins:
+        - {name: emotion_layer, type: "social_navigation_layers::EmotionLayer"}
+    </rosparam>
+  </node>
+  
+  <!-- Publish test social state messages -->
+  <node name="social_state_publisher" pkg="rostopic" type="rostopic" 
+        args="pub -r 1 /social_state social_msgs/SocialState '{header: {frame_id: map}, people: {header: {frame_id: map}, people: [{name: person1, position: {position: {x: 1.0, y: 1.0, z: 0.0}}, velocity: {linear: {x: 0.0, y: 0.0, z: 0.0}}, emotion: happy, reliability: 0.9}, {name: person2, position: {position: {x: -1.0, y: -1.0, z: 0.0}}, velocity: {linear: {x: 0.0, y: 0.0, z: 0.0}}, emotion: angry, reliability: 0.8}]}}'" 
+        output="screen" />
+  
+  <!-- Start rviz for visualization -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find social_navigation_layers)/rviz/emotion_layer.rviz" />
+</launch> 

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg="costmap_2d" type="costmap_2d_node" name="costmap_2d">
+    <rosparam file="$(find social_navigation_layers)/config/human_object_layer_params.yaml" command="load" />
+  </node>
+</launch> 

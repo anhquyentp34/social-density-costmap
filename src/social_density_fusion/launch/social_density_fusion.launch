@@ -1,0 +1,31 @@
+<launch>
+  <arg name="scenario_config" default="$(find social_density_fusion)/config/costmapEx_33_people.yaml" />
+  <arg name="scan_topic" default="/scan" />
+  <arg name="tf_lookup_timeout" default="0.15" />
+  <arg name="max_tf_cache_age" default="0.30" />
+  <arg name="fusion_rate" default="20.0" />
+  <arg name="publish_rate" default="30.0" />
+
+  <node
+    pkg="social_density_fusion"
+    type="lidar_map_polygon_node.py"
+    name="lidar_map_polygon_node"
+    output="screen">
+    <param name="scan_topic" value="$(arg scan_topic)" />
+    <param name="tf_lookup_timeout" value="$(arg tf_lookup_timeout)" />
+    <param name="max_tf_cache_age" value="$(arg max_tf_cache_age)" />
+  </node>
+
+  <node
+    pkg="social_density_fusion"
+    type="social_density_fusion_node.py"
+    name="social_density_fusion_node"
+    output="screen">
+    <param name="config_path" value="$(arg scenario_config)" />
+    <param name="auto_reload_config" value="false" />
+    <param name="config_reload_interval_sec" value="1.0" />
+    <param name="fusion_rate" value="$(arg fusion_rate)" />
+    <param name="publish_rate" value="$(arg publish_rate)" />
+    <rosparam command="load" file="$(arg scenario_config)" />
+  </node>
+</launch>

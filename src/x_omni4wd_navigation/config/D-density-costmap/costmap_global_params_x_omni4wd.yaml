@@ -1,0 +1,96 @@
+global_costmap:
+  global_frame: map
+  robot_base_frame: base_footprint
+  # Tăng để tránh "Transform timeout" khi sim/AMCL tải nặng (log: stamp lệch >0.3s)
+  transform_tolerance: 0.7
+  # Global costmap: social/lidar đổi nhanh (sim + thực địa) — update cao hơn để GlobalPlanner bám costmap mới.
+  update_frequency: 2.0
+  publish_frequency: 0.5
+  resolution: 0.05
+  footprint_padding: 0.005
+  rolling_window: false
+  plugins:
+    - { name: static_layer, type: "costmap_2d::StaticLayer" }
+    - { name: obstacles_layer, type: "costmap_2d::ObstacleLayer" }
+    - { name: inflation_layer, type: "costmap_2d::InflationLayer" }
+    - { name: proxemic, type: "social_navigation_layers::ProxemicLayer" }
+    # - { name: passing, type: "social_navigation_layers::PassingLayer" }
+    - {
+        name: human_group_layer,
+        type: "social_navigation_layers::HumanGroupLayer",
+      }
+    - {
+        name: human_object_layer,
+        type: "social_navigation_layers::HumanObjectLayer",
+      }
+    - { name: emotion_layer, type: "social_navigation_layers::EmotionLayer" }
+
+  static_layer:
+    enabled: true
+  obstacles_layer:
+    observation_sources: base_scan
+    base_scan:
+      data_type: LaserScan
+      sensor_frame: lidar_link
+      topic: /scan
+      clearing: true
+      marking: true
+      inf_is_valid: true # Quan trọng: xử lý đúng giá trị vô cực
+      observation_persistence: 0.0 # Không lưu giữ quan sát cũ
+      expected_update_rate: 0.5 # Chấp nhận scan mỗi 0.5s (2Hz), tránh "sensor out of date" khi CPU nặng
+      obstacle_range: 10.0 # Tầm phát hiện chướng ngại
+      raytrace_range: 12.0 # Khớp max range lidar A2M8
+    track_unknown_space: false # Không theo dõi vùng unknown để tránh ghost
+    footprint_clearing_enabled: true
+    combination_method: 1
+    mark_threshold: 0
+    clear_threshold: 1
+
+  inflation_layer:
+    enabled: true
+    # robot_radius=0.26 → r_inf=0.32; cost mép ≈ cutoff=10 → factor≈53.78
+    cost_scaling_factor: 53.78
+    inflation_radius: 0.32
+
+  proxemic:
+    enabled: true # Whether to apply this plugin or not
+    cutoff: 10.0 # Smallest value to publish on costmap adjustments
+    amplitude: 77.0 # Amplitude of adjustments at peak
+    covariance: 0.25 # Covariance of adjustments
+    factor: 5.0 # Factor with which to scale the velocity
+    min_radius: 0.6
+    proxemic_density_weight: 22.0
+    keep_time: 0.75 # Pause before clearing leg list
+
+  passing:
+    enabled: true
+    cutoff: 10.0
+    amplitude: 77.0
+    covariance: 0.25
+    factor: 5.0
+    min_radius: 0.6
+    density_weight: 22.0
+    keep_time: 0.75
+
+  emotion_layer:
+    enabled: True #Whether to apply this plugin or not
+    cutoff: 10.0 #Smallest value to publish on costmap adjustments
+    amplitude: 77.0 #Amplitude of adjustments at peak
+    covariance: 0.25 #Covariance of adjustments
+    emotion_density_weight: 10.0
+
+  human_object_layer:
+    enabled: true
+    cutoff: 10.0
+    amplitude: 77.0
+    covar: 0.25
+    factor: 1.0
+    human_object_density_weight: 22.0
+
+  human_group_layer:
+    enabled: true
+    cutoff: 10.0
+    amplitude: 77.0
+    covar: 0.25
+    factor: 1.0
+    human_group_density_weight: 50

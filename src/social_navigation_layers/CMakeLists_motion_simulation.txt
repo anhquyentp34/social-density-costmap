@@ -1,0 +1,48 @@
+cmake_minimum_required(VERSION 3.0.2)
+
+project(motion_simulation_2d)
+
+# Tìm các package cần thiết
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  std_msgs
+)
+
+# Tạo executable
+add_executable(motion_simulation_2d 
+  src/motion_simulation_2d.cpp
+)
+
+# Liên kết với các thư viện
+target_link_libraries(motion_simulation_2d
+  ${catkin_LIBRARIES}
+  m  # Thư viện toán học
+)
+
+# Cài đặt include directories
+target_include_directories(motion_simulation_2d PRIVATE
+  ${catkin_INCLUDE_DIRS}
+)
+
+# Cài đặt compile options
+target_compile_options(motion_simulation_2d PRIVATE
+  -std=c++11
+  -Wall
+  -Wextra
+  -O2
+)
+
+# Cài đặt định nghĩa
+target_compile_definitions(motion_simulation_2d PRIVATE
+  _USE_MATH_DEFINES
+)
+
+# Cài đặt output directory
+set_target_properties(motion_simulation_2d PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+)
+
+# Install rules
+install(TARGETS motion_simulation_2d
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+) 

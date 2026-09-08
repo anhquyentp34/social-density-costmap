@@ -1,0 +1,12 @@
+build/
+devel/
+install/
+logs/
+*.bag
+*.mp4
+__pycache__/
+*.pyc
+.vscode/
+.idea/
+*.swp
+*~

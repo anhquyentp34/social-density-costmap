@@ -1,0 +1,26 @@
+# Track D — Robot thật — real_exp3: proxemic + group/object/emotion + density gate FULL (composite)
+# FER: fer_emotion → /person_emotions → fusion → EmotionLayer
+# density.button_state: true → /density_info publish → path_density_weight_controller HOẠT ĐỘNG
+# Sequential relaxation: emotion → human_object → human_group → proxemic khi robot bị kẹt
+# Đây là cấu hình đầy đủ nhất, chứng minh RQ-D
+
+density:
+  button_state: true
+
+detection:
+  enable_group_detection: true
+  enable_interaction_detection: true
+  group_max_member_distance: 2.5
+  group_facing_angle_deg: 60.0
+  interaction_max_distance: 1.75
+  interaction_facing_angle_deg: 15.0
+
+people: []
+
+# Thêm vật thể tĩnh trên map Lab nếu có:
+# objects:
+#   - { name: display_board, x: 0.5, y: -18.0, z: 0.0, interaction_type: seeing }
+objects: []
+
+groups: []
+interactions: []

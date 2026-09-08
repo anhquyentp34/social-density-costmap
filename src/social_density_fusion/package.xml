@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>social_density_fusion</name>
+  <version>0.0.1</version>
+  <description>Social-state and density fusion for proxemic navigation (Gazebo sim + ZED body tracking).</description>
+
+  <maintainer email="quyenanhpt@todo.todo">quyenanhpt</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>message_generation</build_depend>
+
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>gazebo_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>social_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>tf2_ros</depend>
+  <depend>interactive_markers</depend>
+  <exec_depend>zed_sdk_bridge</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
+
+  <export/>
+</package>

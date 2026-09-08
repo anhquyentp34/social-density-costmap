@@ -1,0 +1,26 @@
+<launch>
+  <!--
+    Hỗ trợ kiểm thử V1–V5 bù vận tốc ZED.
+    Chạy song song với pipeline robot (ZED BT + fusion + navigation).
+    Ghi bag: rosrun social_density_fusion record_zed_velocity_test.sh V2
+  -->
+  <arg name="test_case" default="V1" doc="V1|V2|V3|V4|V5" />
+  <arg name="cmd_vx" default="0.0" />
+  <arg name="cmd_vy" default="0.0" />
+  <arg name="cmd_wz" default="0.0" />
+  <arg name="publish_cmd" default="false" />
+
+  <node pkg="rostopic" type="rostopic" name="zed_vel_test_info" output="screen"
+        args="echo /zed_velocity_compensation/debug -n 1" if="false" />
+
+  <!-- Optional open-loop cmd for V2/V3 when publish_cmd:=true (use carefully). -->
+  <node if="$(arg publish_cmd)" pkg="rostopic" type="rostopic" name="zed_vel_test_cmd"
+        args="pub -r 10 /cmd_vel geometry_msgs/Twist
+              '{linear: {x: $(arg cmd_vx), y: $(arg cmd_vy), z: 0.0},
+                angular: {x: 0.0, y: 0.0, z: $(arg cmd_wz)}}'"
+        output="screen" />
+
+  <param name="/zed_velocity_test/case" value="$(arg test_case)" />
+  <param name="/zed_velocity_test/expect"
+         value="Stationary person → final_speed≈0 for V1/V2/V3; see research note" />
+</launch>

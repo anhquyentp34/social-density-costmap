@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!-- Log ρ + *_density_weight → topic + optional CSV cho MATLAB -->
+<launch>
+  <arg name="rate" default="10.0"/>
+  <arg name="rho_topic" default="/density_info"/>
+  <!-- Để trống = không ghi CSV (chỉ publish topic, rosbag ghi được) -->
+  <arg name="csv_path" default=""/>
+
+  <node pkg="social_density_fusion" type="layer_weights_logger.py"
+        name="layer_weights_logger" output="screen">
+    <param name="rate" value="$(arg rate)"/>
+    <param name="rho_topic" value="$(arg rho_topic)"/>
+    <param name="csv_path" value="$(arg csv_path)"/>
+  </node>
+</launch>

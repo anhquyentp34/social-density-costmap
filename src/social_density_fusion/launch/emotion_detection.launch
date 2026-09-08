@@ -1,0 +1,4 @@
+<launch>
+  <!-- Deprecated wrapper — dùng fer_emotion trực tiếp -->
+  <include file="$(find fer_emotion)/launch/emotion_detection.launch"/>
+</launch>

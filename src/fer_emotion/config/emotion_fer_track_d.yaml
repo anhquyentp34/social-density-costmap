@@ -1,0 +1,14 @@
+# fer_emotion — mặc định Track D (ưu tiên Angry)
+focus_emotion: Angry
+group_margin: 0.12
+angry_min_score: 0.12
+angry_margin: 0.04
+angry_neutral_slack: 0.08
+angry_raw_spike: 0.04
+smooth_window: 8
+min_body_confidence: 40.0
+min_fer_confidence: 0.35
+crop_scale: 2.2
+# Giữ nhãn cảm xúc theo ID khi mặt bị che tạm thời (giây)
+hold_last_sec: 2.0
+debug_image_topic: /image_emotion

@@ -1,0 +1,105 @@
+objects:
+- name: poster_A
+  x: 5.34
+  y: 11.03
+  z: 0.0
+  interaction_type: seeing
+emotion_zones:
+- name: angry_zone_actor4
+  emotion: Angry
+  x_min: 4.16
+  y_min: 12.22
+  x_max: 6.16
+  y_max: 14.22
+- name: angry_zone_actor5
+  emotion: Angry
+  x_min: 0.46
+  y_min: 11.68
+  x_max: 2.46
+  y_max: 13.68
+- name: angry_zone_actor6
+  emotion: Angry
+  x_min: 0.36
+  y_min: 13.26
+  x_max: 2.36
+  y_max: 15.26
+actors:
+- name: actor1
+  x: 11.18
+  y: 11.76
+  yaw: -1.541
+  emotion: Neutral
+  group: ''
+  note: walking_spawn
+  role: pedestrian
+  waypoints:
+  - x: 11.18
+    y: 10.66
+  - x: 11.44
+    y: 9.38
+  - x: 11.53
+    y: 7.96
+  - x: 11.71
+    y: 6.69
+  - x: 11.82
+    y: 5.2
+  walk_goal:
+    x: 11.82
+    y: 5.2
+- name: actor2
+  x: 10.24
+  y: 13.48
+  yaw: -2.214
+  emotion: Neutral
+  group: Group_1
+- name: actor3
+  x: 8.15
+  y: 11.55
+  yaw: 0.651
+  emotion: Neutral
+  group: Group_1
+- name: actor4
+  x: 5.24
+  y: 13.26
+  yaw: -1.493
+  emotion: Angry
+  group: ''
+- name: actor5
+  x: 1.46
+  y: 12.68
+  yaw: 1.666
+  emotion: Angry
+  group: Group_2
+- name: actor6
+  x: 1.36
+  y: 14.26
+  yaw: -1.534
+  emotion: Angry
+  group: Group_2
+density:
+  button_state: false
+people:
+- name: actor2
+  emotion: Neutral
+- name: actor3
+  emotion: Neutral
+- name: actor4
+  emotion: Angry
+- name: actor5
+  emotion: Angry
+- name: actor6
+  emotion: Angry
+groups:
+- group_name: Group_1
+  members:
+  - actor2
+  - actor3
+- group_name: Group_2
+  members:
+  - actor5
+  - actor6
+interactions:
+- object_name: poster_A
+  participants:
+  - actor4
+  interaction_type: seeing

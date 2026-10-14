@@ -1,0 +1,107 @@
+TebLocalPlannerROS:
+  odom_topic: /odom
+  # Omni 4 bánh: vẫn holonomic, nhưng ưu tiên camera (+x) hướng theo hướng tiến để quan sát.
+  # Trần bánh vẫn dư; inflation gọn theo robot_radius=0.26.
+  max_vel_x: 0.70  # tiến x êm hơn (was 1.2)
+  max_vel_x_backwards: 0.25  # hạn chế lùi — ưu tiên xoay rồi tiến để camera nhìn phía trước
+  max_vel_y: 0.45  # omni: cho phép né ngang hơn khi qua khe hẹp
+  max_vel_theta: 1.20  # giảm mạnh xoay giật (was 4.0)
+  max_vel_trans: 0.70  # <= max(vx,vy) — tránh cảnh báo chéo
+  acc_lim_x: 0.40
+  acc_lim_y: 0.40
+  acc_lim_theta: 0.80
+  footprint_model:
+    type: circular
+    radius: 0.26
+  teb_autosize: true
+  dt_ref: 0.35  # mẫu thời gian thưa hơn một chút → quỹ đạo mượt
+  dt_hysteresis: 0.15
+  max_samples: 200
+  global_plan_overwrite_orientation: true  # yaw bám hướng path → camera nhìn theo hành trình
+  allow_init_with_backwards_motion: true  # vẫn cho phép khởi tạo lùi khi cần
+  max_global_plan_lookahead_dist: 4.0
+  # Via dày hơn → bám global corridor qua khe hẹp (path đã có sẵn).
+  global_plan_viapoint_sep: 0.25
+  global_plan_prune_distance: 1
+  exact_arc_length: false
+  # Chi kiem tra feasibility gan robot — tranh "trajectory is not feasible" vi cost xa
+  # (social layer day cost cao doc hanh lang; pose xa van co the ghi nhan cham vao vung vang/do).
+  feasibility_check_no_poses: 2
+  feasibility_check_lookahead_distance: 0.8
+  publish_feedback: true
+  xy_goal_tolerance: 0.2
+  yaw_goal_tolerance: 0.1
+  free_goal_vel: false  # chậm dần khi tới goal — ít overshoot
+  trans_stopped_vel: 0.08
+  theta_stopped_vel: 0.08
+  complete_global_plan: true
+  # Khoảng cách tới tâm các PointObstacle trích từ costmap (ô có cost >= costmap_obstacle_threshold). Nên > 0 để không “cạ” biên ô rời rạc.
+  # Sach hon 1 chut de quy dao toi uu khong “sat” bien costmap khi check footprint.
+  min_obstacle_dist: 0.04
+  # Vùng phạt mềm (EdgeInflatedObstacle): khoảng cách robot–điểm chướng ngại; phải > min_obstacle_dist.
+  # 0.42 không sai nhưng thường rộng hơn cần; ~bán kính robot (0.25) + lề ~0.07 m là gọn (khác inflation_radius của costmap_2d).
+  inflation_dist: 0.22  # halo TEB; costmap inflation local 0.28 / global 0.30
+  include_costmap_obstacles: true
+  # Ô local cost >= threshold thành PointObstacle. 1 = quá dày với social layer → tối ưu/khả thi hay xung đột.
+  # 20–80: vẫn né vùng có cost, giảm clutter; va chạm cứng vẫn do obstacles_layer + feasibility footprint.
+  costmap_obstacle_threshold: 10  # = proxemic cutoff — path/TEB không xuyên vùng social
+  costmap_obstacles_behind_robot_dist: 1.0
+  obstacle_poses_affected: 15
+  dynamic_obstacle_inflation_dist: 0.22
+  include_dynamic_obstacles: true
+  costmap_converter_plugin: ""
+  costmap_converter_spin_thread: true
+  costmap_converter_rate: 10
+  no_inner_iterations: 5
+  no_outer_iterations: 4
+  optimization_activate: true
+  optimization_verbose: false
+  penalty_epsilon: 0.08
+  obstacle_cost_exponent: 2
+  weight_max_vel_x: 2
+  weight_max_vel_y: 3  # cho phép vy khi cần qua khe; vẫn ưu tiên tiến
+  weight_max_vel_theta: 2  # phạt vượt ω (was 1)
+  weight_acc_lim_x: 3  # ưu tiên gia tốc êm (was 1)
+  weight_acc_lim_y: 3
+  weight_acc_lim_theta: 3
+  weight_kinematics_nh: 0
+  weight_kinematics_forward_drive: 6  # vẫn ưu tiên camera phía trước, nhưng không khóa ngang trong khe
+  weight_kinematics_turning_radius: 1
+  weight_optimaltime: 4  # quyết đoán hơn, ít đứng rung
+  # >0 rút ngắn path; giữ vừa phải để không giật khi tối ưu.
+  weight_shortest_path: 2.0
+  # Giảm nhẹ so với 180 để không luôn “thắng” via point khi social layer nhuộm vàng rộng.
+  weight_obstacle: 55
+  weight_inflation: 2.0
+  weight_dynamic_obstacle: 10
+  weight_dynamic_obstacle_inflation: 0.2
+  weight_viapoint: 55  # bám path global qua khe hẹp
+  weight_adapt_factor: 2
+  # Bật HCP: cho phép nhảy lớp đường (trái/phải quanh proxemic) thay vì cuộn band cùng topology.
+  enable_homotopy_class_planning: true
+  enable_multithreading: true
+  max_number_classes: 2  # trái/phải quanh proxemic — đủ cho hành lang, tránh flicker/CPU thừa
+  selection_cost_hysteresis: 1.0
+  # Hạ tiếp → dễ bỏ plan cũ khi có lớp ngắn hơn (siết sau thử 0.75).
+  selection_prefer_initial_plan: 0.55
+  selection_obst_cost_scale: 1.0
+  selection_alternative_time_cost: false
+  roadmap_graph_no_samples: 10
+  roadmap_graph_area_width: 5
+  roadmap_graph_area_length_scale: 1.0
+  h_signature_prescaler: 0.5
+  h_signature_threshold: 0.1
+  obstacle_heading_threshold: 0.45
+  switching_blocking_period: 0.8
+  viapoints_all_candidates: true
+  delete_detours_backwards: true
+  max_ratio_detours_duration_best_duration: 3.0
+  visualize_hc_graph: false
+  visualize_with_time_as_z_axis_scale: false
+  shrink_horizon_backup: true
+  shrink_horizon_min_duration: 10
+  oscillation_recovery: true
+  oscillation_v_eps: 0.15
+  oscillation_omega_eps: 0.1
+  oscillation_recovery_min_duration: 5
+  oscillation_filter_duration: 6

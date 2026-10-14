@@ -13,6 +13,9 @@ Tham số:
   ~spin_on_arrival (bool, mặc định False): NGOÀI LỀ — quay tại chỗ khi tới goal (exp7);
     tắt mặc định nên không ảnh hưởng thí nghiệm 1–6
   ~spin_angular_vel / ~spin_revolutions: chỉ dùng khi spin_on_arrival=true
+
+Publish (latch):
+  /goal_sender/last_succeeded_waypoint (std_msgs/String): tên waypoint vừa SUCCEEDED
 """
 
 import os
@@ -26,7 +29,7 @@ import tf
 from actionlib_msgs.msg import GoalStatus
 from actionlib_msgs.msg import GoalStatusArray
 from visualization_msgs.msg import Marker, MarkerArray
-from std_msgs.msg import ColorRGBA
+from std_msgs.msg import ColorRGBA, String
 
 # Waypoints mặc định (trung bình) khi không load được file
 DEFAULT_WAYPOINTS = [
@@ -166,6 +169,10 @@ class GoalSenderScenario:
         rospy.loginfo("Connected to move_base action server")
 
         self.marker_pub = rospy.Publisher('/visualization_markers_start_goal', MarkerArray, queue_size=10)
+        # Latch: fusion/nodes khác biết waypoint vừa SUCCEEDED (vd. arm density gate exp6).
+        self.last_succeeded_pub = rospy.Publisher(
+            '/goal_sender/last_succeeded_waypoint', String, queue_size=1, latch=True
+        )
         rospy.loginfo("Publisher for markers initialized")
 
         rospy.Subscriber("/amcl_pose", PoseWithCovarianceStamped, self._amcl_pose_callback, queue_size=1)
@@ -233,14 +240,18 @@ class GoalSenderScenario:
         self._advancing = True
         try:
             wp = self.waypoints[self.current_goal_index] if self.current_goal_index < len(self.waypoints) else {}
+            wp_name = str(wp.get('name', '') or '')
             rospy.loginfo(
                 "Goal %d đạt mục tiêu (%s) -> gửi goal tiếp theo.",
                 self.current_goal_index + 1, reason
             )
+            if wp_name:
+                self.last_succeeded_pub.publish(String(data=wp_name))
+                rospy.loginfo("Published last_succeeded_waypoint: %s", wp_name)
             self.goal_active = False
             self.last_goal_id = None
             self.active_goal_start_time = None
-            self._spin_in_place(wp.get('name', ''))
+            self._spin_in_place(wp_name)
             self.current_goal_index += 1
             rospy.sleep(self.goal_retry_delay_sec)
             self.send_next_goal()

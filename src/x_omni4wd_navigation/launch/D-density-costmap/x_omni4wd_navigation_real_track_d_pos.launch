@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <launch>
   <!--
-    Track D — Robot thật — NHÁNH ĐỘC LẬP exp4/exp5/exp6
-    Cùng stack *_pos (không FER). exp4 proxemic only; exp5/6 emotion_zones + objects map.
+    Track D — Robot thật — NHÁNH ĐỘC LẬP exp4/5/6 (+ fork exp8/9/10)
+    Cùng stack *_pos (không FER). exp4/8 proxemic only; exp5/6/9/10 emotion_zones + objects map.
     Không dùng cho exp1–exp3 (xem x_omni4wd_navigation_real_track_d.launch).
 
     Odom (đồng bộ exp1–3):
@@ -10,7 +10,7 @@
       scan_static_filter: /scan → /scan_static → SRF; costmap vẫn /scan
 
     Cách dùng (qua run_real_track_d_pos.sh):
-      exp_variant := real_tn4 | real_tn5 | real_tn6
+      exp_variant := real_tn4 | real_tn5 | real_tn6 | real_tn8 | real_tn9 | real_tn9b | real_tn10 | real_tn10b | real_tn11
       social_config := path/to/social_config_real_expX_*_pos.yaml
       map_file := trackD_real_map_exp456_v3.yaml
   -->
@@ -62,8 +62,17 @@
        default="$(find x_omni4wd_navigation)/rviz/D-density-costmap/track_d_real_pos.rviz"/>
   <arg name="open_sii_sgi_dashboard" default="true"/>
   <arg name="use_scenario_gt_for_sii_sgi" default="true"/>
+  <!-- false ở exp7 mark-only: không chạy SII/SGI / scenario GT -->
+  <arg name="use_sii_sgi_monitor" default="true"/>
+  <!-- Phương án B: /sii_pedestrian từ person_* live — mặc định tắt (paper 4–6 không đổi) -->
+  <arg name="enable_sii_pedestrian" default="false"/>
   <arg name="scenario_gt_path"
        default="$(find social_density_fusion)/config/D-density-costmap/real/social_scenario_canonical_trackD_real.yaml"/>
+  <!-- Layout actor cho latch/preview. Default = paper exp4–6. Fork exp8–10 override *_exp8910. -->
+  <arg name="scenario_actor_layout"
+       default="$(find social_density_fusion)/config/D-density-costmap/real/social_actor_layout_from_sim.yaml"/>
+  <!-- true: chỉ advance khi abort + proxemic max (exp4–6). false: exp7 không social -->
+  <arg name="goal_sender_abort_only_when_proxemic_max" default="true"/>
   <arg name="open_move_base_status_timeline" default="false"/>
   <arg name="use_bringup" default="true"/>
 
@@ -142,6 +151,8 @@
     <arg name="use_map_filter" value="true"/>
     <arg name="use_body_filter" value="$(arg scan_static_use_body_filter)"/>
     <arg name="bodies_topic" value="/bodies"/>
+    <arg name="passthrough_if_no_map" value="false"/>
+    <arg name="hold_last_static" value="true"/>
   </include>
 
   <include file="$(find x_omni4wd_slam)/launch/odometry_modes.launch">
@@ -165,6 +176,7 @@
            file="$(find social_density_fusion)/launch/social_density_fusion_zed_pos.launch">
     <arg name="scan_topic" value="$(arg scan_topic)"/>
     <arg name="scenario_config" value="$(arg social_config)"/>
+    <arg name="scenario_actor_layout" value="$(arg scenario_actor_layout)"/>
     <arg name="use_live_emotions" value="false"/>
     <arg name="publish_facing_markers" value="false"/>
     <arg name="publish_velocity_debug" value="false"/>
@@ -242,7 +254,7 @@
         launch-prefix="bash -c 'until rostopic echo -n1 /move_base/status &gt;/dev/null 2&gt;&amp;1; do sleep 1; done; until rostopic echo -n1 /amcl_pose &gt;/dev/null 2&gt;&amp;1; do sleep 1; done; sleep $(arg goal_sender_extra_delay); exec &quot;$0&quot; &quot;$@&quot;'">
     <param name="waypoints_file" value="$(arg goal_sender_waypoints_file)"/>
     <param name="num_cycles" value="$(arg goal_sender_num_cycles)"/>
-    <param name="abort_only_when_proxemic_max" value="true"/>
+    <param name="abort_only_when_proxemic_max" value="$(arg goal_sender_abort_only_when_proxemic_max)"/>
     <param name="proxemic_max_weight" value="45.0"/>
     <param name="proxemic_weight_param_global" value="/move_base/global_costmap/proxemic/proxemic_density_weight"/>
     <param name="proxemic_weight_param_local" value="/move_base/local_costmap/proxemic/proxemic_density_weight"/>
@@ -258,11 +270,14 @@
 
   <!-- ===== SII / SGI — cùng chương trình chung với exp1–3 (horizontal) =====
        Costmap POS vẫn dùng /social_state latch; đo SII/SGI từ /social_state_gt.
+       enable_sii_pedestrian:=true (fork 8–11): thêm /sii_pedestrian từ live person_*.
+       Tắt hoàn toàn khi use_sii_sgi_monitor:=false (exp7 mark-only).
   -->
   <include file="$(find social_navigation_monitor)/launch/track_d_sii_sgi_monitor.launch">
-    <arg name="enabled" value="true"/>
+    <arg name="enabled" value="$(arg use_sii_sgi_monitor)"/>
     <arg name="use_scenario_gt" value="$(arg use_scenario_gt_for_sii_sgi)"/>
     <arg name="scenario_gt_path" value="$(arg scenario_gt_path)"/>
+    <arg name="enable_sii_pedestrian" value="$(arg enable_sii_pedestrian)"/>
     <arg name="open_dashboard" value="$(arg open_sii_sgi_dashboard)"/>
     <arg name="dashboard_layout" value="horizontal"/>
     <arg name="dashboard_image_width" value="1840"/>

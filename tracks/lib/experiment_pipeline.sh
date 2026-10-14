@@ -11,21 +11,7 @@
 [[ -n "${_EXPERIMENT_PIPELINE_LOADED:-}" ]] && return 0
 _EXPERIMENT_PIPELINE_LOADED=1
 
-# Portable workspace root: prefer PIPE_WS / WORKSPACE_PATH, else auto-detect
-# (directory that contains both src/ and tracks/, two levels above this file).
-if [ -z "${PIPE_WS:-}" ]; then
-  if [ -n "${WORKSPACE_PATH:-}" ]; then
-    PIPE_WS="$WORKSPACE_PATH"
-  else
-    _pipe_guess="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-    if [ -d "$_pipe_guess/src" ] && [ -d "$_pipe_guess/tracks" ]; then
-      PIPE_WS="$_pipe_guess"
-    else
-      PIPE_WS="/home/quyenanh/omni4wd_ws"
-    fi
-    unset _pipe_guess
-  fi
-fi
+PIPE_WS="${PIPE_WS:-${WORKSPACE_PATH:-/home/quyenanh/omni4wd_ws}}"
 PIPE_TRACK="${PIPE_TRACK:-unknown-track}"
 PIPE_EXPERIMENT_NAME="${PIPE_EXPERIMENT_NAME:-exp_$(date +%Y%m%d_%H%M%S)}"
 PIPE_DURATION_MINUTES="${PIPE_DURATION_MINUTES:-0}"

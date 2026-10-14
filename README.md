@@ -117,3 +117,30 @@ Relaxes `*_density_weight` when stuck; restores after travel ≥ 2 m (see paper 
 
 MIT for our packages. Third-party packages keep their original licenses (TEB, RPLidar, Ultralytics, …). ZED SDK is subject to Stereolabs terms and is **not** redistributed here.
 EOF
+
+## Reproducing the Track D physical runs (27 Sep 2026)
+
+Local branch `release/trackD-2026-09-27`, not pushed. Tag name reserved for later approval: `trackD-2026-09-27`.
+
+These files are the versions that were on the robot during the evening runs of 27 September 2026. `emotion_layer.cpp` matches public commit `e6176bd` except one identifier, `safe_densit` renamed `safe_density`, so the function compiles. The radii are unchanged. Several scenario YAML files were already edited on disk at 15:53 that day and were committed on the robot only at 18:37 (`b63160a`), after the runs; the bytes in this branch are those on-disk bytes.
+
+Scripts keep absolute paths under `/home/quyenanh/omni4wd_ws`. Change them for another machine. This tree does not include bags, CSV logs, or videos.
+
+| Paper run | Script | exp_variant | Scenario |
+| --- | --- | --- | --- |
+| Exp. 11 | `tracks/D-density-costmap/run_real_exp11_no_social_pos.sh` | `real_tn11` | exp8910 |
+| Exp. 8 | `tracks/D-density-costmap/run_real_exp8_proxemic_only_pos.sh` | `real_tn8` | exp8910 |
+| Exp. 9 | `tracks/D-density-costmap/run_real_exp9_social_layers_pos.sh` | `real_tn9` | exp8910 |
+| Exp. 10b | `tracks/D-density-costmap/run_real_exp10b_density_gate_angry_actor2_pos.sh` | `real_tn10b` | exp8910b, actor2 Angry |
+
+Initial pose passed by each script: `(12.96, 1.32, 1.5948)`. Waypoints: `waypoints_trackD_real_exp8910.yaml`. Map: `trackD_real_map_exp456_v3`. `DURATION=0` waits for Enter.
+
+Planner values loaded that evening:
+
+| Run | lethal_cost | TEB costmap_obstacle_threshold | cost_factor | feasibility_check_no_poses | acc_lim_theta |
+| --- | --- | --- | --- | --- | --- |
+| Exp. 11 | 253 | 253 | 3.0 | (see real_tn11 yaml) | 0.8 |
+| Exp. 8 | 10 | 10 | 1.1 | 2 | 0.80 |
+| Exp. 9 and Exp. 10b | 10 | 10 | 1.3 | 4 | 0.50 |
+
+Exp. 9 and Exp. 10b move_base and TEB yaml are byte-identical. Exp. 8 also uses a shorter lookahead (0.8 versus 1.2).

@@ -1,0 +1,44 @@
+---
+# Track D — Robot thật — Waypoints riêng exp8 / exp9 / exp10 (độc lập với exp4–6)
+# Lộ trình: START → GOAL_1 → GOAL_2 → GOAL_3 → GOAL_4
+# GOAL_3: /amcl_pose 24-09-2026 ~15:35 (chèn giữa)
+# GOAL_4: waypoint 3 cũ (trước đây GOAL_3) — điểm cuối
+
+num_cycles: 1
+movement_mode: "cycle"
+
+waypoints:
+  - name: "START"
+    # Điểm xuất phát — /amcl_pose ~15:30 (23-09)
+    x: 12.9583
+    y: 1.3167
+    yaw: 1.59477879
+    color: [0.0, 1.0, 0.0]
+
+  - name: "GOAL_1"
+    # Waypoint 1 — /amcl_pose 24-09 ~17:13 (đánh dấu tay)
+    x: 11.1950
+    y: 12.0885
+    yaw: 2.75860590
+    color: [1.0, 0.5, 0.0]
+
+  - name: "GOAL_2"
+    # Waypoint 2 — /amcl_pose 24-09 ~17:16 (đánh dấu tay)
+    x: 7.1912
+    y: 12.8952
+    yaw: -3.07136235
+    color: [1.0, 0.5, 0.0]
+
+  - name: "GOAL_3"
+    # Waypoint 3 — /amcl_pose 24-09 ~17:17 (đánh dấu tay)
+    x: 3.5840
+    y: 12.4163
+    yaw: 3.06909291
+    color: [1.0, 0.5, 0.0]
+
+  - name: "GOAL_4"
+    # Điểm cuối — GOAL_3 cũ (~15:55 ngày 23-09)
+    x: -0.2525
+    y: 10.6134
+    yaw: -1.29158785
+    color: [1.0, 0.5, 0.0]

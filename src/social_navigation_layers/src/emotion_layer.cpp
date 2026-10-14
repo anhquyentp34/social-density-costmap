@@ -20,7 +20,7 @@ namespace social_navigation_layers
     {
         double computeDensityGeometryScale(double density, double density_weight)
         {
-            const double safe_densit = std::max(0.0, density);
+            const double safe_density = std::max(0.0, density);
             return std::exp(-density_weight * safe_density);
         }   
     }  // namespace

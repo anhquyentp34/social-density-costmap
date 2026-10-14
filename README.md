@@ -143,4 +143,4 @@ Planner values loaded that evening:
 | Exp. 8 | 10 | 10 | 1.1 | 2 | 0.80 |
 | Exp. 9 and Exp. 10b | 10 | 10 | 1.3 | 4 | 0.50 |
 
-Exp. 9 and Exp. 10b move_base and TEB yaml are byte-identical. Exp. 8 also uses a shorter lookahead (0.8 versus 1.2).
+Exp. 9 and Exp. 10b move_base and TEB yaml are byte-identical. max_global_plan_lookahead_dist is 4.0 in all four TEB yaml files.
